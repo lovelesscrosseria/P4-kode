@@ -4,11 +4,11 @@ program: (strategy | function_decl | event_decl | assignment | variable_decl | W
 strategy: 'strategy'  WHITESPACE IDENT WHITESPACE+ LCURL  behavior* RCURL;
 behavior: 'behavior' WHITESPACE IDENT LPAREN RPAREN WHITESPACE+ LCURL statement* RCURL;
 
-function_decl: 'func' WHITESPACE type WHITESPACE IDENT WHITESPACE? LPAREN WHITESPACE* formal_params? WHITESPACE* RPAREN WHITESPACE* LCURL block RCURL;
-event_decl: 'event' WHITESPACE IDENT WHITESPACE LCURL block RCURL;
+function_decl: 'func' WHITESPACE type WHITESPACE IDENT WHITESPACE? LPAREN WHITESPACE* formal_params? WHITESPACE* RPAREN WHITESPACE* block;
+event_decl: 'event' WHITESPACE IDENT WHITESPACE block;
 
-if_decl: 'if' WHITESPACE* if_wrapper (WHITESPACE | '\n')* (('else if' WHITESPACE* if_wrapper)* (WHITESPACE | '\n')* ((WHITESPACE | '\n')* 'else' (WHITESPACE | '\n')* LCURL block RCURL)?);
-if_wrapper: LPAREN WHITESPACE* expr* WHITESPACE* RPAREN WHITESPACE* '\n'? WHITESPACE* LCURL block RCURL;
+if_decl: 'if' WHITESPACE* if_wrapper (WHITESPACE | '\n')* (('else if' WHITESPACE* if_wrapper)* (WHITESPACE | '\n')* ((WHITESPACE | '\n')* 'else' (WHITESPACE | '\n')* block)?);
+if_wrapper: LPAREN WHITESPACE* expr* WHITESPACE* RPAREN WHITESPACE* '\n'? WHITESPACE* block;
 
 STRING_DECL: '"'[^"]'"';
 variable_decl: type WHITESPACE IDENT (WHITESPACE ASSIGN_OPERATOR WHITESPACE? expr)? SEMI;
@@ -16,10 +16,10 @@ assignment:  IDENT WHITESPACE (ASSIGN_OPERATOR | PLUSEQ_OPERATOR | MINUSEQ_OPERA
 statement: variable_decl | assignment | function_call | if_decl | return_statement | for_loop | do_while_loop | while_loop;
 
 function_call: IDENT LPAREN params RPAREN SEMI;
-for_loop: 'for' LPAREN assignment ';' WHITESPACE expr ';' WHITESPACE expr RPAREN '\n' LCURL block RCURL;
-while_loop: 'while' LPAREN expr RPAREN ('\n' | WHITESPACE)? LCURL block RCURL;
-do_while_loop: 'do' ( '\n' | WHITESPACE)? LCURL block RCURL WHITESPACE 'while' LPAREN expr RPAREN;
-block: (statement | '\n' | WHITESPACE)*;
+for_loop: 'for' LPAREN assignment ';' WHITESPACE expr ';' WHITESPACE expr RPAREN '\n'block;
+while_loop: 'while' LPAREN expr RPAREN ('\n' | WHITESPACE)? block;
+do_while_loop: 'do' ( '\n' | WHITESPACE)? block WHITESPACE 'while' LPAREN expr RPAREN;
+block: LCURL (statement | '\n' | WHITESPACE)* RCURL;
 
 formal_params: type WHITESPACE IDENT WHITESPACE? (',' WHITESPACE? formal_params)*;
 params: expr WHITESPACE? (',' WHITESPACE? params)*;
