@@ -13,10 +13,9 @@ variable_decl: type WS IDENT (WS ASSIGN_OPERATOR WS? expr)?;
 
 list_decl: 'list' LESS_OPERATOR type GREATER_OPERATOR WS IDENT;
 dictionary_decl: 'dictionary' LESS_OPERATOR type COMMA WS? type GREATER_OPERATOR WS IDENT;
-
 collection_expr: IDENT DOT ('get' LPAREN expr RPAREN | 'length');
 collection_statement: IDENT DOT 'push' LPAREN (expr | expr COMMA WS? expr) RPAREN;
-
+roboCode_method: 'robot' DOT function_call;
 assignment  : IDENT WS (ASSIGN_OPERATOR 
             | PLUSEQ_OPERATOR 
             | MINUSEQ_OPERATOR) WS expr NEWLINE
@@ -29,6 +28,7 @@ stat        : block
             | 'if' WS? expr (WS | NEWLINE)? block (WS 'else if' WS? expr (WS | NEWLINE)? block )* (WS 'else' (WS | NEWLINE)? block )?
             | assignment 
             | function_call NEWLINE
+            | roboCode_method NEWLINE
             | return_stat NEWLINE
             | for_loop 
             | do_while_loop 
