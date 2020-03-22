@@ -11,14 +11,18 @@ event_decl: 'event' WS IDENT WS block;
 STRING: '"' ~["]* '"' ;
 variable_decl: type WS IDENT (WS ASSIGN_OPERATOR WS? expr)?;
 list_decl: 'list' LESS_OPERATOR type GREATER_OPERATOR WS IDENT WS ASSIGN_OPERATOR WS LCURL (expr (',' WS? expr)*)? RCURL;
+list_expr: IDENT DOT ('get' LPAREN DIGIT RPAREN | 'length');
+list_statement: IDENT DOT 'push' LPAREN expr RPAREN;
 assignment  : IDENT WS (ASSIGN_OPERATOR 
             | PLUSEQ_OPERATOR 
             | MINUSEQ_OPERATOR) WS expr NEWLINE
             ;
 
+
 stat        : block
             | variable_decl NEWLINE
             | list_decl NEWLINE
+            | list_statement NEWLINE
             | 'if' WS? expr (WS | NEWLINE)? block (WS 'else if' WS? expr (WS | NEWLINE)? block )* (WS 'else' (WS | NEWLINE)? block )?
             | assignment 
             | function_call NEWLINE
@@ -54,9 +58,10 @@ expr        : decrement_operator
             | DIGIT+
             | IDENT
             | function_call
+            | list_expr
             ;
 
-
+DOT: '.';
 LPAREN: '(';
 RPAREN: ')';
 LCURL: '{';
