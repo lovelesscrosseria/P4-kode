@@ -10,7 +10,7 @@ event_decl: 'event' WS IDENT WS block;
 
 STRING: '"' ~["]* '"' ;
 variable_decl: type WS IDENT (WS ASSIGN_OPERATOR WS? expr)?;
-list_decl: 'list' LESS_OPERATOR type GREATER_OPERATOR WS IDENT WS ASSIGN_OPERATOR WS LCURL (expr (',' WS? expr)*)? RCURL;
+list_decl: 'list' LESS_OPERATOR type GREATER_OPERATOR WS IDENT;
 list_expr: IDENT DOT ('get' LPAREN DIGIT RPAREN | 'length');
 list_statement: IDENT DOT 'push' LPAREN expr RPAREN;
 assignment  : IDENT WS (ASSIGN_OPERATOR 
