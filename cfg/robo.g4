@@ -1,6 +1,6 @@
 grammar robo;
 
-program : (strategy | function_decl | event_decl | assignment | variable_decl | WS | NEWLINE)* EOF;
+program : (strategy | function_decl | event_decl | assignment | variable_decl | list_decl | WS | NEWLINE)* EOF;
 
 strategy: 'strategy'  WS IDENT WS+ LCURL NEWLINE (behavior | WS | NEWLINE)* RCURL;
 behavior: 'behavior' WS IDENT LPAREN RPAREN WS+ LCURL (stat | WS | NEWLINE)* RCURL;
@@ -10,6 +10,7 @@ event_decl: 'event' WS IDENT WS block;
 
 STRING: '"' ~["]* '"' ;
 variable_decl: type WS IDENT (WS ASSIGN_OPERATOR WS? expr)?;
+list_decl: 'list' LESS_OPERATOR type GREATER_OPERATOR WS IDENT WS ASSIGN_OPERATOR WS LCURL (expr (',' WS? expr)*)? RCURL;
 assignment  : IDENT WS (ASSIGN_OPERATOR 
             | PLUSEQ_OPERATOR 
             | MINUSEQ_OPERATOR) WS expr NEWLINE
@@ -17,6 +18,7 @@ assignment  : IDENT WS (ASSIGN_OPERATOR
 
 stat        : block
             | variable_decl NEWLINE
+            | list_decl NEWLINE
             | 'if' WS? expr (WS | NEWLINE)? block (WS 'else if' WS? expr (WS | NEWLINE)? block )* (WS 'else' (WS | NEWLINE)? block )?
             | assignment 
             | function_call NEWLINE
@@ -49,11 +51,11 @@ expr        : decrement_operator
             | 'true'
             | 'false'
             | STRING
-            | DIGIT_DOT+
             | DIGIT+
             | IDENT
             | function_call
             ;
+
 
 LPAREN: '(';
 RPAREN: ')';
@@ -84,8 +86,7 @@ MINUSEQ_OPERATOR: '-=';
 
 IDENT: SINGLE_CHARACTER+ (DIGIT | SINGLE_CHARACTER)*;
 SINGLE_CHARACTER: ([a-zA-Z] | '_');
-DIGIT: [0-9];
-DIGIT_DOT: ('0'? | [1-9]*)'.'[0-9]*;
+DIGIT: [0-9]+ ('.')? [0-9]*;
 type: 'num' | 'text' | 'bool' | 'void' | 'ScannedRobotEvent';
 return_stat: 'return'  WS expr;
 decrement_operator: IDENT '--';
