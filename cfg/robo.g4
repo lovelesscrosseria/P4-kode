@@ -1,6 +1,6 @@
 grammar robo;
 
-program : (strategy | function_decl | event_decl | assignment | variable_decl | list_decl | WS | NEWLINE)* EOF;
+program : (strategy | function_decl | event_decl | assignment | variable_decl | list_decl | dictionary_decl | WS | NEWLINE)* EOF;
 
 strategy: 'strategy'  WS IDENT WS+ LCURL NEWLINE (behavior | WS | NEWLINE)* RCURL;
 behavior: 'behavior' WS IDENT LPAREN RPAREN WS+ LCURL (stat | WS | NEWLINE)* RCURL;
@@ -10,19 +10,22 @@ event_decl: 'event' WS IDENT WS block;
 
 STRING: '"' ~["]* '"' ;
 variable_decl: type WS IDENT (WS ASSIGN_OPERATOR WS? expr)?;
+
 list_decl: 'list' LESS_OPERATOR type GREATER_OPERATOR WS IDENT;
-list_expr: IDENT DOT ('get' LPAREN DIGIT RPAREN | 'length');
-list_statement: IDENT DOT 'push' LPAREN expr RPAREN;
+dictionary_decl: 'dictionary' LESS_OPERATOR type COMMA WS? type GREATER_OPERATOR WS IDENT;
+
+collection_expr: IDENT DOT ('get' LPAREN expr RPAREN | 'length');
+collection_statement: IDENT DOT 'push' LPAREN (expr | expr COMMA WS? expr) RPAREN;
+
 assignment  : IDENT WS (ASSIGN_OPERATOR 
             | PLUSEQ_OPERATOR 
             | MINUSEQ_OPERATOR) WS expr NEWLINE
             ;
 
-
 stat        : block
             | variable_decl NEWLINE
             | list_decl NEWLINE
-            | list_statement NEWLINE
+            | collection_statement NEWLINE
             | 'if' WS? expr (WS | NEWLINE)? block (WS 'else if' WS? expr (WS | NEWLINE)? block )* (WS 'else' (WS | NEWLINE)? block )?
             | assignment 
             | function_call NEWLINE
@@ -58,10 +61,11 @@ expr        : decrement_operator
             | DIGIT+
             | IDENT
             | function_call
-            | list_expr
+            | collection_expr
             ;
 
 DOT: '.';
+COMMA: ',';
 LPAREN: '(';
 RPAREN: ')';
 LCURL: '{';
