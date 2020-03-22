@@ -1,25 +1,54 @@
 grammar robo;
 
-program: (strategy | function_decl | event_decl | assignment | variable_decl | WS | '\n' | '\r')* strategy (strategy | function_decl | event_decl | assignment | variable_decl | WS | '\n' | '\r')* EOF;
+program     :(strategy 
+            | function_decl 
+            | event_decl 
+            | assignment 
+            | variable_decl 
+            | WS 
+            | '\n' 
+            | '\r')* strategy (strategy 
+                | function_decl 
+                | event_decl 
+                | assignment 
+                | variable_decl 
+                | WS 
+                | '\n' 
+                | '\r')* EOF
+            ;
+
 strategy: 'strategy'  WS IDENT WS+ LCURL  behavior* RCURL;
-behavior: 'behavior' WS IDENT LPAREN RPAREN WS+ LCURL statement* RCURL;
+behavior: 'behavior' WS IDENT LPAREN RPAREN WS+ LCURL stat* RCURL;
 
 function_decl: 'func' WS type WS IDENT WS? LPAREN WS* formal_params? WS* RPAREN WS* block;
 event_decl: 'event' WS IDENT WS block;
 
-if_decl: 'if' WS* if_wrapper (WS | '\n')* (('else if' WS* if_wrapper)* (WS | '\n')* ((WS | '\n')* 'else' (WS | '\n')* block)?);
-if_wrapper: LPAREN WS* expr* WS* RPAREN WS* '\n'? WS* block;
+// if_decl: 'if' WS* if_wrapper (WS | '\n')* (('else if' WS* if_wrapper)* (WS | '\n')* ((WS | '\n')* 'else' (WS | '\n')* block)?);
+// if_wrapper: LPAREN WS* expr* WS* RPAREN WS* '\n'? WS* block;
 
 STRING_DECL: '"'[^"]'"';
 variable_decl: type WS IDENT (WS ASSIGN_OPERATOR WS? expr)? SEMI;
-assignment:  IDENT WS (ASSIGN_OPERATOR | PLUSEQ_OPERATOR | MINUSEQ_OPERATOR) WS expr SEMI;
-statement: variable_decl | assignment | function_call | if_decl | return_statement | for_loop | do_while_loop | while_loop;
+assignment  : IDENT WS (ASSIGN_OPERATOR 
+            | PLUSEQ_OPERATOR 
+            | MINUSEQ_OPERATOR) WS expr SEMI
+            ;
+
+stat        : block
+            | variable_decl 
+            | 'if' expr 'then' stat ('else' stat)?
+            | assignment 
+            | function_call 
+            | return_stat 
+            | for_loop 
+            | do_while_loop 
+            | while_loop
+            ;
 
 function_call: IDENT LPAREN params RPAREN SEMI;
 for_loop: 'for' LPAREN assignment ';' WS expr ';' WS expr RPAREN '\n'block;
 while_loop: 'while' LPAREN expr RPAREN ('\n' | WS)? block;
 do_while_loop: 'do' ( '\n' | WS)? block WS 'while' LPAREN expr RPAREN;
-block: LCURL (statement | '\n' | WS)* RCURL;
+block: LCURL (stat | '\n' | WS)* RCURL;
 
 formal_params: type WS IDENT WS? (',' WS? formal_params)*;
 params: expr WS? (',' WS? params)*;
@@ -76,6 +105,6 @@ SINGLE_CHARACTER: ([a-zA-Z] | '_');
 DIGIT: [0-9];
 DIGIT_DOT: ('0'? | [1-9]*)'.'[0-9]*;
 type: 'num' | 'text' | 'bool' | 'void';
-return_statement: 'return'  WS expr SEMI;
+return_stat: 'return'  WS expr SEMI;
 decrement_operator: IDENT '--';
 increment_operator: IDENT '++';
