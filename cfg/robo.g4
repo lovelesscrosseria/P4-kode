@@ -1,31 +1,31 @@
 grammar robo;
 
-program : (strategy | function_decl | event_decl | assignment | variable_decl | list_decl | dictionary_decl | WS | NEWLINE)* EOF;
+program : (strategy | function_decl | event_decl | assignment | variable_decl | list_decl | dictionary_decl |   | NEWLINE)* EOF;
 
-strategy: 'strategy'  WS IDENT WS+ LCURL NEWLINE (behavior | WS | NEWLINE)* RCURL;
-behavior: 'behavior' WS IDENT LPAREN RPAREN WS+ LCURL (stat | WS | NEWLINE)* RCURL;
+strategy: 'strategy'    IDENT  + LCURL NEWLINE (behavior |   | NEWLINE)* RCURL;
+behavior: 'behavior'   IDENT LPAREN RPAREN  + LCURL (stat |   | NEWLINE)* RCURL;
 
-function_decl: 'func' WS type WS IDENT WS? LPAREN WS* formal_params? WS* RPAREN WS* block;
-event_decl: 'event' WS IDENT WS block;
+function_decl: 'func'   type   IDENT  ? LPAREN  * formal_params?  * RPAREN  * block;
+event_decl: 'event'   IDENT   block;
 
 STRING: '"' ~["]* '"' ;
-variable_decl: type WS IDENT (WS ASSIGN_OPERATOR WS? expr)?;
+variable_decl: type   IDENT (  ASSIGN_OPERATOR  ? expr)?;
 
-list_decl: 'list' LESS_OPERATOR type GREATER_OPERATOR WS IDENT;
-dictionary_decl: 'dictionary' LESS_OPERATOR type COMMA WS? type GREATER_OPERATOR WS IDENT;
+list_decl: 'list' LESS_OPERATOR type GREATER_OPERATOR   IDENT;
+dictionary_decl: 'dictionary' LESS_OPERATOR type COMMA  ? type GREATER_OPERATOR   IDENT;
 collection_expr: IDENT DOT ('get' LPAREN expr RPAREN | 'length');
-collection_statement: IDENT DOT 'push' LPAREN (expr | expr COMMA WS? expr) RPAREN;
+collection_statement: IDENT DOT 'push' LPAREN (expr | expr COMMA  ? expr) RPAREN;
 roboCode_method: 'robot' DOT function_call;
-assignment  : IDENT WS (ASSIGN_OPERATOR 
+assignment  : IDENT   (ASSIGN_OPERATOR 
             | PLUSEQ_OPERATOR 
-            | MINUSEQ_OPERATOR) WS expr NEWLINE
+            | MINUSEQ_OPERATOR)   expr NEWLINE
             ;
 
 stat        : block
             | variable_decl NEWLINE
             | list_decl NEWLINE
             | collection_statement NEWLINE
-            | 'if' WS? expr (WS | NEWLINE)? block (WS 'else if' WS? expr (WS | NEWLINE)? block )* (WS 'else' (WS | NEWLINE)? block )?
+            | 'if'  ? expr (  | NEWLINE)? block (  'else if'  ? expr (  | NEWLINE)? block )* (  'else' (  | NEWLINE)? block )?
             | assignment 
             | function_call NEWLINE
             | roboCode_method NEWLINE
@@ -36,25 +36,25 @@ stat        : block
             ;
 
 function_call: IDENT LPAREN params RPAREN;
-for_loop: 'for' LPAREN assignment ';' WS expr ';' WS expr RPAREN NEWLINE block;
-while_loop: 'while' LPAREN expr RPAREN (NEWLINE | WS)? block;
-do_while_loop: 'do' ( NEWLINE | WS)? block WS 'while' LPAREN expr RPAREN;
-block: LCURL (stat | NEWLINE | WS)* RCURL;
+for_loop: 'for' LPAREN assignment ';'   expr ';'   expr RPAREN NEWLINE block;
+while_loop: 'while' LPAREN expr RPAREN (NEWLINE |  )? block;
+do_while_loop: 'do' ( NEWLINE |  )? block   'while' LPAREN expr RPAREN;
+block: LCURL (stat | NEWLINE |  )* RCURL;
 
-formal_params: type WS IDENT WS? (',' WS? formal_params)*;
-params: expr WS? (',' WS? params)*;
+formal_params: type   IDENT  ? (','  ? formal_params)*;
+params: expr  ? (','  ? params)*;
 
 expr        : decrement_operator
             | increment_operator
-            | LPAREN WS* expr WS* RPAREN
-            | NOT_OPERATOR WS? expr
+            | LPAREN  * expr  * RPAREN
+            | NOT_OPERATOR  ? expr
             | <assoc=right> expr '^' expr
-            | <assoc=left> expr WS? (TIMES_OPERATOR | DIVISION_OPERATOR | MODULO_OPERATOR) WS? expr
-            | <assoc=left> expr WS? (PLUS_OPERATOR | MINUS_OPERATOR) WS? expr
-            | expr WS? (GEQ_OPERATOR | LEQ_OPEATOR | LESS_OPERATOR | GREATER_OPERATOR) WS? expr
-            | expr WS? (NOTEQ_OPERATOR | EQUAL_OPERATOR) WS? expr
-            | expr WS? AND_OPERATOR WS? expr
-            | expr WS? OR_OPERATOR WS? expr
+            | <assoc=left> expr  ? (TIMES_OPERATOR | DIVISION_OPERATOR | MODULO_OPERATOR)  ? expr
+            | <assoc=left> expr  ? (PLUS_OPERATOR | MINUS_OPERATOR)  ? expr
+            | expr  ? (GEQ_OPERATOR | LEQ_OPEATOR | LESS_OPERATOR | GREATER_OPERATOR)  ? expr
+            | expr  ? (NOTEQ_OPERATOR | EQUAL_OPERATOR)  ? expr
+            | expr  ? AND_OPERATOR  ? expr
+            | expr  ? OR_OPERATOR  ? expr
             | 'true'
             | 'false'
             | STRING
@@ -71,7 +71,7 @@ RPAREN: ')';
 LCURL: '{';
 RCURL: '}';
 NEWLINE: '\n' | '\r' | '\r\n';
-WS: ' ' | '\t';
+WS: [\n\t\r]+ -> skip;
 
 
 ASSIGN_OPERATOR: '=';
@@ -97,6 +97,6 @@ IDENT: SINGLE_CHARACTER+ (DIGIT | SINGLE_CHARACTER)*;
 SINGLE_CHARACTER: ([a-zA-Z] | '_');
 DIGIT: [0-9]+ ('.')? [0-9]*;
 type: 'num' | 'text' | 'bool' | 'void' | 'ScannedRobotEvent';
-return_stat: 'return'  WS expr;
+return_stat: 'return'    expr;
 decrement_operator: IDENT '--';
 increment_operator: IDENT '++';
