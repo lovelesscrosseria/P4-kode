@@ -16,6 +16,7 @@ dictionary_decl: 'dictionary' LESS_OPERATOR type COMMA  ? type GREATER_OPERATOR 
 collection_expr: IDENT DOT ('get' LPAREN expr RPAREN | 'length');
 collection_statement: IDENT DOT 'push' LPAREN (expr | expr COMMA  ? expr) RPAREN;
 roboCode_method: 'robot' DOT function_call;
+
 assignment  : IDENT   (ASSIGN_OPERATOR 
             | PLUSEQ_OPERATOR 
             | MINUSEQ_OPERATOR)   expr NEWLINE
@@ -28,7 +29,6 @@ stat        : block
             | 'if'  ? expr (  | NEWLINE)? block (  'else if'  ? expr (  | NEWLINE)? block )* (  'else' (  | NEWLINE)? block )?
             | assignment 
             | function_call NEWLINE
-            | roboCode_method NEWLINE
             | return_stat NEWLINE
             | for_loop 
             | do_while_loop 
