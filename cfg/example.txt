@@ -1,5 +1,0 @@
-func void add() {
-
-	num result = 2 + 3
-
-}

@@ -1,0 +1,75 @@
+import java.util.*;
+import java.io.*;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
+
+public class BuildAstVisitor extends roboBaseVisitor<ExpressionNode>
+{
+
+    @Override
+	public ExpressionNode visitProgram(roboParser.ProgramContext context)
+	{
+		return visit(context);
+	}
+
+	public ExpressionNode visitDigitExpr(roboParser.DigitExprContext context)
+	{
+		double value = Double.Parse(context.value.Text, NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent);
+
+		NumberNode numberNode = new NumberNode();
+		numberNode.SetValue(value);
+
+		return numberNode;
+	}
+
+    @Override
+    public ExpressionNode visitInfixExpr(roboParser.InfixExprContext context)
+    {
+        InfixExpressionNode node;
+
+        switch (context.op.Type)
+        {
+            case roboLexer.ADD_OP:
+                node = new AdditionNode();
+                break;
+
+            case roboLexer.SUB_OP:
+                node = new SubtractionNode();
+                break;
+
+            case roboLexer.MUL_OP:
+                node = new MultiplicationNode();
+                break;
+
+            case roboLexer.DIV_OP:
+                node = new DivisionNode();
+                break;
+    	}
+	}
+
+	@Override
+    public ExpressionNode VisitFuncExpr(roboParser.FuncExprContext context)
+    {
+        var functionName = context.func.Text;
+
+        var func = typeof(robo)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m -> m.ReturnType == typeof(Double))
+            .Where(m -> m.GetParameters().Select(p -> p.ParameterType).SequenceEqual(new double[] { typeof(Double) }))
+            .FirstOrDefault(m -> m.Name.Equals(functionName, StringComparison.OrdinalIgnoreCase));
+
+        if (func == null)
+            throw new NotSupportedException(string.Format("Function {0} is not supported", functionName));
+
+        Function = (<Double, Double>)func.CreateDelegate(typeof(Func<Double, Double>));
+        Argument = Visit(context.expr());
+
+		return new FunctionNode( Argument );
+
+        node.Left = visit(context.left);
+        node.Right = visit(context.right);
+
+        return node;
+    }
+}

@@ -1,11 +1,11 @@
 import java.util.function.Function;
 
-abstract class ExpressionNode
+public class ExpressionNode
 {
 
 }
 
-abstract class InfixExpressionNode extends ExpressionNode
+class InfixExpressionNode extends ExpressionNode
 {
 	private ExpressionNode Left; 
 	private ExpressionNode Right;
@@ -36,7 +36,22 @@ class MultiplicationNode extends InfixExpressionNode {  }
 
 class DivisonNode extends InfixExpressionNode {  }
 
-class FuncNode extends InfixExpressionNode
+class NegateNode extends ExpressionNode
+{
+    public ExpressionNode InnerNode;
+
+    public ExpressionNode GetInnerNode()
+    {
+        return InnerNode;
+    }
+
+    public void SetInnerNode(ExpressionNode innerNode)
+    {
+        this.InnerNode = innerNode;
+    }
+}
+
+class FuncNode extends ExpressionNode
 {
 	public Function<Double, Double> Function;
 	public ExpressionNode Argument;
@@ -57,4 +72,19 @@ class FuncNode extends InfixExpressionNode
 	{
 		this.Argument = argument;
 	}
+}
+
+class NumberNode extends ExpressionNode
+{
+    public double Value;
+
+    public double GetValue()
+    {
+        return Value;
+    }
+
+    public void SetValue(double value)
+    {
+        this.Value = value;
+    }
 }
