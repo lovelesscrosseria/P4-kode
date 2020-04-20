@@ -14,6 +14,7 @@
 .idea/**/dictionaries
 .idea/**/shelf
 .idea/*
+!.idea/P4-kode.iml
 
 # Generated files
 .idea/**/contentModel.xml
