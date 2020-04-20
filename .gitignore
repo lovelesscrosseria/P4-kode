@@ -93,3 +93,7 @@ fabric.properties
 .idea/**/markdown-navigator/
 
 # End of https://www.gitignore.io/api/intellij
+
+#Egne ting:
+#For en pænere opbygning ift CFG
+src/GrammarOut/*
