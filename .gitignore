@@ -97,3 +97,4 @@ fabric.properties
 #Egne ting:
 #For en pænere opbygning ift CFG
 src/GrammarOut/*
+!src/GrammarOut/Hello
