@@ -1,5 +1,5 @@
-import GrammarOut.roboLexer;
-import GrammarOut.roboParser;
+import GrammarOut.*;
+import java.util.*;
 
 public class BuildAstVisitor extends roboBaseVisitor<ExpressionNode>
 {
@@ -26,7 +26,7 @@ public class BuildAstVisitor extends roboBaseVisitor<ExpressionNode>
     {
         InfixExpressionNode node;
 
-        switch(context.op.Type)
+        switch (context.op.Type)
         {
             case roboLexer.ADD_OP:
                 node = new AdditionNode();
