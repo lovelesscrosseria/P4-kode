@@ -1,0 +1,5 @@
+strategy Hello{
+behavior World (){
+num a = 3 + 4.0
+}
+}

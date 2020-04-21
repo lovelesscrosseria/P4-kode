@@ -1,0 +1,74 @@
+// this is a comment
+/*
+* this is a multiline
+* comment
+*/
+num x = 20
+text y = “this is a string”
+bool z = true
+list<num> myNumbers = {1, 5, 6}
+dictionary<key, value> myValues = { {key, value}, {key, value}, {key, value} }
+
+func bool shouldFire(ScannedRobotEvent e) {
+	if (e.getDistance() > 140) {
+return true
+} else if (e.getDistance() < 150) {
+	return true
+} else {
+	return false
+}
+}
+
+event onLowHealth {
+	return robot.health < 20
+}
+
+strategy default {
+	behavior onRun() {
+		robot.forward(10)
+		robot.fire(3)
+		robot.backward(10)
+		robot.fire(3)
+
+		while (robot.health > x) {
+			robot.turnGunRight(10)
+}
+}
+
+behavior onScannedRobot(ScannedRobotEvent e) {
+	if (shouldFire(e)) {
+		robot.turnTo(e.getBearing())
+		robot.fire(3)
+}
+	robot.scan()
+}
+
+behavior onLowHealth()  {
+	robot.setStrategy(“defensive”)
+}
+
+behavior onWin() {
+	numb amount = 0
+	text winText = “You won!”
+do {
+		print(winText)
+		amount++
+	} while (amount < 10)
+}
+
+behavior onLose() {
+text loseText = “Fuck you!”
+for (numb = 0; numb < 10; numb++) {
+		print(loseText)
+}
+}
+}
+
+strategy defensive {
+	behavior onRun() {
+		robot.forward(200)
+		robot.fire(3)
+		robot.backward(200)
+		robot.fire(3)
+}
+}
