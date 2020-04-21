@@ -18,8 +18,8 @@ public class program
 
             try
             {
-                var cst = parser.CompileUnit();
-                var ast = new buildAstVisitor().VisitCompileUnit(cst);
+                var cst = parser.compileUnit();
+                var ast = new BuildAstVisitor().VisitCompileUnit(cst);
                 var value = new EvaluateExpressionVisitor().Visit(ast);
 
                 System.out.println("= {0}", value);

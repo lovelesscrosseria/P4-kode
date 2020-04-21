@@ -6,21 +6,22 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 public class BuildAstVisitor extends roboBaseVisitor<ExpressionNode>
 {
-
     @Override
 	public ExpressionNode visitProgram(roboParser.ProgramContext context)
 	{
 		return visit(context);
 	}
 
+	@Override
 	public ExpressionNode visitDigitExpr(roboParser.DigitExprContext context)
 	{
-		double value = Double.Parse(context.value, NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent);
+		String str = String.valueOf(context.value);
+		double value = Double.parseDouble(str);
 
 		NumberNode numberNode = new NumberNode();
 		numberNode.SetValue(value);
 
-        return new NumberNode( numberNode );
+		return numberNode;
 	}
 
     @Override
@@ -28,7 +29,7 @@ public class BuildAstVisitor extends roboBaseVisitor<ExpressionNode>
     {
         InfixExpressionNode node;
 
-        switch (context.op.Type)
+        switch(context.op.Type)
         {
             case roboLexer.ADD_OP:
                 node = new AdditionNode();
@@ -43,20 +44,27 @@ public class BuildAstVisitor extends roboBaseVisitor<ExpressionNode>
                 break;
 
             case roboLexer.DIV_OP:
-                node = new DivisionNode();
+                node = new DivisonNode();
                 break;
     	}
+        var left = visit(context.left);
+        var right = visit(context.right);
+
+        node.SetLeft(left);
+        node.SetRight(right);
+
+        return node;
 	}
 
 	@Override
-    public ExpressionNode VisitFuncExpr(roboParser.FuncExprContext context)
+    public ExpressionNode visitFuncExpr(roboParser.FuncExprContext context)
     {
         var functionName = context.func.Text;
 
-        var func = typeof(robo)
+        var func = typeOf(robo)
             .GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m -> m.ReturnType == typeof(Double))
-            .Where(m -> m.GetParameters().Select(p -> p.ParameterType).SequenceEqual(new double[] { typeof(Double) }))
+            .Where(m -> m.ReturnType == instanceOf(Double))
+            .Where(m -> m.GetParameters().Select(p -> p.ParameterType).SequenceEqual(new double[] { typeOf(Double) }))
             .FirstOrDefault(m -> m.Name.Equals(functionName, StringComparison.OrdinalIgnoreCase));
 
         if (func == null)
