@@ -7,13 +7,6 @@ import java.util.Stack;
 
 public class MakeAbstractst implements roboListener{
 
-    private Stack<AbstractStack> stack = new Stack<>();
-
-    public AbstractStack getExpression(){
-        return stack.get(0);
-    }
-
-
 
 
 
