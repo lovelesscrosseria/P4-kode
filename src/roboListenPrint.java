@@ -3,7 +3,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class roboListen implements roboListener {
+public class roboListenPrint implements roboListener {
     @Override
     public void enterProgram(roboParser.ProgramContext ctx) {
         System.err.println("entering program");

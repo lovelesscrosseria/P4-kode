@@ -1,5 +1,9 @@
 strategy Hello{
 behavior World (){
 num a = 3 + 4.0
+num b = 4-3
+num c = 4.9*2
+num d = 3.2/2.2
+num e = 4.2%3.2
 }
 }

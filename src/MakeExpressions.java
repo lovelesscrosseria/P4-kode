@@ -1,16 +1,19 @@
 import GrammarOut.*;
+import expr.*;
+import expr.Number;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.Stack;
 
-public class MakeAbstractst implements roboListener{
+public class MakeExpressions implements roboListener{
+    private Stack<Expression> exprStack = new Stack<>();
 
-
-
-
-
+    public Expression getExpression()
+    {
+        return exprStack.get(0);
+    }
 
     @Override
     public void enterProgram(roboParser.ProgramContext ctx) {
@@ -19,6 +22,9 @@ public class MakeAbstractst implements roboListener{
 
     @Override
     public void exitProgram(roboParser.ProgramContext ctx) {
+        //TODO Push the final note (root of the tree) to stack
+        //exprStack.push(new SymbolExpression("+"));
+        System.out.println(exprStack);
 
     }
 
@@ -279,6 +285,9 @@ public class MakeAbstractst implements roboListener{
 
     @Override
     public void exitDigitExpr(roboParser.DigitExprContext ctx) {
+        double n = Double.parseDouble(ctx.getText());
+        exprStack.push(new Number(n));
+
 
     }
 
@@ -299,6 +308,11 @@ public class MakeAbstractst implements roboListener{
 
     @Override
     public void exitInfixExpr(roboParser.InfixExprContext ctx) {
+        NumExpression right = (NumExpression) exprStack.pop();
+        SymbolExpression symbol = (SymbolExpression) exprStack.pop();
+        NumExpression left = (NumExpression) exprStack.pop();
+
+        exprStack.push(new InfixExpression(left, right, symbol));
 
     }
 
@@ -394,6 +408,15 @@ public class MakeAbstractst implements roboListener{
 
     @Override
     public void visitTerminal(TerminalNode terminalNode) {
+        switch (terminalNode.getText()){
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+            case "%":
+                exprStack.push(new SymbolExpression(terminalNode.getText()));
+
+        }
 
     }
 
