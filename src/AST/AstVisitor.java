@@ -1,7 +1,11 @@
 package AST;
 
+import AST.Nodes.Functions.BlockNode;
+import AST.Nodes.Functions.FormalParamNode;
+import AST.Nodes.Functions.FunctionDeclNode;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
+import AST.Nodes.Variables.AssignmentNode;
 import AST.Nodes.Variables.IdentifierNode;
 import AST.Nodes.Variables.TypeNode;
 import AST.Nodes.Variables.VariableDeclNode;
@@ -17,11 +21,14 @@ abstract class AstVisitor<T> {
     public abstract T visit(CaretExprNode node);
     public abstract T visit(TypeNode node);
     public abstract T visit(VariableDeclNode node);
+    public abstract T visit(FormalParamNode node);
+    public abstract T visit(FunctionDeclNode node);
+    public abstract T visit(BlockNode node);
+    public abstract T visit(StringExprNode node);
+    public abstract T visit(AssignmentNode node);
 
 
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
+
    // public abstract T visit(CaretExprNode node);
    // public abstract T visit(CaretExprNode node);
    // public abstract T visit(CaretExprNode node);
@@ -54,6 +61,16 @@ abstract class AstVisitor<T> {
             return visit((TypeNode) node);
         } else if (node instanceof VariableDeclNode) {
             return visit((VariableDeclNode) node);
+        }  else if (node instanceof FormalParamNode) {
+            return visit((FormalParamNode) node);
+        }  else if (node instanceof FunctionDeclNode) {
+            return visit((FunctionDeclNode) node);
+        } else if (node instanceof BlockNode) {
+            return visit((BlockNode) node);
+        } else if (node instanceof StringExprNode) {
+            return visit((StringExprNode) node);
+        } else if (node instanceof AssignmentNode) {
+            return visit((AssignmentNode) node);
         }
 
         return null;

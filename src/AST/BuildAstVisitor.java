@@ -2,8 +2,12 @@ package AST;
 
 import java.util.ArrayList;
 
+import AST.Nodes.Functions.BlockNode;
+import AST.Nodes.Functions.FormalParamNode;
+import AST.Nodes.Functions.FunctionDeclNode;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
+import AST.Nodes.Variables.AssignmentNode;
 import AST.Nodes.Variables.IdentifierNode;
 import AST.Nodes.Variables.TypeNode;
 import AST.Nodes.Variables.VariableDeclNode;
@@ -44,7 +48,18 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitFunction_decl(roboParser.Function_declContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitFunction_decl(roboParser.Function_declContext ctx) {
+        var node = new FunctionDeclNode();
+        node.Type = (TypeNode) visit(ctx.funcType);
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.funcId.getText();
+        node.Params = GetFormalParams(ctx.formal_params());
+        node.block = (BlockNode) visit(ctx.funcBlock);
+
+        //return visitChildren(ctx);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -102,28 +117,42 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitRoboCode_method(roboParser.RoboCode_methodContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitRoboCode_method(roboParser.RoboCode_methodContext ctx) {
+        return visitChildren(ctx);
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitAssignment(roboParser.AssignmentContext ctx) { return visitChildren(ctx); }
+    @Override public AssignmentNode visitAssignment(roboParser.AssignmentContext ctx) {
+        var node = new AssignmentNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+
+        node.Value = visit(ctx.value);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitStat(roboParser.StatContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitStat(roboParser.StatContext ctx) {
+        return visit(ctx.getChild(0));
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitFunction_call(roboParser.Function_callContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitFunction_call(roboParser.Function_callContext ctx) {
+        return visitChildren(ctx);
+    }
     /**
      * {@inheritDoc}
      *
@@ -137,14 +166,31 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitBlock(roboParser.BlockContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitBlock(roboParser.BlockContext ctx) {
+        var node = new BlockNode();
+        for (var stat : ctx.children) {
+            if (stat instanceof roboParser.StatContext)
+                node.statements.add(visit(stat));
+        }
+
+        return node;
+        //return visitChildren(ctx);
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitFormal_params(roboParser.Formal_paramsContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitFormal_params(roboParser.Formal_paramsContext ctx) {
+        var node = new FormalParamNode();
+        node.Type = (TypeNode) visit(ctx.paramType);
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.paramId.getText();
+
+        //return visitChildren(ctx);
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -211,7 +257,12 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitStringExpr(roboParser.StringExprContext ctx) { return visitChildren(ctx); }
+    @Override public StringExprNode visitStringExpr(roboParser.StringExprContext ctx) {
+        var node = new StringExprNode();
+        node.value = ctx.value.getText();
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -339,4 +390,21 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public RoboNode visitIncrement_operator(roboParser.Increment_operatorContext ctx) { return visitChildren(ctx); }
+
+    private ArrayList<FormalParamNode> GetFormalParams(roboParser.Formal_paramsContext ctx) {
+        ArrayList<FormalParamNode> params = new ArrayList<FormalParamNode>();
+        var node = new FormalParamNode();
+        node.Type = (TypeNode) visit(ctx.paramType);
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.paramId.getText();
+
+        params.add(node);
+
+        if (ctx.formal_params() != null) {
+            for (var param : ctx.formal_params())
+            params.addAll(GetFormalParams(param));
+        }
+
+        return params;
+    }
 }

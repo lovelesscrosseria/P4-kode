@@ -5,7 +5,7 @@ program : (strategy | function_decl | event_decl | assignment | variable_decl | 
 strategy: 'strategy'  ID LCURL NEWLINE (behavior | NEWLINE)* RCURL;
 behavior: 'behavior' ID LPAREN formal_params? RPAREN block;
 
-function_decl: 'func' type ID LPAREN formal_params? RPAREN block;
+function_decl: 'func' funcType=type funcId=ID LPAREN funcParams=formal_params? RPAREN funcBlock=block;
 event_decl: 'event' ID block;
 
 STRING: '"' ~["]* '"' ;
@@ -17,9 +17,9 @@ collection_expr: ID DOT ('get' LPAREN expr RPAREN | 'length');
 collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;
 roboCode_method: 'robot' DOT function_call;
 
-assignment  : ID (ASSIGN_OP 
+assignment  : id=ID (ASSIGN_OP
             | PLUSEQ_OP 
-            | MINUSEQ_OP) expr
+            | MINUSEQ_OP) value=expr
             ;
 
 stat        : block
@@ -49,7 +49,7 @@ loop: loopType='for' LPAREN (variable_decl | assignment) ';' expr ';' expr RPARE
 //do_while_loop: 'do' ( NEWLINE )? block 'while' LPAREN expr RPAREN;
 block: LCURL (stat | NEWLINE )* RCURL;
 
-formal_params: type ID (',' formal_params)*;
+formal_params: paramType=type paramId=ID (',' formal_params)*;
 params: expr (',' params)*;
 
 expr        : decrement_operator                                                # decrExpr
