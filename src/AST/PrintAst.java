@@ -5,12 +5,49 @@ import AST.Nodes.Functions.FormalParamNode;
 import AST.Nodes.Functions.FunctionDeclNode;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
-import AST.Nodes.Variables.AssignmentNode;
-import AST.Nodes.Variables.IdentifierNode;
-import AST.Nodes.Variables.TypeNode;
-import AST.Nodes.Variables.VariableDeclNode;
+import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
+    @Override
+    public RoboNode visit(ListDeclNode node) {
+        System.out.print("( list<");
+        visit(node.Type);
+        System.out.print("> ");
+        visit(node.Id);
+        if (node.nodes.size() > 0) {
+            System.out.print(" = { ");
+            for (int i = 0; i < node.nodes.size(); i++) {
+                visit(node.nodes.get(i));
+
+                if (i + 1 != node.nodes.size()) {
+                    System.out.print(", ");
+                }
+            }
+
+            System.out.print(" }");
+        }
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(IncrementOperatorNode node) {
+        System.out.print("( ");
+        visit(node.Id);
+        System.out.print("++ )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(DecrementOperatorNode node) {
+        System.out.print("( ");
+        visit(node.Id);
+        System.out.print("-- )");
+
+        return null;
+    }
+
     @Override
     public RoboNode visit(AssignmentNode node) {
         System.out.print("( ");

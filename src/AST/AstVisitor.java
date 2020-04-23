@@ -5,10 +5,7 @@ import AST.Nodes.Functions.FormalParamNode;
 import AST.Nodes.Functions.FunctionDeclNode;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
-import AST.Nodes.Variables.AssignmentNode;
-import AST.Nodes.Variables.IdentifierNode;
-import AST.Nodes.Variables.TypeNode;
-import AST.Nodes.Variables.VariableDeclNode;
+import AST.Nodes.Variables.*;
 
 abstract class AstVisitor<T> {
     public abstract T visit(AdditionExprNode node);
@@ -26,6 +23,9 @@ abstract class AstVisitor<T> {
     public abstract T visit(BlockNode node);
     public abstract T visit(StringExprNode node);
     public abstract T visit(AssignmentNode node);
+    public abstract T visit(DecrementOperatorNode node);
+    public abstract T visit(IncrementOperatorNode node);
+    public abstract T visit(ListDeclNode node);
 
 
 
@@ -71,6 +71,12 @@ abstract class AstVisitor<T> {
             return visit((StringExprNode) node);
         } else if (node instanceof AssignmentNode) {
             return visit((AssignmentNode) node);
+        } else if (node instanceof DecrementOperatorNode) {
+            return visit((DecrementOperatorNode) node);
+        } else if (node instanceof IncrementOperatorNode) {
+            return visit((IncrementOperatorNode) node);
+        } else if (node instanceof ListDeclNode) {
+            return visit((ListDeclNode) node);
         }
 
         return null;

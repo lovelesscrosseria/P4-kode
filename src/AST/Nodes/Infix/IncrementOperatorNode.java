@@ -1,4 +1,8 @@
 package AST.Nodes.Infix;
 
-public class IncrementOperatorNode {
+import AST.Nodes.RoboNode;
+import AST.Nodes.Variables.IdentifierNode;
+
+public class IncrementOperatorNode extends RoboNode {
+    public IdentifierNode Id;
 }

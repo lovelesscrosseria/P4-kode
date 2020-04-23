@@ -11,7 +11,7 @@ event_decl: 'event' ID block;
 STRING: '"' ~["]* '"' ;
 variable_decl: varType=type varId=ID (ASSIGN_OP value=expr)?;
 
-list_decl: 'list' LESS_OP type GREATER_OP ID (ASSIGN_OP LCURL (expr)? (',' expr)* RCURL)?;
+list_decl: 'list' LESS_OP listType=type GREATER_OP id=ID (ASSIGN_OP LCURL listExpr=expr? (',' expr)* RCURL)?;
 dictionary_decl: 'dictionary' LESS_OP type COMMA type GREATER_OP ID (ASSIGN_OP LCURL (LCURL expr COMMA expr RCURL)? (',' LCURL expr COMMA expr RCURL)* RCURL);
 collection_expr: ID DOT ('get' LPAREN expr RPAREN | 'length');
 collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;

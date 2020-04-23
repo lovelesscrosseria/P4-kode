@@ -1,5 +1,6 @@
 package AST;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import AST.Nodes.Functions.BlockNode;
@@ -7,13 +8,11 @@ import AST.Nodes.Functions.FormalParamNode;
 import AST.Nodes.Functions.FunctionDeclNode;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
-import AST.Nodes.Variables.AssignmentNode;
-import AST.Nodes.Variables.IdentifierNode;
-import AST.Nodes.Variables.TypeNode;
-import AST.Nodes.Variables.VariableDeclNode;
+import AST.Nodes.Variables.*;
 import GrammarOut.roboBaseVisitor;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
     /**
@@ -89,14 +88,27 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitList_decl(roboParser.List_declContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitList_decl(roboParser.List_declContext ctx) {
+        var node = new ListDeclNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+        node.Type = (TypeNode) visit(ctx.listType);
+
+        for (var item : ctx.expr()) {
+            node.nodes.add(visit(item));
+        }
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitDictionary_decl(roboParser.Dictionary_declContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitDictionary_decl(roboParser.Dictionary_declContext ctx) {
+        return visitChildren(ctx);
+    }
     /**
      * {@inheritDoc}
      *
@@ -174,7 +186,6 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         }
 
         return node;
-        //return visitChildren(ctx);
     }
     /**
      * {@inheritDoc}
@@ -382,14 +393,26 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitDecrement_operator(roboParser.Decrement_operatorContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitDecrement_operator(roboParser.Decrement_operatorContext ctx) {
+        var node = new DecrementOperatorNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.ID().getText();
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitIncrement_operator(roboParser.Increment_operatorContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitIncrement_operator(roboParser.Increment_operatorContext ctx) {
+        var node = new IncrementOperatorNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.ID().getText();
+
+        return node;
+    }
 
     private ArrayList<FormalParamNode> GetFormalParams(roboParser.Formal_paramsContext ctx) {
         ArrayList<FormalParamNode> params = new ArrayList<FormalParamNode>();
