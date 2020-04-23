@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
+import AST.Nodes.Variables.IdentifierNode;
 import GrammarOut.roboBaseVisitor;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
@@ -252,7 +253,13 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitCaretExpr(roboParser.CaretExprContext ctx) { return visitChildren(ctx); }
+    @Override public CaretExprNode visitCaretExpr(roboParser.CaretExprContext ctx) {
+        var node = new CaretExprNode();
+        node.Left = visit(ctx.left);
+        node.Right = visit(ctx.right);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -280,7 +287,13 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitIdExpr(roboParser.IdExprContext ctx) { return visitChildren(ctx); }
+    @Override public IdentifierNode visitIdExpr(roboParser.IdExprContext ctx) {
+        var node = new IdentifierNode();
+        node.Id = ctx.id.getText();
+
+        //return visitChildren(ctx);
+        return node;
+    }
     /**
      * {@inheritDoc}
      *

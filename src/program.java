@@ -32,8 +32,6 @@ public class program
         var cst = parser.program();
         var ast = new BuildAstVisitor().visitProgram(cst);
         ast.visit(new PrintAst());
-
-
     }
 
     /*Fil to inputstream*/
