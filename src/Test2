@@ -4,64 +4,64 @@
 * comment
 */
 num x = 20
-text y = “this is a string”
+text y = "this is a string"
 bool z = true
 list<num> myNumbers = {1, 5, 6}
-dictionary<key, value> myValues = { {key, value}, {key, value}, {key, value} }
+dictionary<text, num> myValues = { {key, value}, {key, value}, {key, value} }
 
 func bool shouldFire(ScannedRobotEvent e) {
 	if (e.getDistance() > 140) {
-return true
-} else if (e.getDistance() < 150) {
-	return true
-} else {
-	return false
-}
+        return true
+    } else if (e.getDistance() < 150) {
+	    return true
+    } else {
+	    return false
+    }
 }
 
 event onLowHealth {
-	return robot.health < 20
+	return robot.health() < 20
 }
 
 strategy default {
-	behavior onRun() {
-		robot.forward(10)
-		robot.fire(3)
-		robot.backward(10)
-		robot.fire(3)
+    behavior onRun() {
+        robot.forward(10)
+        robot.fire(3)
+        robot.backward(10)
+        robot.fire(3)
 
-		while (robot.health > x) {
-			robot.turnGunRight(10)
-}
-}
+        while (robot.health() > x) {
+            robot.turnGunRight(10)
+        }
+    }
 
-behavior onScannedRobot(ScannedRobotEvent e) {
-	if (shouldFire(e)) {
-		robot.turnTo(e.getBearing())
-		robot.fire(3)
-}
-	robot.scan()
-}
+    behavior onScannedRobot(ScannedRobotEvent e) {
+        if (shouldFire(e)) {
+            robot.turnTo(e.getBearing())
+            robot.fire(3)
+        }
+        robot.scan()
+    }
 
-behavior onLowHealth()  {
-	robot.setStrategy(“defensive”)
-}
+    behavior onLowHealth()  {
+        robot.setStrategy("defensive")
+    }
 
-behavior onWin() {
-	numb amount = 0
-	text winText = “You won!”
-do {
-		print(winText)
-		amount++
-	} while (amount < 10)
-}
+    behavior onWin() {
+        num amount = 0
+        text winText = "You won!"
+    do {
+            print(winText)
+            amount++
+        } while (amount < 10)
+    }
 
-behavior onLose() {
-text loseText = “Fuck you!”
-for (numb = 0; numb < 10; numb++) {
-		print(loseText)
-}
-}
+    behavior onLose() {
+        text loseText = "Fuck you!"
+        for (num b = 0; b < 10; b++) {
+            print(loseText)
+        }
+    }
 }
 
 strategy defensive {
@@ -70,5 +70,5 @@ strategy defensive {
 		robot.fire(3)
 		robot.backward(200)
 		robot.fire(3)
-}
+    }
 }

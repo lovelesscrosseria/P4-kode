@@ -1,9 +1,9 @@
 grammar robo;
 
-program : (strategy | function_decl | event_decl | assignment | variable_decl | list_decl | dictionary_decl | NEWLINE )* EOF;
+program : (COMMENT | strategy | function_decl | event_decl | assignment | variable_decl | list_decl | dictionary_decl | NEWLINE )* EOF;
 
 strategy: 'strategy'  ID LCURL NEWLINE (behavior | NEWLINE)* RCURL;
-behavior: 'behavior' ID LPAREN RPAREN LCURL (stat |  NEWLINE)* RCURL;
+behavior: 'behavior' ID LPAREN formal_params? RPAREN block;
 
 function_decl: 'func' type ID LPAREN formal_params? RPAREN block;
 event_decl: 'event' ID block;
@@ -11,32 +11,38 @@ event_decl: 'event' ID block;
 STRING: '"' ~["]* '"' ;
 variable_decl: type ID (ASSIGN_OP expr)?;
 
-list_decl: 'list' LESS_OP type GREATER_OP ID;
-dictionary_decl: 'dictionary' LESS_OP type COMMA type GREATER_OP ID;
+list_decl: 'list' LESS_OP type GREATER_OP ID (ASSIGN_OP LCURL (expr)? (',' expr)* RCURL)?;
+dictionary_decl: 'dictionary' LESS_OP type COMMA type GREATER_OP ID (ASSIGN_OP LCURL (LCURL expr COMMA expr RCURL)? (',' LCURL expr COMMA expr RCURL)* RCURL);
 collection_expr: ID DOT ('get' LPAREN expr RPAREN | 'length');
 collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;
 roboCode_method: 'robot' DOT function_call;
 
 assignment  : ID (ASSIGN_OP 
             | PLUSEQ_OP 
-            | MINUSEQ_OP) expr NEWLINE
+            | MINUSEQ_OP) expr
             ;
 
 stat        : block
-            | variable_decl
-            | list_decl 
+            | variable_decl NEWLINE
+            | list_decl NEWLINE
+            | dictionary_decl NEWLINE
             | collection_statement NEWLINE
             | 'if' expr (NEWLINE)? block ('else if' expr (NEWLINE)? block )* ('else' ( NEWLINE)? block )?
-            | assignment 
+            | assignment NEWLINE
             | function_call NEWLINE
             | return_stat NEWLINE
-            | for_loop 
+            | for_loop
             | do_while_loop 
             | while_loop
+            | COMMENT
+            | ID DOT function_call NEWLINE
+            | roboCode_method NEWLINE
+            | decrement_operator NEWLINE
+            | increment_operator NEWLINE
             ;
 
-function_call: ID LPAREN params RPAREN;
-for_loop: 'for' LPAREN assignment ';' expr ';' expr RPAREN NEWLINE block;
+function_call: ID LPAREN params? RPAREN;
+for_loop: 'for' LPAREN (variable_decl | assignment) ';' expr ';' expr RPAREN block;
 while_loop: 'while' LPAREN expr RPAREN (NEWLINE)? block;
 do_while_loop: 'do' ( NEWLINE )? block 'while' LPAREN expr RPAREN;
 block: LCURL (stat | NEWLINE )* RCURL;
@@ -63,6 +69,8 @@ expr        : decrement_operator                                    # decrExpr
             | function_call                                         # funcExpr
             | collection_expr                                       # collExpr
             | value=DIGIT                                           # digitExpr
+            | ID DOT function_call                                  # roboEventCallExpr
+            | roboCode_method                                       # roboMethodExpr
             ;
 
 DOT: '.';
@@ -72,7 +80,8 @@ RPAREN: ')';
 LCURL: '{';
 RCURL: '}';
 NEWLINE: '\n' | '\r' | '\r\n';
-WS: [ \n\t\r]+ -> skip;
+WS: [ \t]+ -> skip;
+COMMENT: ('//' ~[\r\n]* NEWLINE | '/*' .*? '*/') -> skip;
 
 ASSIGN_OP: '=';
 NOT_OP: '!';
