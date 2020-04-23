@@ -3,6 +3,8 @@ package AST;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.IdentifierNode;
+import AST.Nodes.Variables.TypeNode;
+import AST.Nodes.Variables.VariableDeclNode;
 
 abstract class AstVisitor<T> {
     public abstract T visit(AdditionExprNode node);
@@ -13,7 +15,20 @@ abstract class AstVisitor<T> {
     public abstract T visit(SubtractionExprNode node);
     public abstract T visit(IdentifierNode node);
     public abstract T visit(CaretExprNode node);
+    public abstract T visit(TypeNode node);
+    public abstract T visit(VariableDeclNode node);
 
+
+   // public abstract T visit(CaretExprNode node);
+   // public abstract T visit(CaretExprNode node);
+   // public abstract T visit(CaretExprNode node);
+   // public abstract T visit(CaretExprNode node);
+   // public abstract T visit(CaretExprNode node);
+   // public abstract T visit(CaretExprNode node);
+   // public abstract T visit(CaretExprNode node);
+   // public abstract T visit(CaretExprNode node);
+   // public abstract T visit(CaretExprNode node);
+   // public abstract T visit(CaretExprNode node);
 
 
     public T visit(RoboNode node) {
@@ -35,6 +50,10 @@ abstract class AstVisitor<T> {
             return visit((DigitExprNode) node);
         } else if (node instanceof IdentifierNode) {
             return visit((IdentifierNode) node);
+        } else if (node instanceof TypeNode) {
+            return visit((TypeNode) node);
+        } else if (node instanceof VariableDeclNode) {
+            return visit((VariableDeclNode) node);
         }
 
         return null;

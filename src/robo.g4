@@ -9,7 +9,7 @@ function_decl: 'func' type ID LPAREN formal_params? RPAREN block;
 event_decl: 'event' ID block;
 
 STRING: '"' ~["]* '"' ;
-variable_decl: type ID (ASSIGN_OP expr)?;
+variable_decl: varType=type varId=ID (ASSIGN_OP value=expr)?;
 
 list_decl: 'list' LESS_OP type GREATER_OP ID (ASSIGN_OP LCURL (expr)? (',' expr)* RCURL)?;
 dictionary_decl: 'dictionary' LESS_OP type COMMA type GREATER_OP ID (ASSIGN_OP LCURL (LCURL expr COMMA expr RCURL)? (',' LCURL expr COMMA expr RCURL)* RCURL);

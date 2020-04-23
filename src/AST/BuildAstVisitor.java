@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.IdentifierNode;
+import AST.Nodes.Variables.TypeNode;
+import AST.Nodes.Variables.VariableDeclNode;
 import GrammarOut.roboBaseVisitor;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
@@ -56,7 +58,16 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitVariable_decl(roboParser.Variable_declContext ctx) { return visitChildren(ctx); }
+    @Override public VariableDeclNode visitVariable_decl(roboParser.Variable_declContext ctx) {
+        var node = new VariableDeclNode();
+        node.Type = (TypeNode) visit(ctx.varType);
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.varId.getText();
+
+        node.Value = ctx.value == null ? null : (RoboNode) visit(ctx.value);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -300,7 +311,13 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitType(roboParser.TypeContext ctx) { return visitChildren(ctx); }
+    @Override public TypeNode visitType(roboParser.TypeContext ctx) {
+        var node = new TypeNode();
+        node.Type = ctx.getText();
+
+        //return visitChildren(ctx);
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
