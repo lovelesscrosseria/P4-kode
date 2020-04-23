@@ -1,0 +1,5 @@
+doskey grun = java -cp antlr-4.8-complete.jar org.antlr.v4.gui.TestRig $*    
+doskey antlr4 = java  -cp antlr-4.8-complete.jar org.antlr.v4.Tool $*
+
+compile:
+antlr4 src/robo.g4 -visitor -package GrammarOut -o src/GrammarOut

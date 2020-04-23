@@ -1,6 +1,9 @@
 import java.io.*;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 
-import GrammarOut.*;
+import AST.BuildAstVisitor;
+import AST.PrintAst;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
 import expr.Expression;
@@ -15,88 +18,27 @@ public class program
 
         System.out.println("Hello World!");
         /*Used parser to turn a string of characters into a parse tree*/
-        ANTLRInputStream input = new ANTLRInputStream(convertingFileToInputStream("src/Test"));
+        var input = convertFileToInputStream("src/Test");
 
-        Expression expr = parse(input);
-        System.out.println("Final note: " + expr.toString());
+        ReadableByteChannel channel = Channels.newChannel(input);
+        var in = CharStreams.fromChannel(channel);
+        roboLexer lexer = new roboLexer(in);
 
-    }
+        // create a buffer of tokens pulled from the lexer
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        // create a parser that feeds off the tokens buffer
 
-    public static Expression parse(ANTLRInputStream input) {
-        // Make a parser
-        roboParser parser = makeParser(input);
+        roboParser parser = new roboParser(tokens);
+        var cst = parser.program();
+        var ast = new BuildAstVisitor().visitProgram(cst);
+        ast.visit(new PrintAst());
 
-        // Generate the parse tree using the starter rule.
-        // root is the starter rule for this grammar.
-        // Other grammars may have different names for the starter rule.
-        ParseTree tree = parser.program();
 
-        // *** Debugging option #1: print the tree to the console
-        System.err.println(tree.toStringTree(parser));
-
-        // *** Debugging option #2: show the tree in a window
-        //Trees.inspect(tree, parser);
-
-        // *** Debugging option #3: walk the tree with a listener
-        new ParseTreeWalker().walk(new roboListenPrint(), tree);
-
-        MakeExpressions exprMaker = new MakeExpressions();
-        new ParseTreeWalker().walk(exprMaker, tree);
-        return exprMaker.getExpression();
-    }
-
-    public static roboParser makeParser(ANTLRInputStream input)
-    {
-        roboLexer lexer = new roboLexer (input);
-        //lexer.reportErrorsAsExceptions();
-        TokenStream tokens = new CommonTokenStream(lexer);
-
-        //roboParser parser = new roboParser(tokens);
-        //parser.reportErrorsAsExceptions();
-
-        return new roboParser(tokens);
     }
 
     /*Fil to inputstream*/
-    public static InputStream convertingFileToInputStream (String path)
-        throws IOException {
-            File initialFile = new File (path);
+    public static InputStream convertFileToInputStream (String path) throws IOException {
+        File initialFile = new File (path);
         return new FileInputStream(initialFile);
-        }
-
-    /*
-    public static void main(String[] args)
-    {
-        while (true)
-        {
-            System.out.println("> ");
-            var exprText = System.console().readLine();
-
-            ANTLRInputStream inputStream = null;
-            try {
-                inputStream = new ANTLRInputStream(new StringReader(exprText));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            var lexer = new roboLexer(inputStream);
-            var tokenStream = new CommonTokenStream(lexer);
-            var parser = new roboParser(tokenStream);
-            parser.setBuildParseTree(true);
-
-            try
-            {
-                var cst = parser.compileUnit();
-                var ast = new BuildAstVisitor().VisitCompileUnit(cst);
-                var value = new EvaluateExpressionVisitor().Visit(ast);
-
-                System.out.println("= {0}", value);
-            }
-            catch(Exception ex)
-            {
-                System.out.println(ex.Message);
-            }
-
-            System.out.println();
-        }
-    }*/
+    }
 }
