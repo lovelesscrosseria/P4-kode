@@ -9,6 +9,14 @@ import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
+    @Override
+    public RoboNode visit(RoboCodeMethodExprNode node) {
+        System.out.print("( robot.");
+        visit(node.Method);
+        System.out.print(")");
+
+        return null;
+    }
 
     @Override
     public RoboNode visit(FunctionCallExprNode node) {
@@ -101,7 +109,7 @@ public class PrintAst extends AstVisitor<RoboNode>{
 
     @Override
     public RoboNode visit(RoboCodeMethodNode node) {
-        System.out.print("( robo.");
+        System.out.print("( robot.");
         visit(node.Method);
         System.out.print(") ");
         return null;
@@ -367,7 +375,7 @@ public class PrintAst extends AstVisitor<RoboNode>{
     public RoboNode visit(AdditionExprNode node) {
         System.out.print("( ");
         visit(node.Left);
-        System.out.print('+');
+        System.out.print(" + ");
         visit(node.Right);
         System.out.print(" )");
 

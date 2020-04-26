@@ -70,7 +70,7 @@ expr        : decrement_operator                                                
             | id=ID                                                             # idExpr
             | funcCall=function_call                                            # funcExpr
             | collectionExpr=collection_expr                                    # collExpr
-            | id=ID DOT funcCall=function_call                                  # roboEventCallExpr
+//            | id=ID DOT funcCall=function_call                                  # roboEventCallExpr
             | roboMethod=roboCode_method                                        # roboMethodExpr
             ;
 

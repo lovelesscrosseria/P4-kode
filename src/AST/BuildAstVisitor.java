@@ -380,7 +380,12 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitRoboMethodExpr(roboParser.RoboMethodExprContext ctx) { return visitChildren(ctx); }
+    @Override public RoboCodeMethodExprNode visitRoboMethodExpr(roboParser.RoboMethodExprContext ctx) {
+        var node = new RoboCodeMethodExprNode();
+        node.Method = (FunctionCallNode) visit(ctx.roboMethod.method);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -433,13 +438,6 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
 
         return node;
     }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    @Override public RoboNode visitRoboEventCallExpr(roboParser.RoboEventCallExprContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
      *

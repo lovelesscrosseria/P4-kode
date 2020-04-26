@@ -52,3 +52,4 @@ dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15,
  } */
 
  num x = myfunc(12, x) + 5 * 2
+ num x = robot.fire(3) + 5
