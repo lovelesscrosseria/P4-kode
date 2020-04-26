@@ -189,7 +189,13 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public RoboNode visitFunction_call(roboParser.Function_callContext ctx) {
-        return visitChildren(ctx);
+        var node = new FunctionCallNode();
+        node.Method = new IdentifierNode();
+        node.Method.Id = ctx.id.getText();
+
+        node.Params = GetParams(ctx.funcParams);
+
+        return node;
     }
     /**
      * {@inheritDoc}
@@ -234,7 +240,12 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitParams(roboParser.ParamsContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitParams(roboParser.ParamsContext ctx) {
+        var node = new ParamNode();
+        node.Value = visit(ctx.paramExpr);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -440,6 +451,26 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         return node;
     }
 
+
+    private ArrayList<ParamNode> GetParams(roboParser.ParamsContext ctx) {
+        ArrayList<ParamNode> params = new ArrayList<ParamNode>();
+        if (ctx == null) {
+            return params;
+        }
+
+        var node = new ParamNode();
+        node.Value = visit(ctx.paramExpr);
+
+        params.add(node);
+
+        if (ctx.params() != null) {
+            for (var param : ctx.params()) {
+                params.addAll(GetParams(param));
+            }
+        }
+
+        return params;
+    }
 
     private ArrayList<FormalParamNode> GetFormalParams(roboParser.Formal_paramsContext ctx) {
         ArrayList<FormalParamNode> params = new ArrayList<FormalParamNode>();

@@ -15,7 +15,7 @@ list_decl: 'list' LESS_OP listType=type GREATER_OP id=ID (ASSIGN_OP LCURL listEx
 dictionary_decl: 'dictionary' LESS_OP type COMMA type GREATER_OP ID (ASSIGN_OP LCURL (LCURL expr COMMA expr RCURL)? (',' LCURL expr COMMA expr RCURL)* RCURL);
 collection_expr: ID DOT ('get' LPAREN expr RPAREN | 'length');
 collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;
-roboCode_method: 'robot' DOT function_call;
+roboCode_method: 'robot' DOT method=function_call;
 
 assignment  : id=ID (ASSIGN_OP
             | PLUSEQ_OP 
@@ -39,7 +39,7 @@ stat        : block
             | increment_operator NEWLINE
             ;
 
-function_call: ID LPAREN params? RPAREN;
+function_call: id=ID LPAREN funcParams=params? RPAREN;
 loop: loopType='for' LPAREN (variable_decl | assignment) ';' expr ';' expr RPAREN block
     | loopType='while' LPAREN expr RPAREN (NEWLINE)? block
     | loopType='do' ( NEWLINE )? block 'while' LPAREN expr RPAREN
@@ -50,7 +50,7 @@ loop: loopType='for' LPAREN (variable_decl | assignment) ';' expr ';' expr RPARE
 block: LCURL (stat | NEWLINE )* RCURL;
 
 formal_params: paramType=type paramId=ID (',' formal_params)*;
-params: expr (',' params)*;
+params: paramExpr=expr (',' params)*;
 
 expr        : decrement_operator                                                # decrExpr
             | increment_operator                                                # incrExpr

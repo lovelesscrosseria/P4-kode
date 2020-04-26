@@ -1,8 +1,8 @@
 num a = 3 + 4.0 * 4 + 5/2%2*3
- num b = 4-3
- num c = a*b + a^2
- num d = 3.2/2.2
- num e = 4.2%3.2
+num b = 4-3
+num c = a*b + a^2
+num d = 3.2/2.2
+num e = 4.2%3.2
 
  list<num> myList = {5, 5, 10, 5*5, b}
 
@@ -31,3 +31,5 @@ num a = 3 + 4.0 * 4 + 5/2%2*3
  	num health = 15
  	return health < 20
  }
+
+ num x = mything(x, y)
