@@ -156,7 +156,10 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public RoboNode visitRoboCode_method(roboParser.RoboCode_methodContext ctx) {
-        return visitChildren(ctx);
+        var node = new RoboCodeMethodNode();
+        node.Method = (FunctionCallNode) visit(ctx.method);
+
+        return node;
     }
     /**
      * {@inheritDoc}

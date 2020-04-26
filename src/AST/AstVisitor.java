@@ -4,9 +4,6 @@ import AST.Nodes.Functions.*;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
-import jdk.jfr.Event;
-
-import java.util.function.Function;
 
 abstract class AstVisitor<T> {
     public abstract T visit(AdditionExprNode node);
@@ -32,16 +29,7 @@ abstract class AstVisitor<T> {
     public abstract T visit(EventNode node);
     public abstract T visit(FunctionCallNode node);
     public abstract T visit(ParamNode node);
-
-
-
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
+    public abstract T visit(RoboCodeMethodNode node);
 
 
     public T visit(RoboNode node) {
@@ -93,6 +81,8 @@ abstract class AstVisitor<T> {
             return visit((FunctionCallNode) node);
         } else if (node instanceof ParamNode) {
             return visit((ParamNode) node);
+        } else if (node instanceof RoboCodeMethodNode) {
+            return visit((RoboCodeMethodNode) node);
         }
 
         return null;
