@@ -10,6 +10,15 @@ import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
     @Override
+    public RoboNode visit(ReturnNode node) {
+        System.out.print("( return ");
+        visit(node.Value);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
     public RoboNode visit(RoboCodeMethodExprNode node) {
         System.out.print("( robot.");
         visit(node.Method);

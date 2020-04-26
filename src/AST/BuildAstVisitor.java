@@ -484,7 +484,12 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitReturn_stat(roboParser.Return_statContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitReturn_stat(roboParser.Return_statContext ctx) {
+        var node = new ReturnNode();
+        node.Value = visit(ctx.value);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *

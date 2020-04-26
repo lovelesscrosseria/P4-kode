@@ -51,5 +51,11 @@ dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15,
     }
  } */
 
+func void myTest() {
+    num x = 5
+    num value = testFunc(5)
+    return value
+}
+
  num x = myfunc(12, x) + 5 * 2
  num x = robot.fire(3) + 5
