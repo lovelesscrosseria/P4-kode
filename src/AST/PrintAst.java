@@ -2,10 +2,47 @@ package AST;
 
 import AST.Nodes.Functions.*;
 import AST.Nodes.Infix.*;
+import AST.Nodes.Loops.DoWhileLoopNode;
+import AST.Nodes.Loops.ForLoopNode;
+import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
+    @Override
+    public RoboNode visit(DoWhileLoopNode node) {
+        System.out.print("( do ");
+        visit(node.Block);
+        System.out.print(" while ( ");
+        visit(node.Condition);
+        System.out.print(" )");
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(WhileLoopNode node) {
+        System.out.print("while ( ");
+        visit(node.Condition);
+        System.out.print(" )");
+        visit(node.Block);
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(ForLoopNode node) {
+        System.out.print("( for(");
+        visit(node.Init);
+        System.out.print("; ");
+        visit(node.Condition);
+        System.out.print("; ");
+        visit(node.Increment);
+        System.out.print(" )");
+        visit(node.Block);
+        System.out.print(" )");
+        return null;
+    }
+
 
     @Override
     public RoboNode visit(DictionaryDeclNode node) {
@@ -22,7 +59,7 @@ public class PrintAst extends AstVisitor<RoboNode>{
             for (var value : node.Nodes) {
                 visit(value);
             }
-            System.out.println(" }");
+            System.out.print(" }");
         }
 
         System.out.print(" )");

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import AST.Nodes.Functions.*;
 import AST.Nodes.Infix.*;
+import AST.Nodes.Loops.DoWhileLoopNode;
+import AST.Nodes.Loops.ForLoopNode;
+import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import GrammarOut.roboBaseVisitor;
@@ -226,7 +229,36 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitLoop(roboParser.LoopContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitLoop(roboParser.LoopContext ctx) {
+        RoboNode returnNode = null;
+        switch (ctx.loopType.getText()) {
+            case "for":
+                var forLoopNode = new ForLoopNode();
+                forLoopNode.Block = (BlockNode) visit(ctx.loopBlock);
+                forLoopNode.Condition = visit(ctx.loopCondition);
+                forLoopNode.Increment = visit(ctx.loopIncrement);
+                forLoopNode.Init = ctx.forLoopAssign == null ? visit(ctx.forLoopVarDec) : visit(ctx.forLoopAssign);
+
+                returnNode = forLoopNode;
+                break;
+            case "while":;
+                var whileLoopNode = new WhileLoopNode();
+                whileLoopNode.Block = (BlockNode) visit(ctx.loopBlock);
+                whileLoopNode.Condition = visit(ctx.loopCondition);
+
+                returnNode = whileLoopNode;
+                break;
+            case "do":
+                var doWhileLoopNode = new DoWhileLoopNode();
+                doWhileLoopNode.Block = (BlockNode) visit(ctx.loopBlock);
+                doWhileLoopNode.Condition = visit(ctx.loopCondition);
+
+                returnNode = doWhileLoopNode;
+                break;
+        }
+
+        return returnNode;
+    }
     /**
      * {@inheritDoc}
      *

@@ -1,3 +1,4 @@
+/*
 num a = 3 + 4.0 * 4 + 5/2%2*3
 num b = 4-3
 num c = a*b + a^2
@@ -35,3 +36,17 @@ dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15,
  }
 
  num x = mything(x, y)
+ */
+
+ func void myLoops() {
+    for (num x = 0; x < 10; x++) {
+        robot.fire(3)
+    }
+    do {
+        robot.fire(4)
+    } while (x)
+
+    while (y) {
+        robot.fire(5)
+    }
+ }

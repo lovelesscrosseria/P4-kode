@@ -2,6 +2,9 @@ package AST;
 
 import AST.Nodes.Functions.*;
 import AST.Nodes.Infix.*;
+import AST.Nodes.Loops.DoWhileLoopNode;
+import AST.Nodes.Loops.ForLoopNode;
+import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
@@ -32,6 +35,9 @@ abstract class AstVisitor<T> {
     public abstract T visit(RoboCodeMethodNode node);
     public abstract T visit(DictionaryDeclNode node);
     public abstract T visit(DictionaryValueNode node);
+    public abstract T visit(ForLoopNode node);
+    public abstract T visit(DoWhileLoopNode node);
+    public abstract T visit(WhileLoopNode node);
 
 
     public T visit(RoboNode node) {
@@ -89,6 +95,12 @@ abstract class AstVisitor<T> {
             return visit((DictionaryDeclNode) node);
         } else if (node instanceof DictionaryValueNode) {
             return visit((DictionaryValueNode) node);
+        } else if (node instanceof ForLoopNode) {
+            return visit((ForLoopNode) node);
+        } else if (node instanceof DoWhileLoopNode) {
+            return visit((DoWhileLoopNode) node);
+        } else if (node instanceof WhileLoopNode) {
+            return visit((WhileLoopNode) node);
         }
 
         return null;

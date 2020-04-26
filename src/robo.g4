@@ -13,7 +13,7 @@ variable_decl: varType=type varId=ID (ASSIGN_OP value=expr)?;
 list_decl: 'list' LESS_OP listType=type GREATER_OP id=ID (ASSIGN_OP LCURL listExpr=expr? (',' expr)* RCURL)?;
 dictionary_decl: 'dictionary' LESS_OP dicKey=type COMMA dicValue=type GREATER_OP id=ID (ASSIGN_OP LCURL defaultValue=dictionaryValue? (',' dictionaryValue)* RCURL)?;
 dictionaryValue: LCURL key=expr COMMA value=expr RCURL;
-collection_expr: ID DOT ('get' LPAREN expr RPAREN | 'length');
+collection_expr: id=ID DOT ('get' LPAREN expr RPAREN | 'length');
 collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;
 roboCode_method: 'robot' DOT method=function_call;
 
@@ -40,9 +40,9 @@ stat        : block
             ;
 
 function_call: id=ID LPAREN funcParams=params? RPAREN;
-loop: loopType='for' LPAREN (variable_decl | assignment) ';' expr ';' expr RPAREN block
-    | loopType='while' LPAREN expr RPAREN (NEWLINE)? block
-    | loopType='do' ( NEWLINE )? block 'while' LPAREN expr RPAREN
+loop: loopType='for' LPAREN (forLoopVarDec=variable_decl | forLoopAssign=assignment) ';' loopCondition=expr ';' loopIncrement=expr RPAREN loopBlock=block
+    | loopType='while' LPAREN loopCondition=expr RPAREN (NEWLINE)? loopBlock=block
+    | loopType='do' ( NEWLINE )? loopBlock=block 'while' LPAREN loopCondition=expr RPAREN
     ;
 //for_loop: 'for' LPAREN (variable_decl | assignment) ';' expr ';' expr RPAREN block;
 //while_loop: 'while' LPAREN expr RPAREN (NEWLINE)? block;
