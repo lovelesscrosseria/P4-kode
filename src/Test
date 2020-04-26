@@ -36,9 +36,9 @@ dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15,
  }
 
  num x = mything(x, y)
- */
 
- /* func void myLoops() {
+
+ func void myLoops() {
     for (num x = 0; x < 10; x++) {
         robot.fire(3)
     }
@@ -49,13 +49,13 @@ dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15,
     while (y) {
         robot.fire(5)
     }
- } */
+ }
 
 func void myTest() {
     num x = 5
     num value = testFunc(5)
     return value
 }
-
- num x = myfunc(12, x) + 5 * 2
- num x = robot.fire(3) + 5
+*/
+// num x = myfunc(12, x) + 5 * 2
+// num x = robot.fire(3) + 5
