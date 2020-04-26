@@ -8,6 +8,42 @@ import AST.Nodes.Variables.*;
 public class PrintAst extends AstVisitor<RoboNode>{
 
     @Override
+    public RoboNode visit(DictionaryDeclNode node) {
+        System.out.print("( ");
+        System.out.print("dictionary<");
+        visit(node.key);
+        System.out.print(',');
+        visit(node.value);
+        System.out.print("> ");
+        visit(node.Id);
+
+        if (node.Nodes.size() > 0) {
+            System.out.print("{ ");
+            for (var value : node.Nodes) {
+                visit(value);
+            }
+            System.out.println(" }");
+        }
+
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(DictionaryValueNode node) {
+        System.out.print("( { ");
+        visit(node.Key);
+        System.out.print(",");
+        visit(node.Value);
+        System.out.print(" }");
+
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
     public RoboNode visit(RoboCodeMethodNode node) {
         System.out.print("( robo.");
         visit(node.Method);

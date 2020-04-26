@@ -30,6 +30,8 @@ abstract class AstVisitor<T> {
     public abstract T visit(FunctionCallNode node);
     public abstract T visit(ParamNode node);
     public abstract T visit(RoboCodeMethodNode node);
+    public abstract T visit(DictionaryDeclNode node);
+    public abstract T visit(DictionaryValueNode node);
 
 
     public T visit(RoboNode node) {
@@ -83,6 +85,10 @@ abstract class AstVisitor<T> {
             return visit((ParamNode) node);
         } else if (node instanceof RoboCodeMethodNode) {
             return visit((RoboCodeMethodNode) node);
+        } else if (node instanceof DictionaryDeclNode) {
+            return visit((DictionaryDeclNode) node);
+        } else if (node instanceof DictionaryValueNode) {
+            return visit((DictionaryValueNode) node);
         }
 
         return null;

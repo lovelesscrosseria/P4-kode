@@ -10,9 +10,9 @@ event_decl: 'event' id=ID eventBlock=block;
 
 STRING: '"' ~["]* '"' ;
 variable_decl: varType=type varId=ID (ASSIGN_OP value=expr)?;
-
 list_decl: 'list' LESS_OP listType=type GREATER_OP id=ID (ASSIGN_OP LCURL listExpr=expr? (',' expr)* RCURL)?;
-dictionary_decl: 'dictionary' LESS_OP type COMMA type GREATER_OP ID (ASSIGN_OP LCURL (LCURL expr COMMA expr RCURL)? (',' LCURL expr COMMA expr RCURL)* RCURL);
+dictionary_decl: 'dictionary' LESS_OP dicKey=type COMMA dicValue=type GREATER_OP id=ID (ASSIGN_OP LCURL defaultValue=dictionaryValue? (',' dictionaryValue)* RCURL)?;
+dictionaryValue: LCURL key=expr COMMA value=expr RCURL;
 collection_expr: ID DOT ('get' LPAREN expr RPAREN | 'length');
 collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;
 roboCode_method: 'robot' DOT method=function_call;

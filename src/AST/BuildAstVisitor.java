@@ -1,6 +1,5 @@
 package AST;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import AST.Nodes.Functions.*;
@@ -10,7 +9,6 @@ import AST.Nodes.Variables.*;
 import GrammarOut.roboBaseVisitor;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
-import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
     /**
@@ -74,8 +72,6 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         node.Params = GetFormalParams(ctx.formal_params());
         node.block = (BlockNode) visit(ctx.funcBlock);
 
-        //return visitChildren(ctx);
-
         return node;
     }
     /**
@@ -133,7 +129,31 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public RoboNode visitDictionary_decl(roboParser.Dictionary_declContext ctx) {
-        return visitChildren(ctx);
+        var node = new DictionaryDeclNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+
+        node.key = (TypeNode) visit(ctx.dicKey);
+        node.value = (TypeNode) visit(ctx.dicValue);
+
+        for (var item : ctx.dictionaryValue()) {
+            node.Nodes.add((DictionaryValueNode) visit(item));
+        }
+        return node;
+    }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public RoboNode visitDictionaryValue(roboParser.DictionaryValueContext ctx) {
+        var node = new DictionaryValueNode();
+        node.Key = visit(ctx.key);
+        node.Value = visit(ctx.value);
+
+        return node;
     }
     /**
      * {@inheritDoc}
