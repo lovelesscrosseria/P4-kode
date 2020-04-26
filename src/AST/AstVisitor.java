@@ -38,6 +38,7 @@ abstract class AstVisitor<T> {
     public abstract T visit(ForLoopNode node);
     public abstract T visit(DoWhileLoopNode node);
     public abstract T visit(WhileLoopNode node);
+    public abstract T visit(FunctionCallExprNode node);
 
 
     public T visit(RoboNode node) {
@@ -101,6 +102,8 @@ abstract class AstVisitor<T> {
             return visit((DoWhileLoopNode) node);
         } else if (node instanceof WhileLoopNode) {
             return visit((WhileLoopNode) node);
+        } else if (node instanceof FunctionCallExprNode) {
+            return visit((FunctionCallExprNode) node);
         }
 
         return null;

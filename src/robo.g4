@@ -57,8 +57,8 @@ expr        : decrement_operator                                                
             | LPAREN value=expr RPAREN                                          # parensExpr
             | NOT_OP value=expr                                                 # notExpr
             | <assoc=right> left=expr '^' right=expr                            # caretExpr
-            | <assoc=left> left=expr op=(MUL_OP | DIV_OP | MOD_OP) right=expr      # infixExpr
-            | <assoc=left> left=expr op=(ADD_OP | SUB_OP) right=expr               # infixExpr
+            | <assoc=left> left=expr op=(MUL_OP | DIV_OP | MOD_OP) right=expr   # infixExpr
+            | <assoc=left> left=expr op=(ADD_OP | SUB_OP) right=expr            # infixExpr
             | left=expr (GEQ_OP | LEQ_OP | LESS_OP | GREATER_OP) right=expr     # boolExpr
             | left=expr (NOTEQ_OP | EQUAL_OP) right=expr                        # boolExpr
             | left=expr AND_OP right=expr                                       # boolExpr
@@ -68,10 +68,10 @@ expr        : decrement_operator                                                
             | value=STRING                                                      # stringExpr
             | value=DIGIT+                                                      # digitExpr
             | id=ID                                                             # idExpr
-            | function_call                                                     # funcExpr
-            | collection_expr                                                   # collExpr
-            | ID DOT function_call                                              # roboEventCallExpr
-            | roboCode_method                                                   # roboMethodExpr
+            | funcCall=function_call                                            # funcExpr
+            | collectionExpr=collection_expr                                    # collExpr
+            | id=ID DOT funcCall=function_call                                  # roboEventCallExpr
+            | roboMethod=roboCode_method                                        # roboMethodExpr
             ;
 
 DOT: '.';

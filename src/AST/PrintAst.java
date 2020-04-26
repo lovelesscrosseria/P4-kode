@@ -9,6 +9,25 @@ import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
+
+    @Override
+    public RoboNode visit(FunctionCallExprNode node) {
+        System.out.print("( ");
+        visit(node.Method);
+        System.out.print("(");
+
+        for (int i = 0; i < node.Params.size(); i++) {
+            visit(node.Params.get(i));
+
+            if (i + 1 != node.Params.size()) {
+                System.out.print(", ");
+            }
+        }
+        System.out.print(") )");
+
+        return null;
+    }
+
     @Override
     public RoboNode visit(DoWhileLoopNode node) {
         System.out.print("( do ");

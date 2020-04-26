@@ -307,7 +307,15 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitFuncExpr(roboParser.FuncExprContext ctx) { return visitChildren(ctx); }
+    @Override public FunctionCallExprNode visitFuncExpr(roboParser.FuncExprContext ctx) {
+        var funcCallNode = (FunctionCallNode) visit(ctx.funcCall);
+        var node = new FunctionCallExprNode();
+        node.Params = funcCallNode.Params;
+        node.Method = funcCallNode.Method;
+
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
