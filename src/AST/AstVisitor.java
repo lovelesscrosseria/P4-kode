@@ -1,8 +1,6 @@
 package AST;
 
-import AST.Nodes.Functions.BlockNode;
-import AST.Nodes.Functions.FormalParamNode;
-import AST.Nodes.Functions.FunctionDeclNode;
+import AST.Nodes.Functions.*;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
@@ -26,6 +24,8 @@ abstract class AstVisitor<T> {
     public abstract T visit(DecrementOperatorNode node);
     public abstract T visit(IncrementOperatorNode node);
     public abstract T visit(ListDeclNode node);
+    public abstract T visit(StrategyNode node);
+    public abstract T visit(BehaviorNode node);
 
 
 
@@ -77,6 +77,10 @@ abstract class AstVisitor<T> {
             return visit((IncrementOperatorNode) node);
         } else if (node instanceof ListDeclNode) {
             return visit((ListDeclNode) node);
+        } else if (node instanceof StrategyNode) {
+            return visit((StrategyNode) node);
+        } else if (node instanceof BehaviorNode) {
+            return visit((BehaviorNode) node);
         }
 
         return null;

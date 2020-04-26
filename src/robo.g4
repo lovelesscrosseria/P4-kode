@@ -2,8 +2,8 @@ grammar robo;
 
 program : (strategy | function_decl | event_decl | assignment | variable_decl | list_decl | dictionary_decl | COMMENT | NEWLINE )* EOF;
 
-strategy: 'strategy'  ID LCURL NEWLINE (behavior | NEWLINE)* RCURL;
-behavior: 'behavior' ID LPAREN formal_params? RPAREN block;
+strategy: 'strategy'  id=ID LCURL NEWLINE (behavior | NEWLINE)* RCURL;
+behavior: 'behavior' id=ID LPAREN funcParams=formal_params? RPAREN funcBlock=block;
 
 function_decl: 'func' funcType=type funcId=ID LPAREN funcParams=formal_params? RPAREN funcBlock=block;
 event_decl: 'event' ID block;

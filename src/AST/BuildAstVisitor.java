@@ -3,9 +3,7 @@ package AST;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import AST.Nodes.Functions.BlockNode;
-import AST.Nodes.Functions.FormalParamNode;
-import AST.Nodes.Functions.FunctionDeclNode;
+import AST.Nodes.Functions.*;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
@@ -27,20 +25,41 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
 
         return new AST(nodes);
     }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitStrategy(roboParser.StrategyContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitStrategy(roboParser.StrategyContext ctx) {
+        var node = new StrategyNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+
+        for (var item : ctx.behavior()) {
+            var behavior = visit(item);
+            node.behaviorNodes.add((BehaviorNode) behavior);
+        }
+
+        return node;
+
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitBehavior(roboParser.BehaviorContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitBehavior(roboParser.BehaviorContext ctx) {
+        var node = new BehaviorNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+        node.Params = GetFormalParams(ctx.formal_params());
+        node.Block = (BlockNode) visit(ctx.funcBlock);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -414,8 +433,12 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         return node;
     }
 
+
     private ArrayList<FormalParamNode> GetFormalParams(roboParser.Formal_paramsContext ctx) {
         ArrayList<FormalParamNode> params = new ArrayList<FormalParamNode>();
+        if (ctx == null) {
+            return params;
+        }
         var node = new FormalParamNode();
         node.Type = (TypeNode) visit(ctx.paramType);
         node.Id = new IdentifierNode();

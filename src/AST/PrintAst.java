@@ -1,13 +1,43 @@
 package AST;
 
-import AST.Nodes.Functions.BlockNode;
-import AST.Nodes.Functions.FormalParamNode;
-import AST.Nodes.Functions.FunctionDeclNode;
+import AST.Nodes.Functions.*;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
+    @Override
+    public RoboNode visit(StrategyNode node) {
+        System.out.print("( strategy ");
+        visit(node.Id);
+        System.out.print(" { ");
+        for (var behavior : node.behaviorNodes) {
+            visit(behavior);
+        }
+
+        System.out.print(" } )");
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(BehaviorNode node) {
+        System.out.print("( behavior ");
+        visit(node.Id);
+        System.out.print('(');
+
+        for (int i = 0; i < node.Params.size(); i++) {
+            visit(node.Params.get(i));
+
+            if (i + 1 != node.Params.size()) {
+                System.out.print(", ");
+            }
+        }
+        System.out.print(")");
+        visit(node.Block);
+        System.out.print(" )");
+        return null;
+    }
+
     @Override
     public RoboNode visit(ListDeclNode node) {
         System.out.print("( list<");
@@ -61,7 +91,7 @@ public class PrintAst extends AstVisitor<RoboNode>{
 
     @Override
     public RoboNode visit(StringExprNode node) {
-        System.out.print("\" " + node.value + "\"");
+        System.out.print(" " + node.value + "");
 
         return null;
     }
