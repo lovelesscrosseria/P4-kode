@@ -6,7 +6,7 @@ strategy: 'strategy'  id=ID LCURL NEWLINE (behavior | NEWLINE)* RCURL;
 behavior: 'behavior' id=ID LPAREN funcParams=formal_params? RPAREN funcBlock=block;
 
 function_decl: 'func' funcType=type funcId=ID LPAREN funcParams=formal_params? RPAREN funcBlock=block;
-event_decl: 'event' ID block;
+event_decl: 'event' id=ID eventBlock=block;
 
 STRING: '"' ~["]* '"' ;
 variable_decl: varType=type varId=ID (ASSIGN_OP value=expr)?;

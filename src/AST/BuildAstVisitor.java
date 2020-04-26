@@ -84,7 +84,14 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitEvent_decl(roboParser.Event_declContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitEvent_decl(roboParser.Event_declContext ctx) {
+        var node = new EventNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+        node.Block = (BlockNode) visit(ctx.eventBlock);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *

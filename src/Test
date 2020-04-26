@@ -26,3 +26,8 @@ num a = 3 + 4.0 * 4 + 5/2%2*3
         text x = "yetty"
     }
  }
+
+ event onLowHealth {
+ 	num health = 15
+ 	return health < 20
+ }

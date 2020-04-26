@@ -4,6 +4,7 @@ import AST.Nodes.Functions.*;
 import AST.Nodes.Infix.*;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
+import jdk.jfr.Event;
 
 abstract class AstVisitor<T> {
     public abstract T visit(AdditionExprNode node);
@@ -26,6 +27,7 @@ abstract class AstVisitor<T> {
     public abstract T visit(ListDeclNode node);
     public abstract T visit(StrategyNode node);
     public abstract T visit(BehaviorNode node);
+    public abstract T visit(EventNode node);
 
 
 
@@ -81,6 +83,8 @@ abstract class AstVisitor<T> {
             return visit((StrategyNode) node);
         } else if (node instanceof BehaviorNode) {
             return visit((BehaviorNode) node);
+        } else if (node instanceof EventNode) {
+            return visit((EventNode) node);
         }
 
         return null;

@@ -7,6 +7,16 @@ import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
     @Override
+    public RoboNode visit(EventNode node) {
+        System.out.print("( Event ");
+        visit(node.Id);
+        visit(node.Block);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
     public RoboNode visit(StrategyNode node) {
         System.out.print("( strategy ");
         visit(node.Id);
@@ -88,6 +98,7 @@ public class PrintAst extends AstVisitor<RoboNode>{
 
         return null;
     }
+
 
     @Override
     public RoboNode visit(StringExprNode node) {
