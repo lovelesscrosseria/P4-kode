@@ -1,5 +1,6 @@
 package AST;
 
+import AST.Nodes.Bool.*;
 import AST.Nodes.Functions.BlockNode;
 import AST.Nodes.Functions.FormalParamNode;
 import AST.Nodes.Functions.FunctionDeclNode;
@@ -26,6 +27,98 @@ public class PrintAst extends AstVisitor<RoboNode>{
 
             System.out.print(" }");
         }
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(AndExprNode node) {
+        System.out.print("( ");
+        visit(node.Left);
+        System.out.print(" && ");
+        visit(node.Right);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(OrExprNode node) {
+        System.out.print("( ");
+        visit(node.Left);
+        System.out.print(" || ");
+        visit(node.Right);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(EqualExprNode node) {
+        System.out.print("( ");
+        visit(node.Left);
+        System.out.print(" == ");
+        visit(node.Right);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(NotEqualExprNode node) {
+        System.out.print("( ");
+        visit(node.Left);
+        System.out.print(" != ");
+        visit(node.Right);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(GreatEqualExprNode node) {
+        System.out.print("( ");
+        visit(node.Left);
+        System.out.print(" >= ");
+        visit(node.Right);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(GreaterExprNode node) {
+        System.out.print("( ");
+        visit(node.Left);
+        System.out.print(" > ");
+        visit(node.Right);
+        System.out.print(" )");
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(LessEqualExprNode node) {
+        System.out.print("( ");
+        visit(node.Left);
+        System.out.print(" <= ");
+        visit(node.Right);
+        System.out.print(" )");
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(LessExprNode node) {
+        System.out.print("( ");
+        visit(node.Left);
+        System.out.print(" < ");
+        visit(node.Right);
+        System.out.print(" )");
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(BoolValueNode node) {
+        System.out.print(node.Value);
 
         return null;
     }

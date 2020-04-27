@@ -4,6 +4,11 @@ num c = a*b + a^2
 num d = 3.2/2.2
 num e = 4.2%3.2
 
+num f = false && 3<4.0
+num g = true || false
+bool h= f != g
+text i = 2>3.5 ||5>=2 && 6<= hej
+
 list<num> myList = {5, 5, 10, 5*5, b}
 
 func void myfunc(num t, text x, text tt, num ss) {

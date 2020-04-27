@@ -59,10 +59,10 @@ expr        : decrement_operator                                                
             | <assoc=right> left=expr '^' right=expr                            # caretExpr
             | <assoc=left> left=expr op=(MUL_OP | DIV_OP | MOD_OP) right=expr      # infixExpr
             | <assoc=left> left=expr op=(ADD_OP | SUB_OP) right=expr               # infixExpr
-            | left=expr (GEQ_OP | LEQ_OP | LESS_OP | GREATER_OP) right=expr     # boolExpr
-            | left=expr (NOTEQ_OP | EQUAL_OP) right=expr                        # boolExpr
-            | left=expr AND_OP right=expr                                       # boolExpr
-            | left=expr OR_OP right=expr                                        # boolExpr
+            | left=expr op=(GEQ_OP | LEQ_OP | LESS_OP | GREATER_OP) right=expr     # boolExpr
+            | left=expr op=(NOTEQ_OP | EQUAL_OP) right=expr                        # boolExpr
+            | left=expr op=AND_OP right=expr                                       # boolExpr
+            | left=expr op=OR_OP right=expr                                        # boolExpr
             | value='true'                                                      # trueExpr
             | value='false'                                                     # falseExpr
             | value=STRING                                                      # stringExpr

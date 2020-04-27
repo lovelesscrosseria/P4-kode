@@ -3,10 +3,12 @@ package AST;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import AST.Nodes.Bool.BoolExprNode;
 import AST.Nodes.Functions.BlockNode;
 import AST.Nodes.Functions.FormalParamNode;
 import AST.Nodes.Functions.FunctionDeclNode;
 import AST.Nodes.Infix.*;
+import AST.Nodes.Bool.*;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import GrammarOut.roboBaseVisitor;
@@ -222,7 +224,13 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitTrueExpr(roboParser.TrueExprContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitTrueExpr(roboParser.TrueExprContext ctx) {
+        BoolValueNode node = new BoolValueNode();
+        node.Value = ctx.value.getText();
+
+        //return visitChildren(ctx);
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -346,14 +354,57 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitFalseExpr(roboParser.FalseExprContext ctx) { return visitChildren(ctx); }
+    @Override public BoolValueNode visitFalseExpr(roboParser.FalseExprContext ctx) {
+        BoolValueNode node = new BoolValueNode();
+        node.Value = ctx.value.getText();
+
+        //return visitChildren(ctx);
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitBoolExpr(roboParser.BoolExprContext ctx) { return visitChildren(ctx); }
+    @Override public BoolExprNode visitBoolExpr(roboParser.BoolExprContext ctx) {
+        BoolExprNode node;
+        switch(ctx.op.getType()){
+            case roboLexer.OR_OP:
+                node = new OrExprNode();
+                break;
+            case roboLexer.AND_OP:
+                node = new AndExprNode();
+                break;
+            case roboLexer.EQUAL_OP:
+                node = new EqualExprNode();
+                break;
+            case roboLexer.NOTEQ_OP:
+                node = new NotEqualExprNode();
+                break;
+            case roboLexer.GEQ_OP:
+                node = new GreatEqualExprNode();
+                break;
+            case roboLexer.GREATER_OP:
+                node = new GreaterExprNode();
+                break;
+            case roboLexer.LEQ_OP:
+                node = new LessEqualExprNode();
+                break;
+            case roboLexer.LESS_OP:
+                node = new LessExprNode();
+                break;
+            default:
+                node = new DefaultExprNode();
+                break;
+                //throw new Exception("Wrong Operator for a Bool Expression");
+        }
+
+        node.Left = visit(ctx.left);
+        node.Right = visit(ctx.right);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
