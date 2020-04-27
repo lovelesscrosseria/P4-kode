@@ -16,7 +16,7 @@ public class program
 {
     public static void main(String[] args) throws Exception{
 
-        System.out.println("Hello World!");
+        System.out.println("RoboCompiler v.1337");
         /*Used parser to turn a string of characters into a parse tree*/
         var input = convertFileToInputStream("src/Test");
 

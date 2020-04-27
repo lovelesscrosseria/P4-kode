@@ -1,9 +1,10 @@
 package AST;
 
-import AST.Nodes.Functions.BlockNode;
-import AST.Nodes.Functions.FormalParamNode;
-import AST.Nodes.Functions.FunctionDeclNode;
+import AST.Nodes.Functions.*;
 import AST.Nodes.Infix.*;
+import AST.Nodes.Loops.DoWhileLoopNode;
+import AST.Nodes.Loops.ForLoopNode;
+import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import AST.Nodes.Bool.*;
@@ -27,7 +28,6 @@ abstract class AstVisitor<T> {
     public abstract T visit(DecrementOperatorNode node);
     public abstract T visit(IncrementOperatorNode node);
     public abstract T visit(ListDeclNode node);
-
     public abstract T visit(AndExprNode node);
     public abstract T visit(OrExprNode node);
     public abstract T visit(EqualExprNode node);
@@ -37,16 +37,20 @@ abstract class AstVisitor<T> {
     public abstract T visit(LessEqualExprNode node);
     public abstract T visit(LessExprNode node);
     public abstract T visit(BoolValueNode node);
-
-
-
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
-   // public abstract T visit(CaretExprNode node);
+    public abstract T visit(StrategyNode node);
+    public abstract T visit(BehaviorNode node);
+    public abstract T visit(EventNode node);
+    public abstract T visit(FunctionCallNode node);
+    public abstract T visit(ParamNode node);
+    public abstract T visit(RoboCodeMethodNode node);
+    public abstract T visit(DictionaryDeclNode node);
+    public abstract T visit(DictionaryValueNode node);
+    public abstract T visit(ForLoopNode node);
+    public abstract T visit(DoWhileLoopNode node);
+    public abstract T visit(WhileLoopNode node);
+    public abstract T visit(FunctionCallExprNode node);
+    public abstract T visit(RoboCodeMethodExprNode node);
+    public abstract T visit(ReturnNode node);
 
 
     public T visit(RoboNode node) {
@@ -108,6 +112,34 @@ abstract class AstVisitor<T> {
             return visit((IncrementOperatorNode) node);
         } else if (node instanceof ListDeclNode) {
             return visit((ListDeclNode) node);
+        } else if (node instanceof StrategyNode) {
+            return visit((StrategyNode) node);
+        } else if (node instanceof BehaviorNode) {
+            return visit((BehaviorNode) node);
+        } else if (node instanceof EventNode) {
+            return visit((EventNode) node);
+        } else if (node instanceof FunctionCallNode) {
+            return visit((FunctionCallNode) node);
+        } else if (node instanceof ParamNode) {
+            return visit((ParamNode) node);
+        } else if (node instanceof RoboCodeMethodNode) {
+            return visit((RoboCodeMethodNode) node);
+        } else if (node instanceof DictionaryDeclNode) {
+            return visit((DictionaryDeclNode) node);
+        } else if (node instanceof DictionaryValueNode) {
+            return visit((DictionaryValueNode) node);
+        } else if (node instanceof ForLoopNode) {
+            return visit((ForLoopNode) node);
+        } else if (node instanceof DoWhileLoopNode) {
+            return visit((DoWhileLoopNode) node);
+        } else if (node instanceof WhileLoopNode) {
+            return visit((WhileLoopNode) node);
+        } else if (node instanceof FunctionCallExprNode) {
+            return visit((FunctionCallExprNode) node);
+        } else if (node instanceof RoboCodeMethodExprNode) {
+            return visit((RoboCodeMethodExprNode) node);
+        } else if (node instanceof ReturnNode) {
+            return visit((ReturnNode) node);
         }
 
         return null;

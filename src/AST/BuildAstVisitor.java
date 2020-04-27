@@ -1,6 +1,5 @@
 package AST;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import AST.Nodes.Bool.BoolExprNode;
@@ -9,12 +8,16 @@ import AST.Nodes.Functions.FormalParamNode;
 import AST.Nodes.Functions.FunctionDeclNode;
 import AST.Nodes.Infix.*;
 import AST.Nodes.Bool.*;
+import AST.Nodes.Functions.*;
+import AST.Nodes.Infix.*;
+import AST.Nodes.Loops.DoWhileLoopNode;
+import AST.Nodes.Loops.ForLoopNode;
+import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import GrammarOut.roboBaseVisitor;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
-import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
     /**
@@ -29,20 +32,41 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
 
         return new AST(nodes);
     }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitStrategy(roboParser.StrategyContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitStrategy(roboParser.StrategyContext ctx) {
+        var node = new StrategyNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+
+        for (var item : ctx.behavior()) {
+            var behavior = visit(item);
+            node.behaviorNodes.add((BehaviorNode) behavior);
+        }
+
+        return node;
+
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitBehavior(roboParser.BehaviorContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitBehavior(roboParser.BehaviorContext ctx) {
+        var node = new BehaviorNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+        node.Params = GetFormalParams(ctx.formal_params());
+        node.Block = (BlockNode) visit(ctx.funcBlock);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -57,8 +81,6 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         node.Params = GetFormalParams(ctx.formal_params());
         node.block = (BlockNode) visit(ctx.funcBlock);
 
-        //return visitChildren(ctx);
-
         return node;
     }
     /**
@@ -67,7 +89,14 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitEvent_decl(roboParser.Event_declContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitEvent_decl(roboParser.Event_declContext ctx) {
+        var node = new EventNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+        node.Block = (BlockNode) visit(ctx.eventBlock);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -109,7 +138,31 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public RoboNode visitDictionary_decl(roboParser.Dictionary_declContext ctx) {
-        return visitChildren(ctx);
+        var node = new DictionaryDeclNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+
+        node.key = (TypeNode) visit(ctx.dicKey);
+        node.value = (TypeNode) visit(ctx.dicValue);
+
+        for (var item : ctx.dictionaryValue()) {
+            node.Nodes.add((DictionaryValueNode) visit(item));
+        }
+        return node;
+    }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public RoboNode visitDictionaryValue(roboParser.DictionaryValueContext ctx) {
+        var node = new DictionaryValueNode();
+        node.Key = visit(ctx.key);
+        node.Value = visit(ctx.value);
+
+        return node;
     }
     /**
      * {@inheritDoc}
@@ -132,7 +185,10 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public RoboNode visitRoboCode_method(roboParser.RoboCode_methodContext ctx) {
-        return visitChildren(ctx);
+        var node = new RoboCodeMethodNode();
+        node.Method = (FunctionCallNode) visit(ctx.method);
+
+        return node;
     }
     /**
      * {@inheritDoc}
@@ -165,7 +221,13 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public RoboNode visitFunction_call(roboParser.Function_callContext ctx) {
-        return visitChildren(ctx);
+        var node = new FunctionCallNode();
+        node.Method = new IdentifierNode();
+        node.Method.Id = ctx.id.getText();
+
+        node.Params = GetParams(ctx.funcParams);
+
+        return node;
     }
     /**
      * {@inheritDoc}
@@ -173,7 +235,36 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitLoop(roboParser.LoopContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitLoop(roboParser.LoopContext ctx) {
+        RoboNode returnNode = null;
+        switch (ctx.loopType.getText()) {
+            case "for":
+                var forLoopNode = new ForLoopNode();
+                forLoopNode.Block = (BlockNode) visit(ctx.loopBlock);
+                forLoopNode.Condition = visit(ctx.loopCondition);
+                forLoopNode.Increment = visit(ctx.loopIncrement);
+                forLoopNode.Init = ctx.forLoopAssign == null ? visit(ctx.forLoopVarDec) : visit(ctx.forLoopAssign);
+
+                returnNode = forLoopNode;
+                break;
+            case "while":;
+                var whileLoopNode = new WhileLoopNode();
+                whileLoopNode.Block = (BlockNode) visit(ctx.loopBlock);
+                whileLoopNode.Condition = visit(ctx.loopCondition);
+
+                returnNode = whileLoopNode;
+                break;
+            case "do":
+                var doWhileLoopNode = new DoWhileLoopNode();
+                doWhileLoopNode.Block = (BlockNode) visit(ctx.loopBlock);
+                doWhileLoopNode.Condition = visit(ctx.loopCondition);
+
+                returnNode = doWhileLoopNode;
+                break;
+        }
+
+        return returnNode;
+    }
     /**
      * {@inheritDoc}
      *
@@ -210,14 +301,27 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitParams(roboParser.ParamsContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitParams(roboParser.ParamsContext ctx) {
+        var node = new ParamNode();
+        node.Value = visit(ctx.paramExpr);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitFuncExpr(roboParser.FuncExprContext ctx) { return visitChildren(ctx); }
+    @Override public FunctionCallExprNode visitFuncExpr(roboParser.FuncExprContext ctx) {
+        var funcCallNode = (FunctionCallNode) visit(ctx.funcCall);
+        var node = new FunctionCallExprNode();
+        node.Params = funcCallNode.Params;
+        node.Method = funcCallNode.Method;
+
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -288,7 +392,12 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitRoboMethodExpr(roboParser.RoboMethodExprContext ctx) { return visitChildren(ctx); }
+    @Override public RoboCodeMethodExprNode visitRoboMethodExpr(roboParser.RoboMethodExprContext ctx) {
+        var node = new RoboCodeMethodExprNode();
+        node.Method = (FunctionCallNode) visit(ctx.roboMethod.method);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -341,13 +450,6 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
 
         return node;
     }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    @Override public RoboNode visitRoboEventCallExpr(roboParser.RoboEventCallExprContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
      *
@@ -437,7 +539,12 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitReturn_stat(roboParser.Return_statContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitReturn_stat(roboParser.Return_statContext ctx) {
+        var node = new ReturnNode();
+        node.Value = visit(ctx.value);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -465,8 +572,32 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         return node;
     }
 
+
+    private ArrayList<ParamNode> GetParams(roboParser.ParamsContext ctx) {
+        ArrayList<ParamNode> params = new ArrayList<ParamNode>();
+        if (ctx == null) {
+            return params;
+        }
+
+        var node = new ParamNode();
+        node.Value = visit(ctx.paramExpr);
+
+        params.add(node);
+
+        if (ctx.params() != null) {
+            for (var param : ctx.params()) {
+                params.addAll(GetParams(param));
+            }
+        }
+
+        return params;
+    }
+
     private ArrayList<FormalParamNode> GetFormalParams(roboParser.Formal_paramsContext ctx) {
         ArrayList<FormalParamNode> params = new ArrayList<FormalParamNode>();
+        if (ctx == null) {
+            return params;
+        }
         var node = new FormalParamNode();
         node.Type = (TypeNode) visit(ctx.paramType);
         node.Id = new IdentifierNode();

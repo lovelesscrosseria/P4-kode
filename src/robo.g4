@@ -2,20 +2,20 @@ grammar robo;
 
 program : (strategy | function_decl | event_decl | assignment | variable_decl | list_decl | dictionary_decl | COMMENT | NEWLINE )* EOF;
 
-strategy: 'strategy'  ID LCURL NEWLINE (behavior | NEWLINE)* RCURL;
-behavior: 'behavior' ID LPAREN formal_params? RPAREN block;
+strategy: 'strategy'  id=ID LCURL NEWLINE (behavior | NEWLINE)* RCURL;
+behavior: 'behavior' id=ID LPAREN funcParams=formal_params? RPAREN funcBlock=block;
 
 function_decl: 'func' funcType=type funcId=ID LPAREN funcParams=formal_params? RPAREN funcBlock=block;
-event_decl: 'event' ID block;
+event_decl: 'event' id=ID eventBlock=block;
 
 STRING: '"' ~["]* '"' ;
 variable_decl: varType=type varId=ID (ASSIGN_OP value=expr)?;
-
 list_decl: 'list' LESS_OP listType=type GREATER_OP id=ID (ASSIGN_OP LCURL listExpr=expr? (',' expr)* RCURL)?;
-dictionary_decl: 'dictionary' LESS_OP type COMMA type GREATER_OP ID (ASSIGN_OP LCURL (LCURL expr COMMA expr RCURL)? (',' LCURL expr COMMA expr RCURL)* RCURL);
-collection_expr: ID DOT ('get' LPAREN expr RPAREN | 'length');
+dictionary_decl: 'dictionary' LESS_OP dicKey=type COMMA dicValue=type GREATER_OP id=ID (ASSIGN_OP LCURL defaultValue=dictionaryValue? (',' dictionaryValue)* RCURL)?;
+dictionaryValue: LCURL key=expr COMMA value=expr RCURL;
+collection_expr: id=ID DOT ('get' LPAREN expr RPAREN | 'length');
 collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;
-roboCode_method: 'robot' DOT function_call;
+roboCode_method: 'robot' DOT method=function_call;
 
 assignment  : id=ID (ASSIGN_OP
             | PLUSEQ_OP 
@@ -39,10 +39,10 @@ stat        : block
             | increment_operator NEWLINE
             ;
 
-function_call: ID LPAREN params? RPAREN;
-loop: loopType='for' LPAREN (variable_decl | assignment) ';' expr ';' expr RPAREN block
-    | loopType='while' LPAREN expr RPAREN (NEWLINE)? block
-    | loopType='do' ( NEWLINE )? block 'while' LPAREN expr RPAREN
+function_call: id=ID LPAREN funcParams=params? RPAREN;
+loop: loopType='for' LPAREN (forLoopVarDec=variable_decl | forLoopAssign=assignment) ';' loopCondition=expr ';' loopIncrement=expr RPAREN loopBlock=block
+    | loopType='while' LPAREN loopCondition=expr RPAREN (NEWLINE)? loopBlock=block
+    | loopType='do' ( NEWLINE )? loopBlock=block 'while' LPAREN loopCondition=expr RPAREN
     ;
 //for_loop: 'for' LPAREN (variable_decl | assignment) ';' expr ';' expr RPAREN block;
 //while_loop: 'while' LPAREN expr RPAREN (NEWLINE)? block;
@@ -50,28 +50,28 @@ loop: loopType='for' LPAREN (variable_decl | assignment) ';' expr ';' expr RPARE
 block: LCURL (stat | NEWLINE )* RCURL;
 
 formal_params: paramType=type paramId=ID (',' formal_params)*;
-params: expr (',' params)*;
+params: paramExpr=expr (',' params)*;
 
 expr        : decrement_operator                                                # decrExpr
             | increment_operator                                                # incrExpr
             | LPAREN value=expr RPAREN                                          # parensExpr
             | NOT_OP value=expr                                                 # notExpr
             | <assoc=right> left=expr '^' right=expr                            # caretExpr
-            | <assoc=left> left=expr op=(MUL_OP | DIV_OP | MOD_OP) right=expr      # infixExpr
-            | <assoc=left> left=expr op=(ADD_OP | SUB_OP) right=expr               # infixExpr
-            | left=expr op=(GEQ_OP | LEQ_OP | LESS_OP | GREATER_OP) right=expr     # boolExpr
-            | left=expr op=(NOTEQ_OP | EQUAL_OP) right=expr                        # boolExpr
-            | left=expr op=AND_OP right=expr                                       # boolExpr
-            | left=expr op=OR_OP right=expr                                        # boolExpr
+            | <assoc=left> left=expr op=(MUL_OP | DIV_OP | MOD_OP) right=expr   # infixExpr
+            | <assoc=left> left=expr op=(ADD_OP | SUB_OP) right=expr            # infixExpr
+            | left=expr op=(GEQ_OP | LEQ_OP | LESS_OP | GREATER_OP) right=expr  # boolExpr
+            | left=expr op=(NOTEQ_OP | EQUAL_OP) right=expr                     # boolExpr
+            | left=expr op=AND_OP right=expr                                    # boolExpr
+            | left=expr op=OR_OP right=expr                                     # boolExpr
             | value='true'                                                      # trueExpr
             | value='false'                                                     # falseExpr
             | value=STRING                                                      # stringExpr
             | value=DIGIT+                                                      # digitExpr
             | id=ID                                                             # idExpr
-            | function_call                                                     # funcExpr
-            | collection_expr                                                   # collExpr
-            | ID DOT function_call                                              # roboEventCallExpr
-            | roboCode_method                                                   # roboMethodExpr
+            | funcCall=function_call                                            # funcExpr
+            | collectionExpr=collection_expr                                    # collExpr
+//            | id=ID DOT funcCall=function_call                                  # roboEventCallExpr
+            | roboMethod=roboCode_method                                        # roboMethodExpr
             ;
 
 DOT: '.';

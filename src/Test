@@ -1,3 +1,4 @@
+
 num a = 3 + 4.0 * 4 + 5/2%2*3
 num b = 4-3
 num c = a*b + a^2
@@ -10,11 +11,56 @@ bool h= f != g
 text i = 2>3.5 ||5>=2 && 6<= hej
 
 list<num> myList = {5, 5, 10, 5*5, b}
+dictionary<num, text> DictionaryWithoutValues
+dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15, "femten" }, { 20, "tyve" } }
 
-func void myfunc(num t, text x, text tt, num ss) {
-    t = 5
-    num myNumber =  5 / 5 + 3
-    x = "yeest"
-    t--
-    t++
+ func void myfunc(num t, text x, text tt, num ss) {
+     t = 5
+     num myNumber =  5 / 5 + 3
+     x = "yeest"
+     t--
+     t++
+ }
+
+ strategy default {
+    behavior onRun() {
+        robot.fire(3)
+        robot.forward(10)
+        robot.fire(3)
+        robot.backward(10)
+    }
+    behavior Boi() {
+        num myBoiNum = 7+7
+        text x = "yetty"
+    }
+ }
+
+ event onLowHealth {
+ 	num health = 15
+ 	return health < 20
+ }
+
+ num x = mything(x, y)
+
+
+ func void myLoops() {
+    for (num x = 0; x < 10; x++) {
+        robot.fire(3)
+    }
+    do {
+        robot.fire(4)
+    } while (x)
+
+    while (y) {
+        robot.fire(5)
+    }
+ }
+
+func void myTest() {
+    num x = 5
+    num value = testFunc(5)
+    return value
 }
+
+ num x = myfunc(12, x) + 5 * 2
+ num x = robot.fire(3) + 5

@@ -4,11 +4,199 @@ import AST.Nodes.Bool.*;
 import AST.Nodes.Functions.BlockNode;
 import AST.Nodes.Functions.FormalParamNode;
 import AST.Nodes.Functions.FunctionDeclNode;
+import AST.Nodes.Functions.*;
 import AST.Nodes.Infix.*;
+import AST.Nodes.Loops.DoWhileLoopNode;
+import AST.Nodes.Loops.ForLoopNode;
+import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
+    @Override
+    public RoboNode visit(ReturnNode node) {
+        System.out.print("( return ");
+        visit(node.Value);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(RoboCodeMethodExprNode node) {
+        System.out.print("( robot.");
+        visit(node.Method);
+        System.out.print(")");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(FunctionCallExprNode node) {
+        System.out.print("( ");
+        visit(node.Method);
+        System.out.print("(");
+
+        for (int i = 0; i < node.Params.size(); i++) {
+            visit(node.Params.get(i));
+
+            if (i + 1 != node.Params.size()) {
+                System.out.print(", ");
+            }
+        }
+        System.out.print(") )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(DoWhileLoopNode node) {
+        System.out.print("( do ");
+        visit(node.Block);
+        System.out.print(" while ( ");
+        visit(node.Condition);
+        System.out.print(" )");
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(WhileLoopNode node) {
+        System.out.print("while ( ");
+        visit(node.Condition);
+        System.out.print(" )");
+        visit(node.Block);
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(ForLoopNode node) {
+        System.out.print("( for(");
+        visit(node.Init);
+        System.out.print("; ");
+        visit(node.Condition);
+        System.out.print("; ");
+        visit(node.Increment);
+        System.out.print(" )");
+        visit(node.Block);
+        System.out.print(" )");
+        return null;
+    }
+
+
+    @Override
+    public RoboNode visit(DictionaryDeclNode node) {
+        System.out.print("( ");
+        System.out.print("dictionary<");
+        visit(node.key);
+        System.out.print(',');
+        visit(node.value);
+        System.out.print("> ");
+        visit(node.Id);
+
+        if (node.Nodes.size() > 0) {
+            System.out.print("{ ");
+            for (var value : node.Nodes) {
+                visit(value);
+            }
+            System.out.print(" }");
+        }
+
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(DictionaryValueNode node) {
+        System.out.print("( { ");
+        visit(node.Key);
+        System.out.print(",");
+        visit(node.Value);
+        System.out.print(" }");
+
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(RoboCodeMethodNode node) {
+        System.out.print("( robot.");
+        visit(node.Method);
+        System.out.print(") ");
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(FunctionCallNode node) {
+        System.out.print("( ");
+        visit(node.Method);
+        System.out.print("(");
+
+        for (int i = 0; i < node.Params.size(); i++) {
+            visit(node.Params.get(i));
+
+            if (i + 1 != node.Params.size()) {
+                System.out.print(", ");
+            }
+        }
+        System.out.print(") )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(ParamNode node) {
+        System.out.print("( ");
+        visit(node.Value);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(EventNode node) {
+        System.out.print("( Event ");
+        visit(node.Id);
+        visit(node.Block);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(StrategyNode node) {
+        System.out.print("( strategy ");
+        visit(node.Id);
+        System.out.print(" { ");
+        for (var behavior : node.behaviorNodes) {
+            visit(behavior);
+        }
+
+        System.out.print(" } )");
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(BehaviorNode node) {
+        System.out.print("( behavior ");
+        visit(node.Id);
+        System.out.print('(');
+
+        for (int i = 0; i < node.Params.size(); i++) {
+            visit(node.Params.get(i));
+
+            if (i + 1 != node.Params.size()) {
+                System.out.print(", ");
+            }
+        }
+        System.out.print(")");
+        visit(node.Block);
+        System.out.print(" )");
+        return null;
+    }
+
     @Override
     public RoboNode visit(ListDeclNode node) {
         System.out.print("( list<");
@@ -152,9 +340,10 @@ public class PrintAst extends AstVisitor<RoboNode>{
         return null;
     }
 
+
     @Override
     public RoboNode visit(StringExprNode node) {
-        System.out.print("\" " + node.value + "\"");
+        System.out.print(" " + node.value + "");
 
         return null;
     }
@@ -291,7 +480,7 @@ public class PrintAst extends AstVisitor<RoboNode>{
     public RoboNode visit(AdditionExprNode node) {
         System.out.print("( ");
         visit(node.Left);
-        System.out.print('+');
+        System.out.print(" + ");
         visit(node.Right);
         System.out.print(" )");
 
