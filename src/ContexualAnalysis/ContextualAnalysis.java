@@ -11,6 +11,8 @@ import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
+import java.util.Optional;
+
 public class ContextualAnalysis extends AstVisitor<RoboNode> {
     private FunctionSymbolTableNode currentFunction;
 
@@ -25,35 +27,42 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(DivisionExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
-    public RoboNode visit(DigitExprNode node) {
-        return null;
-    }
+    public RoboNode visit(DigitExprNode node) { return null; }
 
     @Override
     public RoboNode visit(ModuloExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
     public RoboNode visit(MultiplicationExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
     public RoboNode visit(SubtractionExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
     public RoboNode visit(IdentifierNode node) {
-        var s = AST.symbolTable.GetVariables()
-                .stream()
-                .filter((variable) -> variable.Id.equals(node.Id))
-                .findFirst();
+        var s = this.GetVariable(node);
 
         if (s.isEmpty()) {
             this.error("Variable " + node.Id + " is not defined");
@@ -64,6 +73,9 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(CaretExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
@@ -74,10 +86,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(VariableDeclNode node) {
-        var s = AST.symbolTable.GetVariables()
-                .stream()
-                .filter((variable) -> variable.Id.equals(node.Id.Id))
-                .findFirst();
+        var s = this.GetVariable(node.Id);
 
         if (s.isPresent()) {
             this.error("Variable " + node.Id + " is already defined");
@@ -121,16 +130,28 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(AssignmentNode node) {
+        var variable = this.GetVariable(node.Id);
+
+        if (variable.isEmpty()) {
+            this.error("Variable " + node.Id + " is not defined");
+        }
+
+        visit(node.Value);
+
         return null;
     }
 
     @Override
     public RoboNode visit(DecrementOperatorNode node) {
+        visit(node.Id);
+
         return null;
     }
 
     @Override
     public RoboNode visit(IncrementOperatorNode node) {
+        visit(node.Id);
+
         return null;
     }
 
@@ -141,41 +162,65 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(AndExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
     public RoboNode visit(OrExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
     public RoboNode visit(EqualExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
     public RoboNode visit(NotEqualExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
     public RoboNode visit(GreatEqualExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
     public RoboNode visit(GreaterExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
     public RoboNode visit(LessEqualExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
     @Override
     public RoboNode visit(LessExprNode node) {
+        visit(node.Left);
+        visit(node.Right);
+
         return null;
     }
 
@@ -256,5 +301,27 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     private void error(String err) {
         AST.errors.add(err + "\n");
+    }
+
+    private Optional<VariableSymbolTableNode> GetVariable(IdentifierNode variableId) {
+        // check global scope
+        var result = AST.symbolTable.GetVariables()
+                .stream()
+                .filter((variable) -> variable.Id.equals(variableId.Id))
+                .findFirst();
+
+        if (result.isPresent()) {
+            return result;
+        }
+
+        //  check function scope
+        if (this.currentFunction != null) {
+            result = currentFunction.getLocalVariables()
+                    .stream()
+                    .filter((variable) -> variable.Id.equals(variableId.Id))
+                    .findFirst();
+        }
+
+        return result;
     }
 }

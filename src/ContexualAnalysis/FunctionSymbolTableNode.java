@@ -19,7 +19,7 @@ public class FunctionSymbolTableNode {
         this.localDecl.add(param);
     }
 
-    public ArrayList<VariableSymbolTableNode> getLocalVarDeclaration() {
+    public ArrayList<VariableSymbolTableNode> getLocalVariables() {
         return this.localDecl;
     }
 }
