@@ -66,5 +66,9 @@ func void myTest() {
  num x = robot.fire(3) + 5
  */
 
-num b = 5
-num x = a + b + 5
+//num b = 5
+//num x = a + b + 5
+
+func void myFunc(num x, num y) {
+
+}

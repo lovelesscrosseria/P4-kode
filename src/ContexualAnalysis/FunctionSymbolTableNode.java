@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class FunctionSymbolTableNode {
     public String Id;
+    public String Type;
     private ArrayList<VariableSymbolTableNode> params = new ArrayList<VariableSymbolTableNode>();
     private ArrayList<VariableSymbolTableNode> localDecl = new ArrayList<VariableSymbolTableNode>();
 
@@ -15,7 +16,7 @@ public class FunctionSymbolTableNode {
         return this.params;
     }
 
-    public void addLocalVarDeclaration(VariableSymbolTableNode param) {
+    public void addLocalVariableDeclaration(VariableSymbolTableNode param) {
         this.localDecl.add(param);
     }
 

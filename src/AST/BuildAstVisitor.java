@@ -41,6 +41,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitStrategy(roboParser.StrategyContext ctx) {
         var node = new StrategyNode();
+        node.LineNumber = ctx.start.getLine();
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.id.getText();
 
@@ -61,6 +62,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
     @Override public RoboNode visitBehavior(roboParser.BehaviorContext ctx) {
         var node = new BehaviorNode();
         node.Id = new IdentifierNode();
+        node.LineNumber = ctx.start.getLine();
         node.Id.Id = ctx.id.getText();
         node.Params = GetFormalParams(ctx.formal_params());
         node.Block = (BlockNode) visit(ctx.funcBlock);
@@ -75,6 +77,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitFunction_decl(roboParser.Function_declContext ctx) {
         var node = new FunctionDeclNode();
+        node.LineNumber = ctx.start.getLine();
         node.Type = (TypeNode) visit(ctx.funcType);
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.funcId.getText();
@@ -91,6 +94,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitEvent_decl(roboParser.Event_declContext ctx) {
         var node = new EventNode();
+        node.LineNumber = ctx.start.getLine();
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.id.getText();
         node.Block = (BlockNode) visit(ctx.eventBlock);
@@ -105,6 +109,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public VariableDeclNode visitVariable_decl(roboParser.Variable_declContext ctx) {
         var node = new VariableDeclNode();
+        node.LineNumber = ctx.start.getLine();
         node.Type = (TypeNode) visit(ctx.varType);
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.varId.getText();
@@ -121,6 +126,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitList_decl(roboParser.List_declContext ctx) {
         var node = new ListDeclNode();
+        node.LineNumber = ctx.start.getLine();
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.id.getText();
         node.Type = (TypeNode) visit(ctx.listType);
@@ -139,6 +145,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitDictionary_decl(roboParser.Dictionary_declContext ctx) {
         var node = new DictionaryDeclNode();
+        node.LineNumber = ctx.start.getLine();
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.id.getText();
 
@@ -159,6 +166,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
     @Override
     public RoboNode visitDictionaryValue(roboParser.DictionaryValueContext ctx) {
         var node = new DictionaryValueNode();
+        node.LineNumber = ctx.start.getLine();
         node.Key = visit(ctx.key);
         node.Value = visit(ctx.value);
 
@@ -186,6 +194,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitRoboCode_method(roboParser.RoboCode_methodContext ctx) {
         var node = new RoboCodeMethodNode();
+        node.LineNumber = ctx.start.getLine();
         node.Method = (FunctionCallNode) visit(ctx.method);
 
         return node;
@@ -198,6 +207,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public AssignmentNode visitAssignment(roboParser.AssignmentContext ctx) {
         var node = new AssignmentNode();
+        node.LineNumber = ctx.start.getLine();
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.id.getText();
 
@@ -222,6 +232,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitFunction_call(roboParser.Function_callContext ctx) {
         var node = new FunctionCallNode();
+        node.LineNumber = ctx.start.getLine();
         node.Method = new IdentifierNode();
         node.Method.Id = ctx.id.getText();
 
@@ -240,6 +251,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         switch (ctx.loopType.getText()) {
             case "for":
                 var forLoopNode = new ForLoopNode();
+                forLoopNode.LineNumber = ctx.start.getLine();
                 forLoopNode.Block = (BlockNode) visit(ctx.loopBlock);
                 forLoopNode.Condition = visit(ctx.loopCondition);
                 forLoopNode.Increment = visit(ctx.loopIncrement);
@@ -249,6 +261,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
                 break;
             case "while":;
                 var whileLoopNode = new WhileLoopNode();
+                whileLoopNode.LineNumber = ctx.start.getLine();
                 whileLoopNode.Block = (BlockNode) visit(ctx.loopBlock);
                 whileLoopNode.Condition = visit(ctx.loopCondition);
 
@@ -256,6 +269,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
                 break;
             case "do":
                 var doWhileLoopNode = new DoWhileLoopNode();
+                doWhileLoopNode.LineNumber = ctx.start.getLine();
                 doWhileLoopNode.Block = (BlockNode) visit(ctx.loopBlock);
                 doWhileLoopNode.Condition = visit(ctx.loopCondition);
 
@@ -273,6 +287,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitBlock(roboParser.BlockContext ctx) {
         var node = new BlockNode();
+        node.LineNumber = ctx.start.getLine();
         for (var stat : ctx.children) {
             if (stat instanceof roboParser.StatContext)
                 node.statements.add(visit(stat));
@@ -288,6 +303,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitFormal_params(roboParser.Formal_paramsContext ctx) {
         var node = new FormalParamNode();
+        node.LineNumber = ctx.start.getLine();
         node.Type = (TypeNode) visit(ctx.paramType);
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.paramId.getText();
@@ -303,6 +319,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitParams(roboParser.ParamsContext ctx) {
         var node = new ParamNode();
+        node.LineNumber = ctx.start.getLine();
         node.Value = visit(ctx.paramExpr);
 
         return node;
@@ -316,6 +333,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
     @Override public FunctionCallExprNode visitFuncExpr(roboParser.FuncExprContext ctx) {
         var funcCallNode = (FunctionCallNode) visit(ctx.funcCall);
         var node = new FunctionCallExprNode();
+        node.LineNumber = ctx.start.getLine();
         node.Params = funcCallNode.Params;
         node.Method = funcCallNode.Method;
 
@@ -330,6 +348,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitTrueExpr(roboParser.TrueExprContext ctx) {
         BoolValueNode node = new BoolValueNode();
+        node.LineNumber = ctx.start.getLine();
         node.Value = ctx.value.getText();
 
         //return visitChildren(ctx);
@@ -371,6 +390,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public DigitExprNode visitDigitExpr(roboParser.DigitExprContext ctx) {
         DigitExprNode node = new DigitExprNode();
+        node.LineNumber = ctx.start.getLine();
         node.value = Double.parseDouble(ctx.getText());
         return node;
     }
@@ -382,6 +402,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public StringExprNode visitStringExpr(roboParser.StringExprContext ctx) {
         var node = new StringExprNode();
+        node.LineNumber = ctx.start.getLine();
         node.value = ctx.value.getText();
 
         return node;
@@ -394,6 +415,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboCodeMethodExprNode visitRoboMethodExpr(roboParser.RoboMethodExprContext ctx) {
         var node = new RoboCodeMethodExprNode();
+        node.LineNumber = ctx.start.getLine();
         node.Method = (FunctionCallNode) visit(ctx.roboMethod.method);
 
         return node;
@@ -425,6 +447,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
                 break;
         }
 
+        node.LineNumber = ctx.start.getLine();
         node.Left = visit(ctx.left);
         node.Right = visit(ctx.right);
 
@@ -445,6 +468,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public CaretExprNode visitCaretExpr(roboParser.CaretExprContext ctx) {
         var node = new CaretExprNode();
+        node.LineNumber = ctx.start.getLine();
         node.Left = visit(ctx.left);
         node.Right = visit(ctx.right);
 
@@ -458,6 +482,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public BoolValueNode visitFalseExpr(roboParser.FalseExprContext ctx) {
         BoolValueNode node = new BoolValueNode();
+        node.LineNumber = ctx.start.getLine();
         node.Value = ctx.value.getText();
 
         //return visitChildren(ctx);
@@ -497,11 +522,11 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
                 node = new LessExprNode();
                 break;
             default:
-                node = new DefaultExprNode();
-                break;
+                throw new Error("Bool expression wrong");
                 //throw new Exception("Wrong Operator for a Bool Expression");
         }
 
+        node.LineNumber = ctx.start.getLine();
         node.Left = visit(ctx.left);
         node.Right = visit(ctx.right);
 
@@ -515,6 +540,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public IdentifierNode visitIdExpr(roboParser.IdExprContext ctx) {
         var node = new IdentifierNode();
+        node.LineNumber = ctx.start.getLine();
         node.Id = ctx.id.getText();
 
         //return visitChildren(ctx);
@@ -528,6 +554,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public TypeNode visitType(roboParser.TypeContext ctx) {
         var node = new TypeNode();
+        node.LineNumber = ctx.start.getLine();
         node.Type = ctx.getText();
 
         //return visitChildren(ctx);
@@ -541,6 +568,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitReturn_stat(roboParser.Return_statContext ctx) {
         var node = new ReturnNode();
+        node.LineNumber = ctx.start.getLine();
         node.Value = visit(ctx.value);
 
         return node;
@@ -553,6 +581,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitDecrement_operator(roboParser.Decrement_operatorContext ctx) {
         var node = new DecrementOperatorNode();
+        node.LineNumber = ctx.start.getLine();
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.ID().getText();
 
@@ -566,6 +595,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public RoboNode visitIncrement_operator(roboParser.Increment_operatorContext ctx) {
         var node = new IncrementOperatorNode();
+        node.LineNumber = ctx.start.getLine();
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.ID().getText();
 
@@ -580,6 +610,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         }
 
         var node = new ParamNode();
+        node.LineNumber = ctx.start.getLine();
         node.Value = visit(ctx.paramExpr);
 
         params.add(node);
@@ -600,6 +631,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         }
         var node = new FormalParamNode();
         node.Type = (TypeNode) visit(ctx.paramType);
+        node.LineNumber = ctx.start.getLine();
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.paramId.getText();
 

@@ -12,9 +12,11 @@ import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
 import java.util.Optional;
+import java.util.Stack;
+import java.util.function.Function;
 
 public class ContextualAnalysis extends AstVisitor<RoboNode> {
-    private FunctionSymbolTableNode currentFunction;
+    private Stack<FunctionSymbolTableNode> currentFunction = new Stack<FunctionSymbolTableNode>();
 
 
     @Override
@@ -90,11 +92,11 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
         if (s.isPresent()) {
             this.error("Variable " + node.Id + " is already defined");
-        } else if (currentFunction != null) {
+        } else if (currentFunction.peek() != null) {
             var varNode = new VariableSymbolTableNode();
             varNode.Id = node.Id.Id;
             varNode.Type = node.Type.Type;
-            currentFunction.addLocalVarDeclaration(varNode);
+            currentFunction.peek().addLocalVariableDeclaration(varNode);
         } else {
             var varNode = new VariableSymbolTableNode();
             varNode.Id = node.Id.Id;
@@ -110,11 +112,44 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(FormalParamNode node) {
+        if (this.currentFunction.peek() == null) {
+            // should never ever happen, as this is bound through the CFG.
+            this.error("Cannot define a formal parameter when not inside a function");
+            return null;
+        }
+
+        var variable = new VariableSymbolTableNode();
+        variable.Type = node.Type.Type;
+        variable.Id = node.Id.Id;
+        this.currentFunction.peek().addLocalVariableDeclaration(variable);
+
         return null;
     }
 
     @Override
     public RoboNode visit(FunctionDeclNode node) {
+        var function = this.GetFunction(node.Id);
+        if (function.isPresent()) {
+            // function is already declared
+            this.error("[Line " + node.LineNumber + "] A func with name " + node.Id.Id + " is already declared");
+            return null;
+        }
+
+        var functionNode = new FunctionSymbolTableNode();
+        functionNode.Id = node.Id.Id;
+        functionNode.Type = node.Type.Type;
+
+        // push parameters onto function for later use
+        for (var param : node.Params) {
+            var paramNode = new VariableSymbolTableNode();
+            paramNode.Id = param.Id.Id;
+            paramNode.Type = param.Type.Type;
+
+            functionNode.addParam(paramNode);
+        }
+
+        AST.symbolTable.PutFunction(functionNode);
+
         return null;
     }
 
@@ -315,13 +350,20 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         }
 
         //  check function scope
-        if (this.currentFunction != null) {
-            result = currentFunction.getLocalVariables()
+        if (this.currentFunction.peek() != null) {
+            result = currentFunction.peek().getLocalVariables()
                     .stream()
                     .filter((variable) -> variable.Id.equals(variableId.Id))
                     .findFirst();
         }
 
         return result;
+    }
+
+    private Optional<FunctionSymbolTableNode> GetFunction(IdentifierNode functionId) {
+        return AST.symbolTable.Getfunctions()
+                .stream()
+                .filter((function) -> function.Id.equals(functionId.Id))
+                .findFirst();
     }
 }
