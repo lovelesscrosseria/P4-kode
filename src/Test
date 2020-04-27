@@ -69,6 +69,9 @@ func void myTest() {
 //num b = 5
 //num x = a + b + 5
 
-func void myFunc(num x, num y) {
+/*func void myFunc(num x, num y) {
 
-}
+
+} */
+
+num x = 5 + y--

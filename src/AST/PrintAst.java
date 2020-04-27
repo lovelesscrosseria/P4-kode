@@ -14,6 +14,14 @@ import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
     @Override
+    public RoboNode visit(DecrementOperatorExprNode node) {
+        System.out.print("( ");
+        visit(node.Id);
+        System.out.print("-- )");
+        return null;
+    }
+
+    @Override
     public RoboNode visit(ReturnNode node) {
         System.out.print("( return ");
         visit(node.Value);

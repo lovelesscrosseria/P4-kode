@@ -360,7 +360,14 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitDecrExpr(roboParser.DecrExprContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitDecrExpr(roboParser.DecrExprContext ctx) {
+        var node = new DecrementOperatorExprNode();
+        node.LineNumber = ctx.start.getLine();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.decrement_operator().ID().getText();
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *

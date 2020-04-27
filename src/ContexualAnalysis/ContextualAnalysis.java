@@ -18,6 +18,16 @@ import java.util.function.Function;
 public class ContextualAnalysis extends AstVisitor<RoboNode> {
     private Stack<FunctionSymbolTableNode> currentFunction = new Stack<FunctionSymbolTableNode>();
 
+    @Override
+    public RoboNode visit(DecrementOperatorExprNode node) {
+        var s = this.GetVariable(node.Id);
+
+        if (s.isEmpty()) {
+            this.error("Variable " + node.Id.Id + " is not defined");
+        }
+
+        return null;
+    }
 
     @Override
     public RoboNode visit(AdditionExprNode node) {
@@ -92,7 +102,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
         if (s.isPresent()) {
             this.error("Variable " + node.Id + " is already defined");
-        } else if (currentFunction.peek() != null) {
+        } else if (!currentFunction.empty() && currentFunction.peek() != null) {
             var varNode = new VariableSymbolTableNode();
             varNode.Id = node.Id.Id;
             varNode.Type = node.Type.Type;
@@ -112,7 +122,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(FormalParamNode node) {
-        if (this.currentFunction.peek() == null) {
+        if (!this.currentFunction.empty()) {
             // should never ever happen, as this is bound through the CFG.
             this.error("Cannot define a formal parameter when not inside a function");
             return null;
@@ -350,7 +360,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         }
 
         //  check function scope
-        if (this.currentFunction.peek() != null) {
+        if (!this.currentFunction.empty() && this.currentFunction.peek() != null) {
             result = currentFunction.peek().getLocalVariables()
                     .stream()
                     .filter((variable) -> variable.Id.equals(variableId.Id))

@@ -51,6 +51,7 @@ public abstract class AstVisitor<T> {
     public abstract T visit(FunctionCallExprNode node);
     public abstract T visit(RoboCodeMethodExprNode node);
     public abstract T visit(ReturnNode node);
+    public abstract T visit(DecrementOperatorExprNode node);
 
 
     public T visit(RoboNode node) {
@@ -140,7 +141,10 @@ public abstract class AstVisitor<T> {
             return visit((RoboCodeMethodExprNode) node);
         } else if (node instanceof ReturnNode) {
             return visit((ReturnNode) node);
+        } else if (node instanceof DecrementOperatorExprNode) {
+            return visit((DecrementOperatorExprNode) node);
         }
+
 
         return null;
     }
