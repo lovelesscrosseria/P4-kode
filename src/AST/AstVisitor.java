@@ -9,7 +9,7 @@ import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import AST.Nodes.Bool.*;
 
-abstract class AstVisitor<T> {
+public abstract class AstVisitor<T> {
     public abstract T visit(AdditionExprNode node);
     public abstract T visit(DivisionExprNode node);
     public abstract T visit(DigitExprNode node);

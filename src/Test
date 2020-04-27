@@ -1,4 +1,4 @@
-
+/*
 num a = 3 + 4.0 * 4 + 5/2%2*3
 num b = 4-3
 num c = a*b + a^2
@@ -64,3 +64,7 @@ func void myTest() {
 
  num x = myfunc(12, x) + 5 * 2
  num x = robot.fire(3) + 5
+ */
+
+num b = 5
+num x = a + b + 5

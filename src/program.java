@@ -2,8 +2,10 @@ import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
+import AST.AST;
 import AST.BuildAstVisitor;
 import AST.PrintAst;
+import ContexualAnalysis.ContextualAnalysis;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
 import expr.Expression;
@@ -30,8 +32,20 @@ public class program
 
         roboParser parser = new roboParser(tokens);
         var cst = parser.program();
+        AST.errors.clear();
+        AST.symbolTable.clear();
         var ast = new BuildAstVisitor().visitProgram(cst);
         ast.visit(new PrintAst());
+        ast.visit(new ContextualAnalysis());
+
+        if (ast.errors.size() > 0) {
+            StringBuilder error = new StringBuilder("\n");
+            for (var err : AST.errors) {
+                error.append(err);
+            }
+
+            throw new Error(error.toString());
+        }
     }
 
     /*Fil to inputstream*/
