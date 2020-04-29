@@ -11,9 +11,7 @@ import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
-import java.util.Optional;
 import java.util.Stack;
-import java.util.function.Function;
 
 public class ContextualAnalysis extends AstVisitor<RoboNode> {
     private Stack<FunctionSymbolTableNode> currentFunction = new Stack<FunctionSymbolTableNode>();
@@ -23,7 +21,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         var s = this.GetVariable(node.Id);
 
         if (s != null) {
-            this.error("[Line + " + node.LineNumber + "] Variable " + node.Id.Id + " is not defined");
+            this.error(node.LineNumber ,"Variable " + node.Id.Id + " is not defined");
         }
 
         return null;
@@ -77,7 +75,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         var s = this.GetVariable(node);
 
         if (s == null) {
-            this.error("Variable " + node.Id + " is not defined");
+            this.error(node.LineNumber, "Variable " + node.Id + " is not defined");
         }
 
         return null;
@@ -101,7 +99,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         var s = this.GetVariable(node.Id);
 
         if (s != null) {
-            this.error("Variable " + node.Id.Id + " is already defined");
+            this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
         } else if (!currentFunction.empty() && currentFunction.peek() != null) {
             var varNode = new VariableSymbolTableNode();
             varNode.Id = node.Id.Id;
@@ -124,7 +122,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     public RoboNode visit(FormalParamNode node) {
         if (!this.currentFunction.empty()) {
             // should never ever happen, as this is bound through the CFG.
-            this.error("Cannot define a formal parameter when not inside a function");
+            this.error(node.LineNumber,"Cannot define a formal parameter when not inside a function");
             return null;
         }
 
@@ -141,7 +139,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         var function = this.GetFunction(node.Id);
         if (function != null) {
             // function is already declared
-            this.error("[Line " + node.LineNumber + "] A func with name " + node.Id.Id + " is already declared");
+            this.error(node.LineNumber,"A func with name " + node.Id.Id + " is already declared");
             return null;
         }
 
@@ -178,7 +176,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         var variable = this.GetVariable(node.Id);
 
         if (variable == null) {
-            this.error("Variable " + node.Id.Id + " is not defined");
+            this.error(node.LineNumber,"Variable " + node.Id.Id + " is not defined");
         }
 
         visit(node.Value);
@@ -344,8 +342,8 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         return null;
     }
 
-    private void error(String err) {
-        AST.errors.add(err + "\n");
+    private void error(int lineNumber, String err) {
+        AST.errors.add("[Line " + lineNumber + "] " +err + "\n");
     }
 
     private VariableSymbolTableNode GetVariable(IdentifierNode variableId) {
