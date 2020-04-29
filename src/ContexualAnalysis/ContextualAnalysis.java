@@ -22,7 +22,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     public RoboNode visit(DecrementOperatorExprNode node) {
         var s = this.GetVariable(node.Id);
 
-        if (s.isEmpty()) {
+        if (s != null) {
             this.error("[Line + " + node.LineNumber + "] Variable " + node.Id.Id + " is not defined");
         }
 
@@ -76,7 +76,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     public RoboNode visit(IdentifierNode node) {
         var s = this.GetVariable(node);
 
-        if (s.isEmpty()) {
+        if (s == null) {
             this.error("Variable " + node.Id + " is not defined");
         }
 
@@ -100,8 +100,8 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     public RoboNode visit(VariableDeclNode node) {
         var s = this.GetVariable(node.Id);
 
-        if (s.isPresent()) {
-            this.error("Variable " + node.Id + " is already defined");
+        if (s != null) {
+            this.error("Variable " + node.Id.Id + " is already defined");
         } else if (!currentFunction.empty() && currentFunction.peek() != null) {
             var varNode = new VariableSymbolTableNode();
             varNode.Id = node.Id.Id;
@@ -139,7 +139,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(FunctionDeclNode node) {
         var function = this.GetFunction(node.Id);
-        if (function.isPresent()) {
+        if (function != null) {
             // function is already declared
             this.error("[Line " + node.LineNumber + "] A func with name " + node.Id.Id + " is already declared");
             return null;
@@ -177,8 +177,8 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     public RoboNode visit(AssignmentNode node) {
         var variable = this.GetVariable(node.Id);
 
-        if (variable.isEmpty()) {
-            this.error("Variable " + node.Id + " is not defined");
+        if (variable == null) {
+            this.error("Variable " + node.Id.Id + " is not defined");
         }
 
         visit(node.Value);
@@ -348,32 +348,23 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         AST.errors.add(err + "\n");
     }
 
-    private Optional<VariableSymbolTableNode> GetVariable(IdentifierNode variableId) {
+    private VariableSymbolTableNode GetVariable(IdentifierNode variableId) {
         // check global scope
-        var result = AST.symbolTable.GetVariables()
-                .stream()
-                .filter((variable) -> variable.Id.equals(variableId.Id))
-                .findFirst();
+        var result = AST.symbolTable.GetVariable(variableId.Id);
 
-        if (result.isPresent()) {
+        if (result != null) {
             return result;
         }
 
         //  check function scope
         if (!this.currentFunction.empty() && this.currentFunction.peek() != null) {
-            result = currentFunction.peek().getLocalVariables()
-                    .stream()
-                    .filter((variable) -> variable.Id.equals(variableId.Id))
-                    .findFirst();
+            result = currentFunction.peek().getLocalVariable(variableId.Id);
         }
 
         return result;
     }
 
-    private Optional<FunctionSymbolTableNode> GetFunction(IdentifierNode functionId) {
-        return AST.symbolTable.Getfunctions()
-                .stream()
-                .filter((function) -> function.Id.equals(functionId.Id))
-                .findFirst();
+    private FunctionSymbolTableNode GetFunction(IdentifierNode functionId) {
+        return AST.symbolTable.GetFunction(functionId.Id);
     }
 }

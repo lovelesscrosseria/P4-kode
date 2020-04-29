@@ -1,37 +1,37 @@
 package ContexualAnalysis;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SymbolTable {
-    private ArrayList<VariableSymbolTableNode> variables = new ArrayList<VariableSymbolTableNode>();
-    private ArrayList<FunctionSymbolTableNode> functions = new ArrayList<FunctionSymbolTableNode>();
-    private ArrayList<StrategySymbolTableNode> strategies = new ArrayList<StrategySymbolTableNode>();
+    private HashMap<String, VariableSymbolTableNode> variables = new HashMap<String, VariableSymbolTableNode>();
+    private HashMap<String, FunctionSymbolTableNode> functions = new HashMap<String, FunctionSymbolTableNode>();
+    private HashMap<String, StrategySymbolTableNode> strategies = new HashMap<String, StrategySymbolTableNode>();
 
     public void PutVariable(VariableSymbolTableNode variable) {
-        this.variables.add(variable);
+        this.variables.put(variable.Id, variable);
 
     }
 
-    public ArrayList<VariableSymbolTableNode> GetVariables() {
-        return this.variables;
+    public VariableSymbolTableNode GetVariable(String Id) {
+        return this.variables.getOrDefault(Id, null);
     }
 
     public void PutStrategy(StrategySymbolTableNode strategy) {
-        this.strategies.add(strategy);
+        this.strategies.put(strategy.Id, strategy);
 
     }
 
-    public ArrayList<StrategySymbolTableNode> GetStrategies() {
-        return this.strategies;
+    public StrategySymbolTableNode GetStrategy(String Id) {
+        return this.strategies.getOrDefault(Id, null);
     }
 
     public void PutFunction(FunctionSymbolTableNode func) {
-        this.functions.add(func);
+        this.functions.put(func.Id, func);
 
     }
-
-    public ArrayList<FunctionSymbolTableNode> Getfunctions() {
-        return this.functions;
+    public FunctionSymbolTableNode GetFunction(String Id) {
+        return this.functions.getOrDefault(Id, null);
     }
 
     public void clear() {

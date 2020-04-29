@@ -1,26 +1,26 @@
 package ContexualAnalysis;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class FunctionSymbolTableNode {
     public String Id;
     public String Type;
-    private ArrayList<VariableSymbolTableNode> params = new ArrayList<VariableSymbolTableNode>();
-    private ArrayList<VariableSymbolTableNode> localDecl = new ArrayList<VariableSymbolTableNode>();
+    private HashMap<String, VariableSymbolTableNode> params = new HashMap<String, VariableSymbolTableNode>();
+    private HashMap<String, VariableSymbolTableNode> localDecl = new HashMap<String, VariableSymbolTableNode>();
 
     public void addParam(VariableSymbolTableNode param) {
-        this.params.add(param);
+        this.params.put(param.Id, param);
     }
 
-    public ArrayList<VariableSymbolTableNode> getParams() {
-        return this.params;
+    public VariableSymbolTableNode getParam(String Id) {
+        return this.params.getOrDefault(Id, null);
     }
 
     public void addLocalVariableDeclaration(VariableSymbolTableNode param) {
-        this.localDecl.add(param);
+        this.localDecl.put(param.Id, param);
     }
 
-    public ArrayList<VariableSymbolTableNode> getLocalVariables() {
-        return this.localDecl;
+    public VariableSymbolTableNode getLocalVariable(String Id) {
+        return this.localDecl.getOrDefault(Id, null);
     }
 }
