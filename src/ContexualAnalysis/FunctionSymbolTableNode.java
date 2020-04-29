@@ -1,8 +1,7 @@
 package ContexualAnalysis;
 
-import java.util.HashMap;
-
-public class FunctionSymbolTableNode {
+public class FunctionSymbolTableNode extends MethodSymbolTableNode{
+/*
     public String Id;
     public String Type;
     private HashMap<String, VariableSymbolTableNode> params = new HashMap<String, VariableSymbolTableNode>();
@@ -22,5 +21,5 @@ public class FunctionSymbolTableNode {
 
     public VariableSymbolTableNode getLocalVariable(String Id) {
         return this.localDecl.getOrDefault(Id, null);
-    }
+    } */
 }

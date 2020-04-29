@@ -289,8 +289,9 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         var node = new BlockNode();
         node.LineNumber = ctx.start.getLine();
         for (var stat : ctx.children) {
-            if (stat instanceof roboParser.StatContext)
+            if (stat instanceof roboParser.StatContext) {
                 node.statements.add(visit(stat));
+            }
         }
 
         return node;

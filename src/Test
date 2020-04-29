@@ -56,7 +56,7 @@ dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15,
     }
  }
 
-func void myTest() {
+func void myTest(num x) {
     num x = 5
     num value = testFunc(5)
     return value
@@ -66,14 +66,38 @@ func void myTest() {
  num x = robot.fire(3) + 5
  */
 
-//num b = 5
-//num x = a + b + 5
-
-/*func void myFunc(num x, num y) {
+//num x = 5 * 2 + myfunc()
+//num ss = a + b + 5
 
 
-} */
+func void funcs() {
 
+}
 
-num x = 5 + y--
-num x = 5 + y--
+func void myFunc(num x) {
+    num xx = 5 + 5
+    num y = funcs() + 5
+}
+
+event myEvent {
+    num x = 5 + funcs()
+
+    while (x < 5) {
+         num xx = 5 + 5
+         num yy = myFunc(5)
+         do {
+
+         } while(x < 55)
+    }
+
+    return x
+}
+
+strategy defensive {
+	behavior onRun() {
+		robot.forward(200)
+		robot.fire(3)
+		robot.backward(200)
+		robot.fire(3)
+    }
+}

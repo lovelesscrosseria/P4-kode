@@ -10,17 +10,20 @@ import AST.Nodes.Loops.ForLoopNode;
 import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
+import ContexualAnalysis.Loops.DoWhileLoopSymboleTableNode;
+import ContexualAnalysis.Loops.WhileLoopSymbolTableNode;
 
 import java.util.Stack;
 
 public class ContextualAnalysis extends AstVisitor<RoboNode> {
-    private Stack<FunctionSymbolTableNode> currentFunction = new Stack<FunctionSymbolTableNode>();
+    private Stack<MethodSymbolTableNode> currentFunction = new Stack<MethodSymbolTableNode>();
+    private StrategySymbolTableNode currentStrategy;
 
     @Override
     public RoboNode visit(DecrementOperatorExprNode node) {
         var s = this.GetVariable(node.Id);
 
-        if (s != null) {
+        if (s == null) {
             this.error(node.LineNumber ,"Variable " + node.Id.Id + " is not defined");
         }
 
@@ -154,15 +157,27 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
             paramNode.Type = param.Type.Type;
 
             functionNode.addParam(paramNode);
+
+            functionNode.addLocalVariableDeclaration(paramNode);
         }
 
         AST.symbolTable.PutFunction(functionNode);
+
+        this.currentFunction.push(functionNode);
+
+        visit(node.block);
+
+        this.currentFunction.pop();
 
         return null;
     }
 
     @Override
     public RoboNode visit(BlockNode node) {
+        for (var item : node.statements) {
+            visit(item);
+        }
+
         return null;
     }
 
@@ -198,8 +213,18 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         return null;
     }
 
+
     @Override
     public RoboNode visit(ListDeclNode node) {
+        var variable = this.GetVariable(node.Id);
+        if (variable != null) {
+            this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
+        }
+
+        for (var item : node.nodes) {
+            visit(item);
+        }
+
         return null;
     }
 
@@ -274,21 +299,89 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(StrategyNode node) {
+        // what about ChangeStrategy(" strategy name ")
+
+        var strategy = this.GetStrategy(node.Id);
+        if (strategy != null) {
+            this.error(node.LineNumber, "A strategy with name " + node.Id + " is already defined");
+            return null;
+        }
+
+        strategy = new StrategySymbolTableNode();
+        strategy.Id = node.Id.Id;
+        AST.symbolTable.PutStrategy(strategy);
+
+        this.currentStrategy = strategy;
+
+        for (var behavior : node.behaviorNodes) {
+            visit(behavior);
+        }
+
+        this.currentStrategy = null;
+
         return null;
     }
 
     @Override
     public RoboNode visit(BehaviorNode node) {
+        var behavior = new BehaviorSymbolTableNode();
+        behavior.Id = node.Id.Id;
+
+        if (this.GetBehavior(node.Id) != null) {
+            this.error(node.LineNumber, "A behavior with name " + node.Id.Id + " is already defined");
+            return null;
+        }
+
+        for (var paramNode : node.Params) {
+            var param = new VariableSymbolTableNode();
+            param.Type = paramNode.Type.Type;
+            param.Id = paramNode.Id.Id;
+            behavior.addParam(param);
+            behavior.addLocalVariableDeclaration(param);
+        }
+
+        this.currentFunction.push(behavior);
+        visit(node.Block);
+        this.currentFunction.pop();
+
+        this.currentStrategy.addBehavior(behavior);
+
         return null;
     }
 
     @Override
     public RoboNode visit(EventNode node) {
+        var event = this.GetEvent(node.Id);
+        if (event != null) {
+            this.error(node.LineNumber, "The event " + node.Id.Id + " is already declared");
+            return null;
+        }
+
+        event = new EventSymbolTableNode();
+        event.Id = node.Id.Id;
+
+        this.currentFunction.push(event);
+        visit(node.Block);
+        this.currentFunction.pop();
+
+        AST.symbolTable.PutEvent(event);
+
         return null;
     }
 
     @Override
     public RoboNode visit(FunctionCallNode node) {
+        var function = this.GetFunction(node.Method);
+        if (function == null) {
+            this.error(node.LineNumber, "The function " + node.Method.Id + " is not declared");
+            return null;
+        }
+
+        if (node.Params.size() != function.getNumberOfParams()) {
+            this.error(node.LineNumber, "The function " + node.Method.Id + " uses " + function.getNumberOfParams() + " parameters, but " + node.Params.size() + " was given");
+            return null;
+        }
+
         return null;
     }
 
@@ -297,6 +390,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         return null;
     }
 
+    // todo
     @Override
     public RoboNode visit(RoboCodeMethodNode node) {
         return null;
@@ -304,11 +398,22 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(DictionaryDeclNode node) {
+        var variable = this.GetVariable(node.Id);
+        if (variable != null) {
+            this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
+        }
+
+        for (var item : node.Nodes) {
+            visit(item);
+        }
+
         return null;
     }
 
     @Override
     public RoboNode visit(DictionaryValueNode node) {
+        visit(node.Value);
+        visit(node.Key);
         return null;
     }
 
@@ -319,26 +424,52 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(DoWhileLoopNode node) {
+        var loop = new DoWhileLoopSymboleTableNode();
+        this.currentFunction.push(loop);
+        visit(node.Block);
+        this.currentFunction.pop();
+
+        visit(node.Condition);
+
         return null;
     }
 
     @Override
     public RoboNode visit(WhileLoopNode node) {
+        var loop = new WhileLoopSymbolTableNode();
+        visit(node.Condition);
+        this.currentFunction.push(loop);
+        visit(node.Block);
+        this.currentFunction.pop();
+
         return null;
     }
 
     @Override
     public RoboNode visit(FunctionCallExprNode node) {
+        var function = this.GetFunction(node.Method);
+        if (function == null) {
+            this.error(node.LineNumber, "The function " + node.Method.Id + " is not declared");
+            return null;
+        }
+
+        if (node.Params.size() != function.getNumberOfParams()) {
+            this.error(node.LineNumber, "The function " + node.Method.Id + " uses " + function.getNumberOfParams() + " parameters, but " + node.Params.size() + " was given");
+            return null;
+        }
+
         return null;
     }
 
     @Override
     public RoboNode visit(RoboCodeMethodExprNode node) {
+
         return null;
     }
 
     @Override
     public RoboNode visit(ReturnNode node) {
+        visit(node.Value);
         return null;
     }
 
@@ -364,5 +495,17 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     private FunctionSymbolTableNode GetFunction(IdentifierNode functionId) {
         return AST.symbolTable.GetFunction(functionId.Id);
+    }
+
+    private EventSymbolTableNode GetEvent(IdentifierNode eventId) {
+        return AST.symbolTable.GetEvent(eventId.Id);
+    }
+
+    private StrategySymbolTableNode GetStrategy(IdentifierNode strategyId) {
+        return AST.symbolTable.GetStrategy(strategyId.Id);
+    }
+
+    private BehaviorSymbolTableNode GetBehavior(IdentifierNode behaviorId) {
+        return this.currentStrategy.getBehavior(behaviorId.Id);
     }
 }

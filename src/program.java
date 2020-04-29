@@ -35,7 +35,7 @@ public class program
         AST.errors.clear();
         AST.symbolTable.clear();
         var ast = new BuildAstVisitor().visitProgram(cst);
-        ast.visit(new PrintAst());
+        //ast.visit(new PrintAst());
         ast.visit(new ContextualAnalysis());
 
         if (ast.errors.size() > 0) {

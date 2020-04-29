@@ -1,6 +1,6 @@
 package ContexualAnalysis;
 
-public class VariableSymbolTableNode {
+public class VariableSymbolTableNode extends SymbolTableNode {
     public String Id;
     public String Type;
 }

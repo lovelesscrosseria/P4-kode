@@ -3,7 +3,7 @@ package ContexualAnalysis;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class StrategySymbolTableNode {
+public class StrategySymbolTableNode extends SymbolTableNode {
     public String Id;
     private HashMap<String, BehaviorSymbolTableNode> behaviors = new HashMap<String, BehaviorSymbolTableNode>();
 

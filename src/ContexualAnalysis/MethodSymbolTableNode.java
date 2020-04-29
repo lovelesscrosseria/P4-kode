@@ -3,9 +3,9 @@ package ContexualAnalysis;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class BehaviorSymbolTableNode extends MethodSymbolTableNode{
-    /*
+public abstract class MethodSymbolTableNode extends SymbolTableNode  {
     public String Id;
+    public String Type = "";
     private HashMap<String, VariableSymbolTableNode> params = new HashMap<String, VariableSymbolTableNode>();
     private HashMap<String, VariableSymbolTableNode> localDecl = new HashMap<String, VariableSymbolTableNode>();
 
@@ -23,5 +23,9 @@ public class BehaviorSymbolTableNode extends MethodSymbolTableNode{
 
     public VariableSymbolTableNode getLocalVariable(String Id) {
         return this.localDecl.getOrDefault(Id, null);
-    } */
+    }
+
+    public int getNumberOfParams() {
+        return this.params.size();
+    }
 }
