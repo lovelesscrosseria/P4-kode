@@ -74,4 +74,6 @@ func void myTest() {
 
 } */
 
+
+num x = 5 + y--
 num x = 5 + y--

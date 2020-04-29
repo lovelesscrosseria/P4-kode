@@ -23,7 +23,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         var s = this.GetVariable(node.Id);
 
         if (s.isEmpty()) {
-            this.error("Variable " + node.Id.Id + " is not defined");
+            this.error("[Line + " + node.LineNumber + "] Variable " + node.Id.Id + " is not defined");
         }
 
         return null;
