@@ -1,6 +1,7 @@
 package AST;
 
 import java.util.ArrayList;
+import java.util.function.Function;
 
 import AST.Nodes.Bool.BoolExprNode;
 import AST.Nodes.Functions.BlockNode;
@@ -172,20 +173,25 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
 
         return node;
     }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitCollection_expr(roboParser.Collection_exprContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    @Override public RoboNode visitCollection_statement(roboParser.Collection_statementContext ctx) { return visitChildren(ctx); }
+    @Override
+    public RoboNode visitDotOperation(roboParser.DotOperationContext ctx) {
+        var node = new DotOperationNode();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.id.getText();
+
+        node.Method = (FunctionCallNode) visit(ctx.method);
+        node.LineNumber = ctx.start.getLine();
+
+        return node;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -375,21 +381,43 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitCollExpr(roboParser.CollExprContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitIncrExpr(roboParser.IncrExprContext ctx) {
+        var node = new IncrementOperatorExprNode();
+        node.LineNumber = ctx.start.getLine();
+        node.Id = new IdentifierNode();
+        node.Id.Id = ctx.increment_operator().ID().getText();
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitIncrExpr(roboParser.IncrExprContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitCollExpr(roboParser.CollExprContext ctx) {
+        var node = new DotOperationExprNode();
+
+        var dotOperationNode = (DotOperationNode) visit(ctx.collectionExpr);
+        node.Id = dotOperationNode.Id;
+        node.Method = dotOperationNode.Method;
+        node.LineNumber = ctx.start.getLine();
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitParensExpr(roboParser.ParensExprContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitParensExpr(roboParser.ParensExprContext ctx) {
+        var node = new ParensVariableNode();
+        node.LineNumber = ctx.start.getLine();
+        node.value = visit(ctx.value);
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
@@ -467,7 +495,13 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public RoboNode visitNotExpr(roboParser.NotExprContext ctx) { return visitChildren(ctx); }
+    @Override public RoboNode visitNotExpr(roboParser.NotExprContext ctx) {
+        var notNode = new NotExprNode();
+
+        notNode.Value = visit(ctx.value);
+
+        return notNode;
+    }
     /**
      * {@inheritDoc}
      *

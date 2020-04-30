@@ -13,8 +13,9 @@ variable_decl: varType=type varId=ID (ASSIGN_OP value=expr)?;
 list_decl: 'list' LESS_OP listType=type GREATER_OP id=ID (ASSIGN_OP LCURL listExpr=expr? (',' expr)* RCURL)?;
 dictionary_decl: 'dictionary' LESS_OP dicKey=type COMMA dicValue=type GREATER_OP id=ID (ASSIGN_OP LCURL defaultValue=dictionaryValue? (',' dictionaryValue)* RCURL)?;
 dictionaryValue: LCURL key=expr COMMA value=expr RCURL;
-collection_expr: id=ID DOT ('get' LPAREN expr RPAREN | 'length');
-collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;
+//collection_expr: id=ID DOT ('get' LPAREN expr RPAREN | 'length');
+dotOperation: id=ID DOT method=function_call;
+//collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;
 roboCode_method: 'robot' DOT method=function_call;
 
 assignment  : id=ID (ASSIGN_OP
@@ -26,7 +27,7 @@ stat        : block
             | variable_decl NEWLINE
             | list_decl NEWLINE
             | dictionary_decl NEWLINE
-            | collection_statement NEWLINE
+            | dotOperation NEWLINE
             | 'if' expr (NEWLINE)? block ('else if' expr (NEWLINE)? block )* ('else' ( NEWLINE)? block )?
             | assignment NEWLINE
             | function_call NEWLINE
@@ -69,7 +70,7 @@ expr        : decrement_operator                                                
             | value=DIGIT+                                                      # digitExpr
             | id=ID                                                             # idExpr
             | funcCall=function_call                                            # funcExpr
-            | collectionExpr=collection_expr                                    # collExpr
+            | collectionExpr=dotOperation                                       # collExpr
 //            | id=ID DOT funcCall=function_call                                  # roboEventCallExpr
             | roboMethod=roboCode_method                                        # roboMethodExpr
             ;

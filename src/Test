@@ -1,4 +1,4 @@
-/*
+
 num a = 3 + 4.0 * 4 + 5/2%2*3
 num b = 4-3
 num c = a*b + a^2
@@ -8,7 +8,7 @@ num e = 4.2%3.2
 num f = false && 3<4.0
 num g = true || false
 bool h= f != g
-text i = 2>3.5 ||5>=2 && 6<= hej
+text i = 2>3.5 ||5>=2 && 6 <= a
 
 list<num> myList = {5, 5, 10, 5*5, b}
 dictionary<num, text> DictionaryWithoutValues
@@ -42,7 +42,9 @@ dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15,
 
  num x = mything(x, y)
 
+func void mything(num x, text y) {
 
+}
  func void myLoops() {
     for (num x = 0; x < 10; x++) {
         robot.fire(3)
@@ -50,27 +52,31 @@ dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15,
     do {
         robot.fire(4)
     } while (x)
-
+    num y = true
     while (y) {
         robot.fire(5)
     }
  }
 
 func void myTest(num x) {
-    num x = 5
+    x = 5
     num value = testFunc(5)
     return value
 }
 
- num x = myfunc(12, x) + 5 * 2
- num x = robot.fire(3) + 5
- */
+func void testFunc(text x) {
+    return x + 5
+}
 
-//num x = 5 * 2 + myfunc()
-//num ss = a + b + 5
+ num x2 = myfunc(12, x, 12, 5) + 5 * 2
+ num x3 = robot.fire(3) + 5
 
 
-num x = myFunc(5) + 5
+num x4 = 5 * 2 + myfunc(1, 2, 3, 4)
+num ss = a + b + 5
+
+
+num x5 = myFunc(5) + 5
 
 func void myFunc(num x2) {
     x = 5 + 5

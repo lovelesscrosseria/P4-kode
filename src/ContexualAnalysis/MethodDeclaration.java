@@ -299,6 +299,31 @@ public class MethodDeclaration extends AstVisitor<RoboNode> {
         return null;
     }
 
+    @Override
+    public RoboNode visit(IncrementOperatorExprNode node) {
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(ParensVariableNode node) {
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(NotExprNode node) {
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(DotOperationNode node) {
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(DotOperationExprNode node) {
+        return null;
+    }
+
     private void error(int lineNumber, String err) {
         AST.errors.add("[Line " + lineNumber + "] " + err + "\n");
     }

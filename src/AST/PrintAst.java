@@ -13,6 +13,54 @@ import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
+
+    @Override
+    public RoboNode visit(IncrementOperatorExprNode node) {
+        System.out.print("( ");
+        visit(node.Id);
+        System.out.print("++ )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(ParensVariableNode node) {
+        System.out.print("(");
+        visit(node.value);
+        System.out.print(")");
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(NotExprNode node) {
+        System.out.print("( !");
+        visit(node.Value);
+        System.out.print(" )");
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(DotOperationNode node) {
+        System.out.print("( ");
+        visit(node.Id);
+        System.out.print(".");
+        visit(node.Method);
+        System.out.print(" )");
+
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(DotOperationExprNode node) {
+        System.out.print("( ");
+        visit(node.Id);
+        System.out.print(".");
+        visit(node.Method);
+        System.out.print(" )");
+        
+        return null;
+    }
+
     @Override
     public RoboNode visit(DecrementOperatorExprNode node) {
         System.out.print("( ");

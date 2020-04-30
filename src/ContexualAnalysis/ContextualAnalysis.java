@@ -478,6 +478,38 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         return null;
     }
 
+    @Override
+    public RoboNode visit(IncrementOperatorExprNode node) {
+        visit(node.Id);
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(ParensVariableNode node) {
+        visit(node.value);
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(NotExprNode node) {
+        visit(node.Value);
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(DotOperationNode node) {
+        visit(node.Id);
+        visit(node.Method);
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(DotOperationExprNode node) {
+        visit(node.Id);
+        visit(node.Method);
+        return null;
+    }
+
     private void error(int lineNumber, String err) {
         AST.errors.add("[Line " + lineNumber + "] " + err + "\n");
     }

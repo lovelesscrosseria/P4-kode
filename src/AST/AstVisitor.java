@@ -52,6 +52,11 @@ public abstract class AstVisitor<T> {
     public abstract T visit(RoboCodeMethodExprNode node);
     public abstract T visit(ReturnNode node);
     public abstract T visit(DecrementOperatorExprNode node);
+    public abstract T visit(IncrementOperatorExprNode node);
+    public abstract T visit(ParensVariableNode node);
+    public abstract T visit(NotExprNode node);
+    public abstract T visit(DotOperationNode node);
+    public abstract T visit(DotOperationExprNode node);
 
 
     public T visit(RoboNode node) {
@@ -87,7 +92,9 @@ public abstract class AstVisitor<T> {
             } else if (node instanceof LessExprNode){
                 return visit ((LessExprNode) node);
             }
-        }else if (node instanceof BoolValueNode){
+        }  else if (node instanceof NotExprNode) {
+            return visit((NotExprNode) node);
+        } else if (node instanceof BoolValueNode){
             return visit ((BoolValueNode) node);
         } else if (node instanceof DigitExprNode) {
             return visit((DigitExprNode) node);
@@ -143,8 +150,15 @@ public abstract class AstVisitor<T> {
             return visit((ReturnNode) node);
         } else if (node instanceof DecrementOperatorExprNode) {
             return visit((DecrementOperatorExprNode) node);
+        } else if (node instanceof IncrementOperatorExprNode) {
+            return visit((IncrementOperatorExprNode) node);
+        } else if (node instanceof ParensVariableNode) {
+            return visit((ParensVariableNode) node);
+        } else if (node instanceof DotOperationNode) {
+            return visit((DotOperationNode) node);
+        } else if (node instanceof DotOperationExprNode) {
+            return visit((DotOperationExprNode) node);
         }
-
 
         return null;
     }
