@@ -1,7 +1,5 @@
 package ContexualAnalysis;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SymbolTable {
@@ -12,7 +10,6 @@ public class SymbolTable {
 
     public void PutVariable(VariableSymbolTableNode variable) {
         this.variables.put(variable.Id, variable);
-
     }
 
     public VariableSymbolTableNode GetVariable(String Id) {
@@ -21,7 +18,6 @@ public class SymbolTable {
 
     public void PutStrategy(StrategySymbolTableNode strategy) {
         this.strategies.put(strategy.Id, strategy);
-
     }
 
     public StrategySymbolTableNode GetStrategy(String Id) {
@@ -30,7 +26,6 @@ public class SymbolTable {
 
     public void PutFunction(FunctionSymbolTableNode func) {
         this.functions.put(func.Id, func);
-
     }
     public FunctionSymbolTableNode GetFunction(String Id) {
         return this.functions.getOrDefault(Id, null);
@@ -38,7 +33,6 @@ public class SymbolTable {
 
     public void PutEvent(EventSymbolTableNode event) {
         this.events.put(event.Id, event);
-
     }
     public EventSymbolTableNode GetEvent(String Id) {
         return this.events.getOrDefault(Id, null);

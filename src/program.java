@@ -6,6 +6,7 @@ import AST.AST;
 import AST.BuildAstVisitor;
 import AST.PrintAst;
 import ContexualAnalysis.ContextualAnalysis;
+import ContexualAnalysis.MethodDeclaration;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
 import expr.Expression;
@@ -36,6 +37,7 @@ public class program
         AST.symbolTable.clear();
         var ast = new BuildAstVisitor().visitProgram(cst);
         //ast.visit(new PrintAst());
+        ast.visit(new MethodDeclaration());
         ast.visit(new ContextualAnalysis());
 
         if (ast.errors.size() > 0) {

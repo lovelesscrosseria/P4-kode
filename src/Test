@@ -70,9 +70,7 @@ func void myTest(num x) {
 //num ss = a + b + 5
 
 
-func void funcs() {
-
-}
+num x = myFunc(5) + 5
 
 func void myFunc(num x) {
     num xx = 5 + 5
@@ -91,6 +89,10 @@ event myEvent {
     }
 
     return x
+}
+
+func void funcs() {
+
 }
 
 strategy defensive {
