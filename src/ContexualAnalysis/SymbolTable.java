@@ -1,19 +1,22 @@
 package ContexualAnalysis;
 
+import AST.Nodes.Variables.VariableDeclNode;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SymbolTable {
-    private HashMap<String, VariableSymbolTableNode> variables = new HashMap<String, VariableSymbolTableNode>();
+    private VariableHelper variables = new VariableHelper();
     private HashMap<String, FunctionSymbolTableNode> functions = new HashMap<String, FunctionSymbolTableNode>();
     private HashMap<String, StrategySymbolTableNode> strategies = new HashMap<String, StrategySymbolTableNode>();
     private HashMap<String, EventSymbolTableNode> events = new HashMap<String, EventSymbolTableNode>();
 
     public void PutVariable(VariableSymbolTableNode variable) {
-        this.variables.put(variable.Id, variable);
+        this.variables.PutVariable(variable);
     }
 
     public VariableSymbolTableNode GetVariable(String Id) {
-        return this.variables.getOrDefault(Id, null);
+        return this.variables.GetVariable(Id);
     }
 
     public void PutStrategy(StrategySymbolTableNode strategy) {
@@ -38,8 +41,21 @@ public class SymbolTable {
         return this.events.getOrDefault(Id, null);
     }
 
+    public void EnterScope(ArrayList<VariableSymbolTableNode> variables) {
+        this.variables.EnterScope(variables);
+    }
+    public void EnterScope() { this.variables.EnterScope(); }
+
+    public void ExitScope() {
+        this.variables.ExitScope();
+    }
+
+    public void PutLocalDeclaration(VariableSymbolTableNode variable) {
+        this.variables.PutLocalDeclaration(variable);
+    }
+    public boolean IsVariableLocal(VariableSymbolTableNode variable) { return this.variables.IsVariableLocal(variable); }
+
     public void clear() {
-        this.variables.clear();
         this.functions.clear();
         this.strategies.clear();
         this.events.clear();

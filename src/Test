@@ -72,8 +72,8 @@ func void myTest(num x) {
 
 num x = myFunc(5) + 5
 
-func void myFunc(num x) {
-    num xx = 5 + 5
+func void myFunc(num x2) {
+    x = 5 + 5
     num y = funcs() + 5
 }
 
@@ -81,7 +81,7 @@ event myEvent {
     num x = 5 + funcs()
 
     while (x < 5) {
-         num xx = 5 + 5
+         x = 5 + 5
          num yy = myFunc(5)
          do {
 

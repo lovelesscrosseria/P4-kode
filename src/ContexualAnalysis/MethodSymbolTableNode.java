@@ -28,4 +28,11 @@ public abstract class MethodSymbolTableNode extends SymbolTableNode  {
     public int getNumberOfParams() {
         return this.params.size();
     }
+    public ArrayList<VariableSymbolTableNode> GetParams() {
+        var paramList = new ArrayList<VariableSymbolTableNode>();
+
+        params.forEach((k, v) -> paramList.add(v));
+
+        return paramList;
+    }
 }

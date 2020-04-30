@@ -13,6 +13,7 @@ import AST.Nodes.Variables.*;
 import ContexualAnalysis.Loops.DoWhileLoopSymboleTableNode;
 import ContexualAnalysis.Loops.WhileLoopSymbolTableNode;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class ContextualAnalysis extends AstVisitor<RoboNode> {
@@ -99,21 +100,37 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(VariableDeclNode node) {
-        var s = this.GetVariable(node.Id);
-
-        if (s != null) {
-            this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
-        } else if (!currentFunction.empty() && currentFunction.peek() != null) {
+        var variable = this.GetVariable(node.Id);
+        if (variable == null && !currentFunction.empty() && currentFunction.peek() != null) {
+            // variable is not defined and is inside scope
             var varNode = new VariableSymbolTableNode();
             varNode.Id = node.Id.Id;
             varNode.Type = node.Type.Type;
             currentFunction.peek().addLocalVariableDeclaration(varNode);
-        } else {
+            AST.symbolTable.PutLocalDeclaration(varNode);
+        } else if (variable == null) {
+            // variable is not defined and is in global scope
             var varNode = new VariableSymbolTableNode();
             varNode.Id = node.Id.Id;
             varNode.Type = node.Type.Type;
 
             AST.symbolTable.PutVariable(varNode);
+        } else if (!currentFunction.empty() && currentFunction.peek() != null) {
+            // variable is declared somwhere and we are inside a scope
+            if(AST.symbolTable.IsVariableLocal(variable)) {
+                // the variable is declared locally, and we are inside the scope, which is not allowed
+                this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
+            } else {
+                // the variable is not declared locally, and we are inside the scope, which is allowed
+                var varNode = new VariableSymbolTableNode();
+                varNode.Id = node.Id.Id;
+                varNode.Type = node.Type.Type;
+                currentFunction.peek().addLocalVariableDeclaration(varNode);
+                AST.symbolTable.PutLocalDeclaration(varNode);
+            }
+        } else {
+            // variable is declared in global scope and we are inside the global scope
+            this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
         }
 
         visit(node.Value);
@@ -145,12 +162,13 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
             this.error(node.LineNumber,"A func with name " + node.Id.Id + " is not declared");
             return null;
         }
-
+        AST.symbolTable.EnterScope(function.GetParams());
         this.currentFunction.push(function);
 
         visit(node.block);
 
         this.currentFunction.pop();
+        AST.symbolTable.ExitScope();
 
         return null;
     }
@@ -289,6 +307,8 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
             return null;
         }
 
+        AST.symbolTable.EnterScope();
+
         this.currentStrategy = strategy;
 
         for (var behavior : node.behaviorNodes) {
@@ -296,7 +316,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         }
 
         this.currentStrategy = null;
-
+        AST.symbolTable.ExitScope();
         return null;
     }
 
@@ -310,9 +330,11 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
             return null;
         }
 
+        AST.symbolTable.EnterScope(behavior.GetParams());
         this.currentFunction.push(behavior);
         visit(node.Block);
         this.currentFunction.pop();
+        AST.symbolTable.ExitScope();
 
         return null;
     }
@@ -325,9 +347,11 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
             return null;
         }
 
+        AST.symbolTable.EnterScope();
         this.currentFunction.push(event);
         visit(node.Block);
         this.currentFunction.pop();
+        AST.symbolTable.ExitScope();
 
         return null;
     }
@@ -388,10 +412,12 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(DoWhileLoopNode node) {
         var loop = new DoWhileLoopSymboleTableNode();
+
+        AST.symbolTable.EnterScope();
         this.currentFunction.push(loop);
         visit(node.Block);
         this.currentFunction.pop();
-
+        AST.symbolTable.ExitScope();
         visit(node.Condition);
 
         return null;
@@ -401,9 +427,11 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     public RoboNode visit(WhileLoopNode node) {
         var loop = new WhileLoopSymbolTableNode();
         visit(node.Condition);
+        AST.symbolTable.EnterScope();
         this.currentFunction.push(loop);
         visit(node.Block);
         this.currentFunction.pop();
+        AST.symbolTable.ExitScope();
 
         return null;
     }
