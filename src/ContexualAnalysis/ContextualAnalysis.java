@@ -11,6 +11,7 @@ import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import ContexualAnalysis.Loops.DoWhileLoopSymboleTableNode;
+import ContexualAnalysis.Loops.ForLoopSymbolTableNode;
 import ContexualAnalysis.Loops.WhileLoopSymbolTableNode;
 
 import java.util.ArrayList;
@@ -406,6 +407,19 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(ForLoopNode node) {
+        var loop = new ForLoopSymbolTableNode();
+
+        AST.symbolTable.EnterScope();
+        this.currentFunction.push(loop);
+
+        visit(node.Init);
+        visit(node.Condition);
+        visit(node.Block);
+        visit(node.Increment);
+
+        this.currentFunction.pop();
+        AST.symbolTable.ExitScope();
+
         return null;
     }
 

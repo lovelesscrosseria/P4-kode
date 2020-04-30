@@ -92,7 +92,9 @@ event myEvent {
 }
 
 func void funcs() {
-
+    for (num i = 0; i < 5; i++) {
+        num x = 55 ^ 2
+    }
 }
 
 strategy defensive {
