@@ -25,9 +25,9 @@ dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15,
  strategy default {
     behavior onRun() {
         robot.fire(3)
-        robot.forward(10)
+        robot.ahead(10)
         robot.fire(3)
-        robot.backward(10)
+        robot.back(10)
     }
     behavior Boi() {
         num myBoiNum = 7+7
@@ -105,9 +105,11 @@ func void funcs() {
 
 strategy defensive {
 	behavior onRun() {
-		robot.forward(200)
+		robot.ahead(200)
 		robot.fire(3)
-		robot.backward(200)
+		robot.back(200)
 		robot.fire(3)
     }
 }
+
+

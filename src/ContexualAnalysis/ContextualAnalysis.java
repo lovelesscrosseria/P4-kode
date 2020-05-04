@@ -381,6 +381,18 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     // todo
     @Override
     public RoboNode visit(RoboCodeMethodNode node) {
+        var methodName = node.Method.Method.Id;
+        var method = AST.symbolTable.getRobocodeRuntimeMethod(methodName);
+        if (method == null) {
+            this.error(node.LineNumber, "A robocode method with name " + methodName + " is not defined");
+            return null;
+        }
+        if (method.getNumberOfParams() != node.Method.Params.size()) {
+            var error =  String.format("The robocode method with name %s requires %d parameters, but %d was provided", methodName, method.getNumberOfParams(), node.Method.Params.size());
+            this.error(node.LineNumber, error);
+            return null;
+        }
+
         return null;
     }
 
@@ -468,6 +480,17 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(RoboCodeMethodExprNode node) {
+        var methodName = node.Method.Method.Id;
+        var method = AST.symbolTable.getRobocodeRuntimeMethod(methodName);
+        if (method == null) {
+            this.error(node.LineNumber, "A robocode method with name " + methodName + " is not defined");
+            return null;
+        }
+        if (method.getNumberOfParams() != node.Method.Params.size()) {
+            var error =  String.format("The robocode method with name %s requires %d parameters, but %d was provided", methodName, method.getNumberOfParams(), node.Method.Params.size());
+            this.error(node.LineNumber, error);
+            return null;
+        }
 
         return null;
     }
