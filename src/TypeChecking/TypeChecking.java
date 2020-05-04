@@ -11,75 +11,182 @@ import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 public class TypeChecking extends AstVisitor<RoboNode> {
+
+    /*private TypeNode generalize(RoboNode left, RoboNode right) {
+        var result = new TypeNode();
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+        HashSet<String> additionTypes = new HashSet<String>(Arrays.asList("num", "text"));
+
+        if (leftType.equals("num") && rightType.equals("num")) {
+            result.Type = "num";
+        } else if (!additionTypes.contains(leftType) || !additionTypes.contains(rightType)) {
+            this.error(left.LineNumber, "Cannot generalize " + leftType + " and " + rightType + " types");
+            return null;
+        } else if (leftType.equals("text") || rightType.equals("text")) {
+
+        }
+
+        return result;
+    } */
+
     @Override
     public RoboNode visit(AdditionExprNode node) {
+        HashSet<String> additionTypes = new HashSet<String>(Arrays.asList("num", "text"));
         var left = visit(node.Left);
-        // num y = 5 + x
-        // (x ^5) + 5
-        // left = string | int
-        // right = int | string
-        // result = string => string + int
+        var right = visit(node.Right);
 
-        // left = int
-        // right = int
-        // result = int => int + int
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
 
-        // left = bool
-        // right = int | string | void | bool
-        // error
+        if (leftType.equals("num") && rightType.equals("num")) {
+            node.Type = new TypeNode();
+            node.Type.Type = "num";
+        } else if ((leftType.equals("text") || rightType.equals("text")) && additionTypes.contains(leftType) && additionTypes.contains(rightType)) {
+            node.Type = new TypeNode();
+            node.Type.Type = "text";
+        } else if (!additionTypes.contains(leftType) || !additionTypes.contains(rightType)) {
+            this.error(left.LineNumber, "Cannot add type " + leftType + "and type " + rightType + " together, as they are not compatible for addition");
+            return null;
+        }
 
-        // left = int | string | void | bool
-        // right = bool
-        // error
-
-        return null;
+        return node;
     }
 
     @Override
     public RoboNode visit(DivisionExprNode node) {
-        return null;
+        // @todo divison by 0?
+
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+
+        if (!leftType.equals("num") || !rightType.equals("num")) {
+            this.error(left.LineNumber, "Cannot divide type " + leftType + "and type " + rightType + " together, as they are not compatible for division");
+        } else {
+            node.Type = new TypeNode();
+            node.Type.Type = "num";
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(DigitExprNode node) {
         // 1,2,3,4,5,6,7,8,9... tal
-        return null;
+        node.Type.Type = "num";
+
+        return node;
     }
 
     @Override
     public RoboNode visit(ModuloExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+
+        if (!leftType.equals("num") || !rightType.equals("num")) {
+            this.error(left.LineNumber, "Cannot use modulo on type " + leftType + "and type " + rightType + " together, as they are not compatible for modulo");
+        } else {
+            node.Type = new TypeNode();
+            node.Type.Type = "num";
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(MultiplicationExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+
+        if (!leftType.equals("num") || !rightType.equals("num")) {
+            this.error(left.LineNumber, "Cannot multiply on type " + leftType + "and type " + rightType + " together, as they are not compatible for multiplication");
+        } else {
+            node.Type = new TypeNode();
+            node.Type.Type = "num";
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(SubtractionExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+
+        if (!leftType.equals("num") || !rightType.equals("num")) {
+            this.error(left.LineNumber, "Cannot subract type " + leftType + "and type " + rightType + ", as they are not compatible for subtraction");
+            return null;
+        } else {
+            node.Type = new TypeNode();
+            node.Type.Type = "num";
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(IdentifierNode node) {
-        return null;
+        var variable = AST.symbolTable.GetVariable(node.Id);
+        var result = new IdentifierNode();
+        result.Id = variable.Id;
+        result.Type = new TypeNode();
+        result.Type.Type = variable.Type;
+        result.LineNumber = node.LineNumber;
+
+        return result;
     }
 
     @Override
     public RoboNode visit(CaretExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+
+        if (!leftType.equals("num") || !rightType.equals("num")) {
+            this.error(left.LineNumber, "Cannot use power-operator on type " + leftType + "and type " + rightType + ", as they are not compatible for power-operation");
+            return null;
+        } else {
+            node.Type = new TypeNode();
+            node.Type.Type = "num";
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(TypeNode node) {
-        return null;
+        return node;
     }
 
     @Override
     public RoboNode visit(VariableDeclNode node) {
-        return null;
+        var value = visit(node.Value);
+        if (value == null) {
+            return null;
+        } else if (!node.Type.Type.equals(value.Type.Type)) {
+            this.error(node.LineNumber, "Cannot assign type " + value.Type.Type + "to a variable with type " + node.Type.Type);
+            return null;
+        }
+
+        return node;
     }
 
     @Override
@@ -99,12 +206,14 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(StringExprNode node) {
-        return null;
+        return node;
     }
 
     @Override
     public RoboNode visit(AssignmentNode node) {
-        return null;
+        visit(node.Value);
+
+        return node;
     }
 
     @Override
@@ -164,7 +273,10 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(BoolValueNode node) {
-        return null;
+        node.Type = new TypeNode();
+        node.Type.Type = "bool";
+
+        return node;
     }
 
     @Override

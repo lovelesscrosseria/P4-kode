@@ -1,4 +1,4 @@
-
+/*
 num a = 3 + 4.0 * 4 + 5/2%2*3
 num b = 4-3
 num c = a*b + a^2
@@ -115,6 +115,18 @@ strategy defensive {
 		robot.fire(3)
 		robot.changeStrategy("offensive")
     }
-}
+} */
+
+
+num x = 5 + 5
+text y = "as" + "bs" + 5
+num x2 = 5 / 5
+// num x3 = 5 / "give me error"
+num x4 = 5 % 6
+// num x5 = 5 % "give me error"
+num x6 = 5 - y
+// num x7 = 5 - true
+num x8 = x ^ x4
+
 
 
