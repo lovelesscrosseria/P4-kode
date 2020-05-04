@@ -103,12 +103,17 @@ func void funcs() {
     }
 }
 
+strategy offensive {
+
+}
+
 strategy defensive {
 	behavior onRun() {
 		robot.ahead(200)
 		robot.fire(3)
 		robot.back(200)
 		robot.fire(3)
+		robot.changeStrategy("offensive")
     }
 }
 

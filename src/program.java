@@ -9,6 +9,7 @@ import ContexualAnalysis.ContextualAnalysis;
 import ContexualAnalysis.MethodDeclaration;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
+import TypeChecking.TypeChecking;
 import expr.Expression;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -39,6 +40,7 @@ public class program
         //ast.visit(new PrintAst());
         ast.visit(new MethodDeclaration());
         ast.visit(new ContextualAnalysis());
+        ast.visit(new TypeChecking());
 
         if (ast.errors.size() > 0) {
             StringBuilder error = new StringBuilder("\n");
