@@ -50,7 +50,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
             node.Type = new TypeNode();
             node.Type.Type = "text";
         } else if (!additionTypes.contains(leftType) || !additionTypes.contains(rightType)) {
-            this.error(left.LineNumber, "Cannot add type " + leftType + "and type " + rightType + " together, as they are not compatible for addition");
+            this.error(left.LineNumber, "Cannot add type " + leftType + " and type " + rightType + " together, as they are not compatible for addition");
             return null;
         }
 
@@ -68,7 +68,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var rightType = right.Type.Type;
 
         if (!leftType.equals("num") || !rightType.equals("num")) {
-            this.error(left.LineNumber, "Cannot divide type " + leftType + "and type " + rightType + " together, as they are not compatible for division");
+            this.error(left.LineNumber, "Cannot divide type " + leftType + " and type " + rightType + " together, as they are not compatible for division");
         } else {
             node.Type = new TypeNode();
             node.Type.Type = "num";
@@ -94,7 +94,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var rightType = right.Type.Type;
 
         if (!leftType.equals("num") || !rightType.equals("num")) {
-            this.error(left.LineNumber, "Cannot use modulo on type " + leftType + "and type " + rightType + " together, as they are not compatible for modulo");
+            this.error(left.LineNumber, "Cannot use modulo on type " + leftType + " and type " + rightType + " together, as they are not compatible for modulo");
         } else {
             node.Type = new TypeNode();
             node.Type.Type = "num";
@@ -112,7 +112,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var rightType = right.Type.Type;
 
         if (!leftType.equals("num") || !rightType.equals("num")) {
-            this.error(left.LineNumber, "Cannot multiply on type " + leftType + "and type " + rightType + " together, as they are not compatible for multiplication");
+            this.error(left.LineNumber, "Cannot multiply on type " + leftType + " and type " + rightType + " together, as they are not compatible for multiplication");
         } else {
             node.Type = new TypeNode();
             node.Type.Type = "num";
@@ -130,7 +130,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var rightType = right.Type.Type;
 
         if (!leftType.equals("num") || !rightType.equals("num")) {
-            this.error(left.LineNumber, "Cannot subract type " + leftType + "and type " + rightType + ", as they are not compatible for subtraction");
+            this.error(left.LineNumber, "Cannot subract type " + leftType + " and type " + rightType + ", as they are not compatible for subtraction");
             return null;
         } else {
             node.Type = new TypeNode();
@@ -161,7 +161,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var rightType = right.Type.Type;
 
         if (!leftType.equals("num") || !rightType.equals("num")) {
-            this.error(left.LineNumber, "Cannot use power-operator on type " + leftType + "and type " + rightType + ", as they are not compatible for power-operation");
+            this.error(left.LineNumber, "Cannot use power-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for power-operation");
             return null;
         } else {
             node.Type = new TypeNode();
@@ -182,7 +182,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         if (value == null) {
             return null;
         } else if (!node.Type.Type.equals(value.Type.Type)) {
-            this.error(node.LineNumber, "Cannot assign type " + value.Type.Type + "to a variable with type " + node.Type.Type);
+            this.error(node.LineNumber, "Cannot assign type " + value.Type.Type + " to a variable with type " + node.Type.Type);
             return null;
         }
 
@@ -211,19 +211,41 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(AssignmentNode node) {
-        visit(node.Value);
-
+        var value = visit(node.Value);
+        var variable = AST.symbolTable.GetVariable(node.Id.Id);
+        if (value == null) {
+            return null;
+        } else if (!variable.Type.equals(value.Type.Type)) {
+            this.error(node.LineNumber, "Cannot assign type " + value.Type.Type + " to a variable with type " + variable.Type);
+            return null;
+        }
         return node;
     }
 
     @Override
     public RoboNode visit(DecrementOperatorNode node) {
-        return null;
+        var variable = AST.symbolTable.GetVariable(node.Id.Id);
+        if (!variable.Type.equals("num")) {
+            this.error(node.LineNumber, "Cannot use decrement-operator on type " + variable.Type + ". It must only be used on type num.");
+            return null;
+        }
+
+        node.Type = new TypeNode();
+        node.Type.Type = "num";
+        return node;
     }
 
     @Override
     public RoboNode visit(IncrementOperatorNode node) {
-        return null;
+        var variable = AST.symbolTable.GetVariable(node.Id.Id);
+        if (!variable.Type.equals("num")) {
+            this.error(node.LineNumber, "Cannot use increment-operator on type " + variable.Type + ". It must only be used on type num.");
+            return null;
+        }
+
+        node.Type = new TypeNode();
+        node.Type.Type = "num";
+        return node;
     }
 
     @Override
@@ -233,42 +255,150 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(AndExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+        if (leftType.equals("bool") && rightType.equals("bool")) {
+            node.Type = new TypeNode();
+            node.Type.Type = "bool";
+        }  else {
+            this.error(left.LineNumber, "Cannot perform and-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for an and-operation");
+            return null;
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(OrExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+        if (leftType.equals("bool") && rightType.equals("bool")) {
+            node.Type = new TypeNode();
+            node.Type.Type = "bool";
+        }  else {
+            this.error(left.LineNumber, "Cannot perform or-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for an or-operation");
+            return null;
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(EqualExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+        if (leftType.equals(rightType)) {
+            node.Type = new TypeNode();
+            node.Type.Type = "bool";
+        }  else {
+            this.error(left.LineNumber, "Cannot perform equals-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for an equals-operation");
+            return null;
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(NotEqualExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+        if (leftType.equals(rightType)) {
+            node.Type = new TypeNode();
+            node.Type.Type = "bool";
+        }  else {
+            this.error(left.LineNumber, "Cannot perform not-equal-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for an not-equal-operation");
+            return null;
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(GreatEqualExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+
+        if (leftType.equals("num") && rightType.equals("num")) {
+            node.Type = new TypeNode();
+            node.Type.Type = "bool";
+        }  else {
+            this.error(left.LineNumber, "Cannot perform greater-equal-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for an greater-equal-operation");
+            return null;
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(GreaterExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+
+        if (leftType.equals("num") && rightType.equals("num")) {
+            node.Type = new TypeNode();
+            node.Type.Type = "bool";
+        }  else {
+            this.error(left.LineNumber, "Cannot perform greater-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for an greater-operation");
+            return null;
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(LessEqualExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+
+        if (leftType.equals("num") && rightType.equals("num")) {
+            node.Type = new TypeNode();
+            node.Type.Type = "bool";
+        }  else {
+            this.error(left.LineNumber, "Cannot perform less-equal-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for an less-equal-operation");
+            return null;
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(LessExprNode node) {
-        return null;
+        var left = visit(node.Left);
+        var right = visit(node.Right);
+
+        var leftType = left.Type.Type;
+        var rightType = right.Type.Type;
+
+        if (leftType.equals("num") && rightType.equals("num")) {
+            node.Type = new TypeNode();
+            node.Type.Type = "bool";
+        }  else {
+            this.error(left.LineNumber, "Cannot perform less-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for an less-operation");
+            return null;
+        }
+
+        return node;
     }
 
     @Override
@@ -366,7 +496,17 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(NotExprNode node) {
-        return null;
+        var result = visit(node.Value);
+        if (result == null) {
+            return null;
+        } else if (!result.Type.Type.equals("bool")) {
+            this.error(node.LineNumber, "Cannot perform not-operation on type " + result.Type.Type + ". not-operations must be on type bool");
+            return null;
+        }
+
+        node.Type = new TypeNode();
+        node.Type.Type = "bool";
+        return node;
     }
 
     @Override
