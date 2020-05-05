@@ -12,9 +12,7 @@ import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import ContexualAnalysis.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Stack;
+import java.util.*;
 
 public class TypeChecking extends AstVisitor<RoboNode> {
     private StrategySymbolTableNode currentStrategy;
@@ -451,17 +449,47 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(FunctionCallNode node) {
-        return null;
+        var function = this.GetFunction(node.Method);
+        var formalParams = new ArrayList<VariableSymbolTableNode>(function.getParams().values());
+        Collections.reverse(formalParams);
+
+        for (int i = 0; i < formalParams.size(); i++) {
+            var paramType = visit(node.Params.get(i));
+            if (!formalParams.get(i).Type.equals(paramType.Type.Type)) {
+                this.error(node.LineNumber, node.Method.Id + "() Param #" + i + " is not of type " + formalParams.get(i).Type);
+            }
+        }
+
+        node.Type = new TypeNode();
+        node.Type.Type = function.Type;
+
+        return node;
     }
 
     @Override
     public RoboNode visit(ParamNode node) {
-        return null;
+        node.Value = visit(node.Value);
+        node.Type = node.Value.Type;
+        return node;
     }
 
     @Override
     public RoboNode visit(RoboCodeMethodNode node) {
-        return null;
+        var roboMethod = AST.symbolTable.getRobocodeRuntimeMethod(node.Method.Method.Id);
+        var formalParams = new ArrayList<VariableSymbolTableNode>(roboMethod.getParams().values());
+        Collections.reverse(formalParams);
+
+        for (int i = 0; i < formalParams.size(); i++) {
+            var paramType = visit(node.Method.Params.get(i));
+            if (!formalParams.get(i).Type.equals(paramType.Type.Type)) {
+                this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + i + " is not of type " + formalParams.get(i).Type);
+            }
+        }
+
+        node.Type = new TypeNode();
+        node.Type.Type = roboMethod.Type;
+
+        return node;
     }
 
     @Override
@@ -491,12 +519,40 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(FunctionCallExprNode node) {
-        return null;
+        var function = this.GetFunction(node.Method);
+        var formalParams = new ArrayList<VariableSymbolTableNode>(function.getParams().values());
+        Collections.reverse(formalParams);
+
+        for (int i = 0; i < formalParams.size(); i++) {
+            var paramType = visit(node.Params.get(i));
+            if (!formalParams.get(i).Type.equals(paramType.Type.Type)) {
+                this.error(node.LineNumber, node.Method.Id + "() Param #" + i + " is not of type " + formalParams.get(i).Type);
+            }
+        }
+
+        node.Type = new TypeNode();
+        node.Type.Type = function.Type;
+
+        return node;
     }
 
     @Override
     public RoboNode visit(RoboCodeMethodExprNode node) {
-        return null;
+        var roboMethod = AST.symbolTable.getRobocodeRuntimeMethod(node.Method.Method.Id);
+        var formalParams = new ArrayList<VariableSymbolTableNode>(roboMethod.getParams().values());
+        Collections.reverse(formalParams);
+
+        for (int i = 0; i < formalParams.size(); i++) {
+            var paramType = visit(node.Method.Params.get(i));
+            if (!formalParams.get(i).Type.equals(paramType.Type.Type)) {
+                this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + i + " is not of type " + formalParams.get(i).Type);
+            }
+        }
+
+        node.Type = new TypeNode();
+        node.Type.Type = roboMethod.Type;
+
+        return node;
     }
 
     @Override
