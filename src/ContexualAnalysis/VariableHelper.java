@@ -1,7 +1,5 @@
 package ContexualAnalysis;
 
-import AST.Nodes.Variables.VariableDeclNode;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;

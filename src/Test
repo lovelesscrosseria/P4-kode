@@ -116,7 +116,7 @@ strategy defensive {
 		robot.changeStrategy("offensive")
     }
 } */
-
+/*
 num x = 5 + 5
 text y = "as" + "bs" + 5
 num x2 = 5 / 5
@@ -131,7 +131,28 @@ x8 = 5
 // x8++
 // y--
 // y++
+*/
 
 // test alle bool udtryk inde i en function-body
+
+func void funcs(num x, num x2) {
+    num x12 = 2 + 5
+    //bool equal = x == x2
+    bool notEqual = x != x2
+    bool greater = x > x2
+    bool greaterEqual = x >= x2
+    bool less = x < x2
+    bool lessEqual = x <= x2
+    bool equal = true
+    bool not = !equal
+    return 2
+}
+
+strategy offensive {
+    behavior onRun() {
+
+    }
+}
+
 
 

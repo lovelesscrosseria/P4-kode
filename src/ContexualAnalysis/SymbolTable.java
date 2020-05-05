@@ -56,6 +56,17 @@ public class SymbolTable {
     }
     public boolean IsVariableLocal(VariableSymbolTableNode variable) { return this.variables.IsVariableLocal(variable); }
 
+    public void EnterFunction(MethodSymbolTableNode func) {
+         var variables = new ArrayList<VariableSymbolTableNode>(func.getParams().values());
+         variables.addAll(func.getLocalVariables().values());
+
+         this.EnterScope(variables);
+    }
+
+    public void ExitFunction() {
+        this.ExitScope();
+    }
+
     public FunctionSymbolTableNode getRobocodeRuntimeMethod(String id) {
         return roboCodeRuntimeMethods.getRuntimeMethod(id);
     }

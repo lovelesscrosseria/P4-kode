@@ -40,9 +40,15 @@ public class program
         //ast.visit(new PrintAst());
         ast.visit(new MethodDeclaration());
         ast.visit(new ContextualAnalysis());
+        checkErrors();
         ast.visit(new TypeChecking());
 
-        if (ast.errors.size() > 0) {
+
+    }
+
+
+    public static void checkErrors() {
+        if (AST.errors.size() > 0) {
             StringBuilder error = new StringBuilder("\n");
             for (var err : AST.errors) {
                 error.append(err);
@@ -51,7 +57,6 @@ public class program
             throw new Error(error.toString());
         }
     }
-
     /*Fil to inputstream*/
     public static InputStream convertFileToInputStream (String path) throws IOException {
         File initialFile = new File (path);

@@ -10,29 +10,14 @@ import AST.Nodes.Loops.ForLoopNode;
 import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
+import ContexualAnalysis.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Stack;
 
 public class TypeChecking extends AstVisitor<RoboNode> {
-
-    /*private TypeNode generalize(RoboNode left, RoboNode right) {
-        var result = new TypeNode();
-        var leftType = left.Type.Type;
-        var rightType = right.Type.Type;
-        HashSet<String> additionTypes = new HashSet<String>(Arrays.asList("num", "text"));
-
-        if (leftType.equals("num") && rightType.equals("num")) {
-            result.Type = "num";
-        } else if (!additionTypes.contains(leftType) || !additionTypes.contains(rightType)) {
-            this.error(left.LineNumber, "Cannot generalize " + leftType + " and " + rightType + " types");
-            return null;
-        } else if (leftType.equals("text") || rightType.equals("text")) {
-
-        }
-
-        return result;
-    } */
+    private StrategySymbolTableNode currentStrategy;
 
     @Override
     public RoboNode visit(AdditionExprNode node) {
@@ -143,6 +128,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(IdentifierNode node) {
         var variable = AST.symbolTable.GetVariable(node.Id);
+
         var result = new IdentifierNode();
         result.Id = variable.Id;
         result.Type = new TypeNode();
@@ -191,17 +177,38 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(FormalParamNode node) {
-        return null;
+        return node;
     }
 
     @Override
     public RoboNode visit(FunctionDeclNode node) {
-        return null;
+        var function = this.GetFunction(node.Id);
+        AST.symbolTable.EnterFunction(function);
+
+        visit(node.block);
+
+        AST.symbolTable.ExitFunction();
+        return node;
     }
 
     @Override
     public RoboNode visit(BlockNode node) {
-        return null;
+        boolean hasSeenReturn = false;
+
+        for (var stmt : node.statements) {
+            if (stmt instanceof ReturnNode && !hasSeenReturn) {
+                hasSeenReturn = true;
+                visit(stmt);
+            } else if (hasSeenReturn) {
+                // error
+                error(stmt.LineNumber, "Cannot perform any statements after a return value");
+            } else {
+                // not return, has not seen return
+                visit(stmt);
+            }
+        }
+
+        return node;
     }
 
     @Override
@@ -411,12 +418,24 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(StrategyNode node) {
-        return null;
+        this.currentStrategy = this.GetStrategy(node.Id);
+
+        for (var behavior : node.behaviorNodes) {
+            visit(behavior);
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(BehaviorNode node) {
-        return null;
+        var behavior = this.GetBehavior(node.Id);
+        AST.symbolTable.EnterFunction(behavior);
+
+        visit(node.Block);
+
+        AST.symbolTable.ExitFunction();
+        return node;
     }
 
     @Override
@@ -491,7 +510,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(ParensVariableNode node) {
-        return null;
+        return visit(node.value);
     }
 
     @Override
@@ -518,9 +537,22 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     public RoboNode visit(DotOperationExprNode node) {
         return null;
     }
-
-
     private void error(int lineNumber, String err) {
         AST.errors.add("[Line " + lineNumber + "] " + err + "\n");
+    }
+    private FunctionSymbolTableNode GetFunction(IdentifierNode functionId) {
+        return AST.symbolTable.GetFunction(functionId.Id);
+    }
+
+    private EventSymbolTableNode GetEvent(IdentifierNode eventId) {
+        return AST.symbolTable.GetEvent(eventId.Id);
+    }
+
+    private StrategySymbolTableNode GetStrategy(IdentifierNode strategyId) {
+        return AST.symbolTable.GetStrategy(strategyId.Id);
+    }
+
+    private BehaviorSymbolTableNode GetBehavior(IdentifierNode behaviorId) {
+        return this.currentStrategy.getBehavior(behaviorId.Id);
     }
 }

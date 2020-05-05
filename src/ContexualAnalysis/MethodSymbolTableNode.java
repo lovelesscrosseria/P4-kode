@@ -17,6 +17,14 @@ public abstract class MethodSymbolTableNode extends SymbolTableNode  {
         return this.params.getOrDefault(Id, null);
     }
 
+    public HashMap<String, VariableSymbolTableNode> getParams() {
+        return this.params;
+    }
+
+    public HashMap<String, VariableSymbolTableNode> getLocalVariables() {
+        return this.localDecl;
+    }
+
     public void addLocalVariableDeclaration(VariableSymbolTableNode param) {
         this.localDecl.put(param.Id, param);
     }
