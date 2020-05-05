@@ -535,7 +535,6 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     public RoboNode visit(FunctionCallExprNode node) {
         var function = this.GetFunction(node.Method);
         var formalParams = new ArrayList<VariableSymbolTableNode>(function.getParams().values());
-        Collections.reverse(formalParams);
 
         for (int i = 0; i < formalParams.size(); i++) {
             var paramType = visit(node.Params.get(i));
