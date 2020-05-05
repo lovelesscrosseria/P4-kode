@@ -440,7 +440,13 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(EventNode node) {
-        return null;
+        var event = this.GetEvent(node.Id);
+        AST.symbolTable.EnterFunction(event);
+
+        visit(node.Block);
+
+        AST.symbolTable.ExitFunction();
+        return node;
     }
 
     @Override

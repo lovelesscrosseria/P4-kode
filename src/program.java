@@ -42,7 +42,7 @@ public class program
         ast.visit(new ContextualAnalysis());
         checkErrors();
         ast.visit(new TypeChecking());
-
+        checkErrors();
 
     }
 

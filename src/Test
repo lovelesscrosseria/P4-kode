@@ -116,6 +116,7 @@ strategy defensive {
 		robot.changeStrategy("offensive")
     }
 } */
+
 /*
 num x = 5 + 5
 text y = "as" + "bs" + 5
@@ -146,6 +147,10 @@ func void funcs(num x, num x2) {
     bool equal = true
     bool not = !equal
     return 2
+}
+
+event myEvent {
+    num x = 123
 }
 
 strategy offensive {
