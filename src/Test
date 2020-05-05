@@ -135,12 +135,34 @@ x8 = 5
 */
 
 // test alle bool udtryk inde i en function-body
+/*
+list<num> myList = {0, 1, 2}
+dictionary<text, num> myDic = { {"as", 1}, {"asd", 2} }
 
 func num funcs2(num x, text t) {
     num xxx = robot.health()
     robot.fire(5)
+    myList.add(5)
+    myDic.add("yes", 1)
+    testing(5, "yes", 5, "yes", "yes", true)
+}
+*/
+
+func void test() {
+  list<num> myList = {0, 1, 2}
+  testing(5, "yes", 5, 2, "yes", true)
+  myList = myList + myList
+  myList = myList - myList
+  myList = myList / myList
+  myList = myList * myList
+  myList = myList ^ myList
+  myList = myList % myList
 }
 
+func void testing(num x, text y, num t, num t2, text y43, bool za) {
+
+}
+/*
 func void funcs(num x, num x2) {
     num x12 = 2 + 5
     //bool equal = x == x2
@@ -167,4 +189,4 @@ strategy offensive {
 }
 
 
-
+*/

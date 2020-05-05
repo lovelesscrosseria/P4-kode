@@ -14,7 +14,6 @@ import ContexualAnalysis.Loops.DoWhileLoopSymboleTableNode;
 import ContexualAnalysis.Loops.ForLoopSymbolTableNode;
 import ContexualAnalysis.Loops.WhileLoopSymbolTableNode;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
 public class ContextualAnalysis extends AstVisitor<RoboNode> {
@@ -219,7 +218,35 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(ListDeclNode node) {
         var variable = this.GetVariable(node.Id);
-        if (variable != null) {
+        if (variable == null && !currentFunction.empty() && currentFunction.peek() != null) {
+            // variable is not defined and is inside scope
+            var varNode = new ListVariableSymbolTableNode();
+            varNode.Id = node.Id.Id;
+            varNode.Type = node.Type.Type;
+            currentFunction.peek().addLocalVariableDeclaration(varNode);
+            AST.symbolTable.PutLocalDeclaration(varNode);
+        } else if (variable == null) {
+            // variable is not defined and is in global scope
+            var varNode = new ListVariableSymbolTableNode();
+            varNode.Id = node.Id.Id;
+            varNode.Type = node.Type.Type;
+
+            AST.symbolTable.PutVariable(varNode);
+        } else if (!currentFunction.empty() && currentFunction.peek() != null) {
+            // variable is declared somwhere and we are inside a scope
+            if(AST.symbolTable.IsVariableLocal(variable)) {
+                // the variable is declared locally, and we are inside the scope, which is not allowed
+                this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
+            } else {
+                // the variable is not declared locally, and we are inside the scope, which is allowed
+                var varNode = new ListVariableSymbolTableNode();
+                varNode.Id = node.Id.Id;
+                varNode.Type = node.Type.Type;
+                currentFunction.peek().addLocalVariableDeclaration(varNode);
+                AST.symbolTable.PutLocalDeclaration(varNode);
+            }
+        } else {
+            // variable is declared in global scope and we are inside the global scope
             this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
         }
 
@@ -399,7 +426,38 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(DictionaryDeclNode node) {
         var variable = this.GetVariable(node.Id);
-        if (variable != null) {
+        if (variable == null && !currentFunction.empty() && currentFunction.peek() != null) {
+            // variable is not defined and is inside scope
+            var varNode = new DictionaryVariableSymbolTableNode();
+            varNode.Id = node.Id.Id;
+            varNode.Key = node.key.Type;
+            varNode.Value = node.value.Type;
+            currentFunction.peek().addLocalVariableDeclaration(varNode);
+            AST.symbolTable.PutLocalDeclaration(varNode);
+        } else if (variable == null) {
+            // variable is not defined and is in global scope
+            var varNode = new DictionaryVariableSymbolTableNode();
+            varNode.Id = node.Id.Id;
+            varNode.Key = node.key.Type;
+            varNode.Value = node.value.Type;
+
+            AST.symbolTable.PutVariable(varNode);
+        } else if (!currentFunction.empty() && currentFunction.peek() != null) {
+            // variable is declared somwhere and we are inside a scope
+            if(AST.symbolTable.IsVariableLocal(variable)) {
+                // the variable is declared locally, and we are inside the scope, which is not allowed
+                this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
+            } else {
+                // the variable is not declared locally, and we are inside the scope, which is allowed
+                var varNode = new DictionaryVariableSymbolTableNode();
+                varNode.Id = node.Id.Id;
+                varNode.Key = node.key.Type;
+                varNode.Value = node.value.Type;
+                currentFunction.peek().addLocalVariableDeclaration(varNode);
+                AST.symbolTable.PutLocalDeclaration(varNode);
+            }
+        } else {
+            // variable is declared in global scope and we are inside the global scope
             this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
         }
 
@@ -522,14 +580,28 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(DotOperationNode node) {
         visit(node.Id);
-        visit(node.Method);
+        var methodId = node.Method.Method.Id;
+        var method = AST.symbolTable.getDotOperationMethod(methodId, node.Method.Params.size());
+
+        if (method == null) {
+            this.error(node.LineNumber, "No method found for '" + methodId + "' which takes " + node.Method.Params.size() + " parameters");
+            return null;
+        }
+
         return null;
     }
 
     @Override
     public RoboNode visit(DotOperationExprNode node) {
         visit(node.Id);
-        visit(node.Method);
+        var methodId = node.Method.Method.Id;
+        var method = AST.symbolTable.getDotOperationMethod(methodId, node.Method.Params.size());
+
+        if (method == null) {
+            this.error(node.LineNumber, "No method found for '" + methodId + "' which takes " + node.Method.Params.size() + " parameters");
+            return null;
+        }
+
         return null;
     }
 

@@ -11,6 +11,7 @@ public class SymbolTable {
     private HashMap<String, StrategySymbolTableNode> strategies = new HashMap<String, StrategySymbolTableNode>();
     private HashMap<String, EventSymbolTableNode> events = new HashMap<String, EventSymbolTableNode>();
     private RunTimeRobocodeMethods roboCodeRuntimeMethods = new RunTimeRobocodeMethods();
+    private DotOperationMethods dotOperationRunTimeMethods = new DotOperationMethods();
 
     public void PutVariable(VariableSymbolTableNode variable) {
         this.variables.PutVariable(variable);
@@ -69,6 +70,13 @@ public class SymbolTable {
 
     public FunctionSymbolTableNode getRobocodeRuntimeMethod(String id) {
         return roboCodeRuntimeMethods.getRuntimeMethod(id);
+    }
+
+    public FunctionSymbolTableNode getDotOperationMethod(String type, String id) {
+        return dotOperationRunTimeMethods.getDotOperationMethod(type, id);
+    }
+    public FunctionSymbolTableNode getDotOperationMethod(String id, int numberOfParams) {
+        return dotOperationRunTimeMethods.getDotOperationMethod(id, numberOfParams);
     }
 
     public void clear() {

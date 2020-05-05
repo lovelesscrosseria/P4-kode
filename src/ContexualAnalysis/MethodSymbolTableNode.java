@@ -2,11 +2,12 @@ package ContexualAnalysis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public abstract class MethodSymbolTableNode extends SymbolTableNode  {
     public String Id;
     public String Type = "";
-    private HashMap<String, VariableSymbolTableNode> params = new HashMap<String, VariableSymbolTableNode>();
+    private LinkedHashMap<String, VariableSymbolTableNode> params = new LinkedHashMap<String, VariableSymbolTableNode>();
     private HashMap<String, VariableSymbolTableNode> localDecl = new HashMap<String, VariableSymbolTableNode>();
 
     public void addParam(VariableSymbolTableNode param) {

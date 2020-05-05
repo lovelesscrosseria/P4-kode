@@ -25,8 +25,9 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
         var leftType = left.Type.Type;
         var rightType = right.Type.Type;
-
-        if (leftType.equals("num") && rightType.equals("num")) {
+        if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
+            this.error(left.LineNumber, "Only num and text types are suitable to addition");
+        } else if (leftType.equals("num") && rightType.equals("num")) {
             node.Type = new TypeNode();
             node.Type.Type = "num";
         } else if ((leftType.equals("text") || rightType.equals("text")) && additionTypes.contains(leftType) && additionTypes.contains(rightType)) {
@@ -49,8 +50,9 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
         var leftType = left.Type.Type;
         var rightType = right.Type.Type;
-
-        if (!leftType.equals("num") || !rightType.equals("num")) {
+        if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
+            this.error(left.LineNumber, "Only num types are suitable to division");
+        } else if (!leftType.equals("num") || !rightType.equals("num")) {
             this.error(left.LineNumber, "Cannot divide type " + leftType + " and type " + rightType + " together, as they are not compatible for division");
         } else {
             node.Type = new TypeNode();
@@ -76,7 +78,9 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var leftType = left.Type.Type;
         var rightType = right.Type.Type;
 
-        if (!leftType.equals("num") || !rightType.equals("num")) {
+        if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
+            this.error(left.LineNumber, "Only num types are suitable to modulo");
+        } else if (!leftType.equals("num") || !rightType.equals("num")) {
             this.error(left.LineNumber, "Cannot use modulo on type " + leftType + " and type " + rightType + " together, as they are not compatible for modulo");
         } else {
             node.Type = new TypeNode();
@@ -94,7 +98,9 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var leftType = left.Type.Type;
         var rightType = right.Type.Type;
 
-        if (!leftType.equals("num") || !rightType.equals("num")) {
+        if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
+            this.error(left.LineNumber, "Only num types are suitable to multiplication");
+        } else if (!leftType.equals("num") || !rightType.equals("num")) {
             this.error(left.LineNumber, "Cannot multiply on type " + leftType + " and type " + rightType + " together, as they are not compatible for multiplication");
         } else {
             node.Type = new TypeNode();
@@ -112,7 +118,9 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var leftType = left.Type.Type;
         var rightType = right.Type.Type;
 
-        if (!leftType.equals("num") || !rightType.equals("num")) {
+        if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
+            this.error(left.LineNumber, "Only num types are suitable to subtraction");
+        } else if (!leftType.equals("num") || !rightType.equals("num")) {
             this.error(left.LineNumber, "Cannot subract type " + leftType + " and type " + rightType + ", as they are not compatible for subtraction");
             return null;
         } else {
@@ -127,8 +135,14 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     public RoboNode visit(IdentifierNode node) {
         var variable = AST.symbolTable.GetVariable(node.Id);
 
-        var result = new IdentifierNode();
+        IdentifierNode result = new IdentifierNode();
         result.Id = variable.Id;
+        if (variable instanceof ListVariableSymbolTableNode) {
+            result = new ListIdentifierNode();
+        } else if (variable instanceof DictionaryVariableSymbolTableNode) {
+            result = new DictionaryIdentifierNode();
+        }
+
         result.Type = new TypeNode();
         result.Type.Type = variable.Type;
         result.LineNumber = node.LineNumber;
@@ -143,8 +157,9 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
         var leftType = left.Type.Type;
         var rightType = right.Type.Type;
-
-        if (!leftType.equals("num") || !rightType.equals("num")) {
+        if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
+            this.error(left.LineNumber, "Only num types are suitable to power-operations");
+        } else if (!leftType.equals("num") || !rightType.equals("num")) {
             this.error(left.LineNumber, "Cannot use power-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for power-operation");
             return null;
         } else {
@@ -218,7 +233,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     public RoboNode visit(AssignmentNode node) {
         var value = visit(node.Value);
         var variable = AST.symbolTable.GetVariable(node.Id.Id);
-        if (value == null) {
+        if (value == null || value.Type == null) {
             return null;
         } else if (!variable.Type.equals(value.Type.Type)) {
             this.error(node.LineNumber, "Cannot assign type " + value.Type.Type + " to a variable with type " + variable.Type);
@@ -451,12 +466,11 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     public RoboNode visit(FunctionCallNode node) {
         var function = this.GetFunction(node.Method);
         var formalParams = new ArrayList<VariableSymbolTableNode>(function.getParams().values());
-        Collections.reverse(formalParams);
 
         for (int i = 0; i < formalParams.size(); i++) {
             var paramType = visit(node.Params.get(i));
             if (!formalParams.get(i).Type.equals(paramType.Type.Type)) {
-                this.error(node.LineNumber, node.Method.Id + "() Param #" + i + " is not of type " + formalParams.get(i).Type);
+                this.error(node.LineNumber, node.Method.Id + "() Param #" + (i + 1) + " is not of type " + formalParams.get(i).Type);
             }
         }
 
@@ -482,7 +496,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         for (int i = 0; i < formalParams.size(); i++) {
             var paramType = visit(node.Method.Params.get(i));
             if (!formalParams.get(i).Type.equals(paramType.Type.Type)) {
-                this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + i + " is not of type " + formalParams.get(i).Type);
+                this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + formalParams.get(i).Type);
             }
         }
 
@@ -562,12 +576,29 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(DecrementOperatorExprNode node) {
-        return null;
+        var variable = AST.symbolTable.GetVariable(node.Id.Id);
+        if (!variable.Type.equals("num")) {
+            this.error(node.LineNumber, "Cannot use decrement-operator on type " + variable.Type + ". It must only be used on type num.");
+            return null;
+        }
+
+        node.Type = new TypeNode();
+        node.Type.Type = "num";
+
+        return node;
     }
 
     @Override
     public RoboNode visit(IncrementOperatorExprNode node) {
-        return null;
+        var variable = AST.symbolTable.GetVariable(node.Id.Id);
+        if (!variable.Type.equals("num")) {
+            this.error(node.LineNumber, "Cannot use increment-operator on type " + variable.Type + ". It must only be used on type num.");
+            return null;
+        }
+
+        node.Type = new TypeNode();
+        node.Type.Type = "num";
+        return node;
     }
 
     @Override
@@ -592,6 +623,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(DotOperationNode node) {
+
         return null;
     }
 
@@ -616,5 +648,9 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     private BehaviorSymbolTableNode GetBehavior(IdentifierNode behaviorId) {
         return this.currentStrategy.getBehavior(behaviorId.Id);
+    }
+
+    private boolean isIdentifierDictionaryOrList(RoboNode node) {
+        return node instanceof ListIdentifierNode || node instanceof DictionaryIdentifierNode;
     }
 }

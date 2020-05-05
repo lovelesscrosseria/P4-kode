@@ -8,6 +8,10 @@ import java.util.ArrayList;
 public class AST extends RoboNode {
     public static SymbolTable symbolTable = new SymbolTable();
     public static ArrayList<String> errors = new ArrayList<String>();
+    public static enum type {
+        Test,
+        Yeet
+    }
 
     ArrayList<RoboNode> nodes;
 
