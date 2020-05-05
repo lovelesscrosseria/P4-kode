@@ -233,7 +233,10 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     public RoboNode visit(AssignmentNode node) {
         var value = visit(node.Value);
         var variable = AST.symbolTable.GetVariable(node.Id.Id);
-        if (value == null || value.Type == null) {
+        if (variable instanceof ListVariableSymbolTableNode || variable instanceof DictionaryVariableSymbolTableNode) {
+            this.error(value.LineNumber, "Only primitive types are suitable to assignment");
+            return null;
+        } else if (value == null || value.Type == null) {
             return null;
         } else if (!variable.Type.equals(value.Type.Type)) {
             this.error(node.LineNumber, "Cannot assign type " + value.Type.Type + " to a variable with type " + variable.Type);

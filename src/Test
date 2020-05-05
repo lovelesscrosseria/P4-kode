@@ -177,6 +177,7 @@ func void funcs(num x, num x2) {
     bool not = !equal
     funcs2(5, "")
     num xxx = funcs2(5, "")
+    myList += 2
     return 2
 }
 
