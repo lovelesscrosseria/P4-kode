@@ -18,6 +18,11 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     private StrategySymbolTableNode currentStrategy;
 
     @Override
+    public RoboNode visit(IfNode node) {
+        return null;
+    }
+
+    @Override
     public RoboNode visit(AdditionExprNode node) {
         HashSet<String> additionTypes = new HashSet<String>(Arrays.asList("num", "text"));
         var left = visit(node.Left);
@@ -573,7 +578,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(ReturnNode node) {
-        return null;
+        return visit(node.Value);
     }
 
     @Override

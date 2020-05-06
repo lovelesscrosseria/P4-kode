@@ -140,7 +140,23 @@ list<num> myList = {0, 1, 2}
 dictionary<text, num> myDic = { {"as", 1}, {"asd", 2} }
 */
 func void test222(ScannedRobotEvent e) {
-    e.getBearing()
+    bool y = true
+    if (true && false && true && y) {
+        bool xxxx = true
+        if (xxxx) {
+            if (xxxx) {
+                bool plsWork = true
+            }
+
+            plsWork = false
+        }
+    } else if (false ) {
+
+    } else if (true) {
+
+    } else {
+
+    }
 }
 /*
 func num funcs2(num x, text t) {

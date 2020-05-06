@@ -13,6 +13,10 @@ import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
 public class PrintAst extends AstVisitor<RoboNode>{
+    @Override
+    public RoboNode visit(IfNode node) {
+        return null;
+    }
 
     @Override
     public RoboNode visit(IncrementOperatorExprNode node) {

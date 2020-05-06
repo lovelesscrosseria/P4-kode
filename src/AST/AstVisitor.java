@@ -57,6 +57,7 @@ public abstract class AstVisitor<T> {
     public abstract T visit(NotExprNode node);
     public abstract T visit(DotOperationNode node);
     public abstract T visit(DotOperationExprNode node);
+    public abstract T visit(IfNode node);
 
 
     public T visit(RoboNode node) {
@@ -158,6 +159,8 @@ public abstract class AstVisitor<T> {
             return visit((DotOperationNode) node);
         } else if (node instanceof DotOperationExprNode) {
             return visit((DotOperationExprNode) node);
+        } else if (node instanceof IfNode) {
+            return visit((IfNode) node);
         }
 
         return null;

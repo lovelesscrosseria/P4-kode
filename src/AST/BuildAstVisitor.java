@@ -19,6 +19,7 @@ import AST.Nodes.Variables.*;
 import GrammarOut.roboBaseVisitor;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
     /**
@@ -32,6 +33,34 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         }
 
         return new AST(nodes);
+    }
+
+    @Override
+    public RoboNode visitIfStmt(roboParser.IfStmtContext ctx) {
+        var ifNode =  new IfNode();
+        ifNode.expr = visit(ctx.ifExpr);
+        ifNode.block = (BlockNode) visit(ctx.ifBlock);
+        ifNode.LineNumber = ctx.start.getLine();
+
+        for (int i = 0; i < ctx.children.size(); i += 3) {
+            var item = ctx.children.get(i);
+
+            if (item.getText().equals("else if")) {
+                var elseIfNode = new ElseIfNode();
+                elseIfNode.expr = visit(ctx.children.get(i +1 ));
+                elseIfNode.block = (BlockNode) visit(ctx.children.get(i + 2));
+                elseIfNode.LineNumber = ctx.start.getLine();
+                ifNode.ifElseNodes.add(elseIfNode);
+            } else if (item.getText().equals("else")) {
+                var elseNode = new ElseNode();
+                elseNode.block = (BlockNode) visit(ctx.children.get(i + 1));
+                elseNode.LineNumber = ctx.start.getLine();
+                ifNode.elseBlock = elseNode;
+                break;
+            }
+        }
+
+        return ifNode;
     }
 
     /**

@@ -18,6 +18,11 @@ public class MethodDeclaration extends AstVisitor<RoboNode> {
     private StrategySymbolTableNode currentStrategy;
 
     @Override
+    public RoboNode visit(IfNode node) {
+        return null;
+    }
+
+    @Override
     public RoboNode visit(AdditionExprNode node) {
         return null;
     }

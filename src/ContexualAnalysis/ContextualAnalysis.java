@@ -605,6 +605,23 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         return null;
     }
 
+    @Override
+    public RoboNode visit(IfNode node) {
+        visit(node.expr);
+        visit(node.block);
+
+        for (var elseIf : node.ifElseNodes) {
+            visit(elseIf.expr);
+            visit(elseIf.block);
+        }
+
+        if (node.elseBlock != null) {
+            visit(node.elseBlock);
+        }
+
+        return null;
+    }
+
     private void error(int lineNumber, String err) {
         AST.errors.add("[Line " + lineNumber + "] " + err + "\n");
     }

@@ -17,6 +17,7 @@ dictionaryValue: LCURL key=expr COMMA value=expr RCURL;
 dotOperation: id=ID DOT method=function_call;
 //collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;
 roboCode_method: 'robot' DOT method=function_call;
+ifStmt: 'if' ifExpr=expr (NEWLINE)? ifBlock=block ('else if' expr (NEWLINE)? block )* ('else' ( NEWLINE)? block )?;
 
 assignment  : id=ID (ASSIGN_OP
             | PLUSEQ_OP 
@@ -28,13 +29,12 @@ stat        : block
             | list_decl NEWLINE
             | dictionary_decl NEWLINE
             | dotOperation NEWLINE
-            | 'if' expr (NEWLINE)? block ('else if' expr (NEWLINE)? block )* ('else' ( NEWLINE)? block )?
+            | ifStmt NEWLINE
             | assignment NEWLINE
             | function_call NEWLINE
             | return_stat NEWLINE
             | loop
             | COMMENT
-            | ID DOT function_call NEWLINE
             | roboCode_method NEWLINE
             | decrement_operator NEWLINE
             | increment_operator NEWLINE
