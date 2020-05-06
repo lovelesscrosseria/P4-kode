@@ -135,30 +135,25 @@ x8 = 5
 */
 
 // test alle bool udtryk inde i en function-body
-
+/*
 list<num> myList = {0, 1, 2}
 dictionary<text, num> myDic = { {"as", 1}, {"asd", 2} }
-
+*/
+func void test222(ScannedRobotEvent e) {
+    e.getBearing()
+}
+/*
 func num funcs2(num x, text t) {
     num xxx = robot.health()
     robot.fire(5)
-    myList.add(5)
-    myDic.add("yes", 1)
+    myList.add(1)
+    myDic.add(" as", 1)
     testing(5, "yes", 5, 5, "yes", true)
 }
 
 func void test() {
   list<num> myList = {0, 1, 2}
   testing(5, "yes", 5, 2, "yes", true)
-
-/*
-  myList = myList + myList
-  myList = myList - myList
-  myList = myList / myList
-  myList = myList * myList
-  myList = myList ^ myList
-  myList = myList % myList
-  */
 }
 
 func void testing(num x, text y, num t, num t2, text y43, bool za) {
@@ -177,7 +172,7 @@ func void funcs(num x, num x2) {
     bool not = !equal
     funcs2(5, "")
     num xxx = funcs2(5, "")
-    myList += 2
+
     return 2
 }
 
@@ -191,4 +186,4 @@ strategy offensive {
     }
 }
 
-
+*/

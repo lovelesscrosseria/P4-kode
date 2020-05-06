@@ -78,6 +78,9 @@ public class SymbolTable {
     public FunctionSymbolTableNode getDotOperationMethod(String id, int numberOfParams) {
         return dotOperationRunTimeMethods.getDotOperationMethod(id, numberOfParams);
     }
+    public FunctionSymbolTableNode getDotOperationMethod(String type, String id, int numberOfParams) {
+        return dotOperationRunTimeMethods.getDotOperationMethod(type, id, numberOfParams);
+    }
 
     public void clear() {
         this.functions.clear();

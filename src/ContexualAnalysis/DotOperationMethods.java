@@ -64,4 +64,14 @@ public class DotOperationMethods {
 
         return null;
     }
+
+    public FunctionSymbolTableNode getDotOperationMethod(String type, String id, int numberOfParams) {
+        if (this.methods.containsKey(type)) {
+            var typeMethods = this.methods.get(type);
+            if (typeMethods.containsKey(id) && typeMethods.get(id).getNumberOfParams() == numberOfParams) {
+                return typeMethods.get(id);
+            }
+        }
+        return null;
+    }
 }
