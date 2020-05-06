@@ -26,7 +26,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var leftType = left.Type.Type;
         var rightType = right.Type.Type;
         if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
-            this.error(left.LineNumber, "Only num and text types are suitable to addition");
+            this.error(left.LineNumber, "Only num and text types are suitable for addition");
         } else if (leftType.equals("num") && rightType.equals("num")) {
             node.Type = new TypeNode();
             node.Type.Type = "num";
@@ -51,7 +51,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var leftType = left.Type.Type;
         var rightType = right.Type.Type;
         if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
-            this.error(left.LineNumber, "Only num types are suitable to division");
+            this.error(left.LineNumber, "Only num types are suitable for division");
         } else if (!leftType.equals("num") || !rightType.equals("num")) {
             this.error(left.LineNumber, "Cannot divide type " + leftType + " and type " + rightType + " together, as they are not compatible for division");
         } else {
@@ -79,7 +79,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var rightType = right.Type.Type;
 
         if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
-            this.error(left.LineNumber, "Only num types are suitable to modulo");
+            this.error(left.LineNumber, "Only num types are suitable for modulo");
         } else if (!leftType.equals("num") || !rightType.equals("num")) {
             this.error(left.LineNumber, "Cannot use modulo on type " + leftType + " and type " + rightType + " together, as they are not compatible for modulo");
         } else {
@@ -99,7 +99,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var rightType = right.Type.Type;
 
         if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
-            this.error(left.LineNumber, "Only num types are suitable to multiplication");
+            this.error(left.LineNumber, "Only num types are suitable for multiplication");
         } else if (!leftType.equals("num") || !rightType.equals("num")) {
             this.error(left.LineNumber, "Cannot multiply on type " + leftType + " and type " + rightType + " together, as they are not compatible for multiplication");
         } else {
@@ -119,7 +119,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var rightType = right.Type.Type;
 
         if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
-            this.error(left.LineNumber, "Only num types are suitable to subtraction");
+            this.error(left.LineNumber, "Only num types are suitable for subtraction");
         } else if (!leftType.equals("num") || !rightType.equals("num")) {
             this.error(left.LineNumber, "Cannot subract type " + leftType + " and type " + rightType + ", as they are not compatible for subtraction");
             return null;
@@ -158,7 +158,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var leftType = left.Type.Type;
         var rightType = right.Type.Type;
         if (isIdentifierDictionaryOrList(left) || isIdentifierDictionaryOrList(right)) {
-            this.error(left.LineNumber, "Only num types are suitable to power-operations");
+            this.error(left.LineNumber, "Only num types are suitable for power-operations");
         } else if (!leftType.equals("num") || !rightType.equals("num")) {
             this.error(left.LineNumber, "Cannot use power-operator on type " + leftType + " and type " + rightType + ", as they are not compatible for power-operation");
             return null;
@@ -234,7 +234,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var value = visit(node.Value);
         var variable = AST.symbolTable.GetVariable(node.Id.Id);
         if (variable instanceof ListVariableSymbolTableNode || variable instanceof DictionaryVariableSymbolTableNode) {
-            this.error(value.LineNumber, "Only primitive types are suitable to assignment");
+            this.error(value.LineNumber, "Only primitive types are suitable for assignment");
             return null;
         } else if (value == null || value.Type == null) {
             return null;
