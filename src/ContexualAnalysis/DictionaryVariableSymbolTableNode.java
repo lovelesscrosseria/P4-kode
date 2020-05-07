@@ -1,6 +1,9 @@
 package ContexualAnalysis;
 
+import java.util.HashMap;
+
 public class DictionaryVariableSymbolTableNode extends VariableSymbolTableNode {
-    public String Key;
-    public String Value;
+    public String KeyType;
+    public String ValueType;
+    public HashMap<String, DictionaryValue> Nodes = new HashMap<String, DictionaryValue>();
 }

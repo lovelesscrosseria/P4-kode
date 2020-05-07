@@ -10,9 +10,17 @@ public class VariableHelper {
     private Stack<ArrayList<VariableSymbolTableNode>> toRemove = new Stack<ArrayList<VariableSymbolTableNode>>();
 
     public void EnterScope(ArrayList<VariableSymbolTableNode> variables) {
-        variables.forEach((x) -> this.localDeclarations.put(x.Id, x));
+        var toRemoveList = new ArrayList<VariableSymbolTableNode>();
 
-        this.toRemove.add(variables);
+        for (var variable : variables) {
+            if (!localDeclarations.containsKey(variable.Id)) {
+                this.localDeclarations.put(variable.Id, variable);
+                toRemoveList.add(variable);
+            }
+        }
+        //variables.forEach((x) -> this.localDeclarations.put(x.Id, x));
+
+        this.toRemove.add(toRemoveList);
     }
     public void EnterScope() {
         this.toRemove.add(new ArrayList<VariableSymbolTableNode>());

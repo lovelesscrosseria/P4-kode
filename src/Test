@@ -140,8 +140,17 @@ list<num> myList = {0, 1, 2}
 dictionary<text, num> myDic = { {"as", 1}, {"asd", 2} }
 */
 
-func void test(ScannedRobotEvent e) {
+func num test(ScannedRobotEvent e) {
     //list<num> myList = {0, 1, 2}
+
+    dictionary<text, num> myDictionary = { {"yeet", 1}, {"yeety", 2}, {"yes", 3} }
+    dictionary<num, num> myDictionaryz2z
+    myDictionary.add("yes", 3)
+    myDictionary.add("yes", 3)
+    myDictionary.add("yes", 3)
+    myDictionary.add("yes", 3)
+    myDictionaryz2z.add(1,1)
+
     num y = 5
     for (num i = 0; i < 25; i++) {
         num x = 5
@@ -166,17 +175,15 @@ func void test(ScannedRobotEvent e) {
         }
     }
 
-    /*//bool yeet = myList.add(5)
     bool yeet = true
     if (true) {
        num test = e.getBearing()
     } else if (false) {
        bool test = true
        test = false
-    } else if (false) {
-        //num test = 2
-        //test = 5
-    } */
+    }
+
+    return 5
 }
 
 

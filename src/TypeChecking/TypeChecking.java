@@ -15,6 +15,7 @@ import ContexualAnalysis.*;
 import java.util.*;
 
 public class TypeChecking extends AstVisitor<RoboNode> {
+    private MethodSymbolTableNode currentFunction;
     private StrategySymbolTableNode currentStrategy;
 
     @Override
@@ -196,11 +197,15 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(FunctionDeclNode node) {
         var function = this.GetFunction(node.Id);
+        this.currentFunction = function;
         AST.symbolTable.EnterFunction(function);
 
         visit(node.block);
 
+        checkValidReturn(node);
+
         AST.symbolTable.ExitFunction();
+        this.currentFunction = null;
         return node;
     }
 
@@ -511,6 +516,22 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(DictionaryDeclNode node) {
+        var variable = AST.symbolTable.GetVariable(node.Id.Id);
+
+        for (var item : node.Nodes) {
+            var value = visit(item.Value);
+            var key = visit(item.Key);
+
+            if (!value.Type.Type.equals(node.value.Type)) {
+                // wrong value type
+                this.error(node.LineNumber, "Start node-Value is of wrong type. node-value must be of type " + node.key.Type + " but type " + key.Type.Type + " was given");
+            }
+            if (!key.Type.Type.equals(node.key.Type)) {
+                // wrong key type
+                this.error(node.LineNumber, "Start node-Key is of wrong type. node-key must be of type " + node.key.Type + " but type " + key.Type.Type + " was given");
+            }
+        }
+
         return null;
     }
 
@@ -539,6 +560,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         visit(node.Block);
 
         AST.symbolTable.ExitFunction();
+
         return null;
     }
 
@@ -688,10 +710,10 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
             for (int i = 0; i < node.Method.Params.size(); i++) {
                 var paramType = visit(node.Method.Params.get(i));
-                if (i % 2 == 0 && !paramType.Type.Type.equals(dicVar.Key)) {
-                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + dicVar.Key);
-                } else if (i % 2 == 1 && !paramType.Type.Type.equals(dicVar.Value)){
-                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + dicVar.Value);
+                if (i % 2 == 0 && !paramType.Type.Type.equals(dicVar.KeyType)) {
+                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + dicVar.KeyType);
+                } else if (i % 2 == 1 && !paramType.Type.Type.equals(dicVar.ValueType)){
+                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + dicVar.ValueType);
                 }
             }
         } else if (variable.Type.equals("ScannedRobotEvent")) {
@@ -744,15 +766,18 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
             for (int i = 0; i < node.Method.Params.size(); i++) {
                 var paramType = visit(node.Method.Params.get(i));
-                if (i % 2 == 0 && !paramType.Type.Type.equals(dicVar.Key)) {
-                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + dicVar.Key);
-                } else if (i % 2 == 1 && !paramType.Type.Type.equals(dicVar.Value)){
-                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + dicVar.Value);
+                if (i % 2 == 0 && !paramType.Type.Type.equals(dicVar.KeyType)) {
+                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + dicVar.KeyType);
+                } else if (i % 2 == 1 && !paramType.Type.Type.equals(dicVar.ValueType)){
+                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + dicVar.ValueType);
                 }
             }
 
             node.Type = new TypeNode();
             node.Type.Type = this.getDotOperation("dictionary", node).Type;
+        }else if (variable == null) {
+            var asdasad = true;
+            var vaasdasdriable = AST.symbolTable.GetVariable(node.Id.Id);
         } else if (variable.Type.equals("ScannedRobotEvent")) {
             if (!this.checkDotOperationExists("ScannedRobotEvent", node)) {
                 return null;
@@ -837,6 +862,39 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         }
 
         return true;
+    }
+
+    private boolean checkValidReturn(FunctionDeclNode node) {
+        if (!node.Type.Type.equals("void")) {
+            boolean hasSeenReturn = false;
+            // must have return and return be type correct;
+            for (var stmt : node.block.statements) {
+                if (stmt instanceof ReturnNode) {
+                    hasSeenReturn = true;
+                    var returnNode = visit(stmt);
+                    if (returnNode.Type == null || !returnNode.Type.Type.equals(node.Type.Type)) {
+                        // must be of type
+                        this.error(stmt.LineNumber, "The func " + node.Id.Id + " must return a value of type " + node.Type.Type);
+                    }
+                }
+
+            }
+            if (!hasSeenReturn) {
+                // must have return
+                this.error(node.LineNumber, "The func " + node.Id.Id + " must return a value of type " + node.Type.Type);
+            }
+        } else {
+            // is of type void. CAN have return, but cannot give a value.
+            for (var stmt : node.block.statements) {
+                if (stmt instanceof ReturnNode) {
+                    var returnNode = visit(stmt);
+                    this.error(stmt.LineNumber, "Return for void functions are not implemented yet :-(");
+                }
+            }
+
+        }
+
+        return false;
     }
 
     private MethodSymbolTableNode getDotOperation(String type, DotOperationExprNode node) {

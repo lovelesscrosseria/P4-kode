@@ -44,13 +44,4 @@ public abstract class MethodSymbolTableNode extends SymbolTableNode  {
 
         return paramList;
     }
-
-    public void enterBlock() {
-        this.localDecl.forEach((k, v) -> v.scopeHealth += 1);
-    }
-
-    public void exitBlock() {
-        this.localDecl.forEach((k, v) -> v.scopeHealth -= 1);
-
-    }
 }

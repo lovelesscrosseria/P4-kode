@@ -15,7 +15,6 @@ import ContexualAnalysis.Loops.ForLoopSymbolTableNode;
 import ContexualAnalysis.Loops.WhileLoopSymbolTableNode;
 
 import java.util.Stack;
-import java.util.function.Function;
 
 public class ContextualAnalysis extends AstVisitor<RoboNode> {
     private Stack<MethodSymbolTableNode> currentFunction = new Stack<MethodSymbolTableNode>();
@@ -439,16 +438,16 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
             // variable is not defined and is inside scope
             var varNode = new DictionaryVariableSymbolTableNode();
             varNode.Id = node.Id.Id;
-            varNode.Key = node.key.Type;
-            varNode.Value = node.value.Type;
+            varNode.KeyType = node.key.Type;
+            varNode.ValueType = node.value.Type;
             currentFunction.peek().addLocalVariableDeclaration(varNode);
             AST.symbolTable.PutLocalDeclaration(varNode);
         } else if (variable == null) {
             // variable is not defined and is in global scope
             var varNode = new DictionaryVariableSymbolTableNode();
             varNode.Id = node.Id.Id;
-            varNode.Key = node.key.Type;
-            varNode.Value = node.value.Type;
+            varNode.KeyType = node.key.Type;
+            varNode.ValueType = node.value.Type;
 
             AST.symbolTable.PutVariable(varNode);
         } else if (!currentFunction.empty() && currentFunction.peek() != null) {
@@ -460,8 +459,8 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
                 // the variable is not declared locally, and we are inside the scope, which is allowed
                 var varNode = new DictionaryVariableSymbolTableNode();
                 varNode.Id = node.Id.Id;
-                varNode.Key = node.key.Type;
-                varNode.Value = node.value.Type;
+                varNode.KeyType = node.key.Type;
+                varNode.ValueType = node.value.Type;
                 currentFunction.peek().addLocalVariableDeclaration(varNode);
                 AST.symbolTable.PutLocalDeclaration(varNode);
             }
