@@ -521,9 +521,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(ForLoopNode node) {
-        var id = new IdentifierNode();
-        id.Id = node.LoopId;
-        var loop = this.GetFunction(id);
+        var loop = this.GetFunction(node.LoopId);
         AST.symbolTable.EnterFunction(loop);
 
         visit(node.Init);
@@ -546,12 +544,36 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(DoWhileLoopNode node) {
-        return null;
+        var loop = this.GetFunction(node.LoopId);
+        AST.symbolTable.EnterFunction(loop);
+
+        visit(node.Block);
+
+        AST.symbolTable.ExitFunction();
+        var conditionNode = visit(node.Condition);
+
+        if (!conditionNode.Type.Type.equals("bool")) {
+            this.error(conditionNode.LineNumber, "The condition-expression of a do-while-loop must be of type bool");
+        }
+
+        return node;
     }
 
     @Override
     public RoboNode visit(WhileLoopNode node) {
-        return null;
+        var loop = this.GetFunction(node.LoopId);
+        AST.symbolTable.EnterFunction(loop);
+
+        visit(node.Block);
+
+        AST.symbolTable.ExitFunction();
+        var conditionNode = visit(node.Condition);
+
+        if (!conditionNode.Type.Type.equals("bool")) {
+            this.error(conditionNode.LineNumber, "The condition-expression of a while-loop must be of type bool");
+        }
+
+        return node;
     }
 
     @Override
@@ -828,6 +850,9 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     }
     private FunctionSymbolTableNode GetFunction(IdentifierNode functionId) {
         return AST.symbolTable.GetFunction(functionId.Id);
+    }
+    private FunctionSymbolTableNode GetFunction(String functionId) {
+        return AST.symbolTable.GetFunction(functionId);
     }
 
     private EventSymbolTableNode GetEvent(IdentifierNode eventId) {

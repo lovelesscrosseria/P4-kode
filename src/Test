@@ -142,12 +142,27 @@ dictionary<text, num> myDic = { {"as", 1}, {"asd", 2} }
 
 func void test(ScannedRobotEvent e) {
     //list<num> myList = {0, 1, 2}
-
+    num y = 5
     for (num i = 0; i < 25; i++) {
         num x = 5
         x = 2
         for (num xx = 0; xx < 25; xx++) {
             num yess = 25
+        }
+
+        do {
+            num yy = 25
+            y = 2
+        } while (y > 5)
+
+        while (y < 25) {
+            bool yy = true
+            yy = false
+
+            if (yy) {
+                bool myx = true
+                myx = false
+            }
         }
     }
 

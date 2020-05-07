@@ -15,6 +15,7 @@ import ContexualAnalysis.Loops.ForLoopSymbolTableNode;
 import ContexualAnalysis.Loops.WhileLoopSymbolTableNode;
 
 import java.util.Stack;
+import java.util.function.Function;
 
 public class ContextualAnalysis extends AstVisitor<RoboNode> {
     private Stack<MethodSymbolTableNode> currentFunction = new Stack<MethodSymbolTableNode>();
@@ -517,9 +518,23 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     public RoboNode visit(DoWhileLoopNode node) {
         var loop = new DoWhileLoopSymboleTableNode();
 
+        var currentFunction = this.currentFunction.peek();
         AST.symbolTable.EnterScope();
         this.currentFunction.push(loop);
+
         visit(node.Block);
+
+        var loopNode = new FunctionSymbolTableNode();
+        loopNode.Id =node.LoopId;
+
+        for (var item : currentFunction.getLocalVariables().values()) {
+            loopNode.addLocalVariableDeclaration(item);
+        }
+        for (var item : loop.getLocalVariables().values()) {
+            loopNode.addLocalVariableDeclaration(item);
+        }
+
+        AST.symbolTable.PutFunction(loopNode);
         this.currentFunction.pop();
         AST.symbolTable.ExitScope();
         visit(node.Condition);
@@ -530,10 +545,25 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(WhileLoopNode node) {
         var loop = new WhileLoopSymbolTableNode();
+        var currentFunction = this.currentFunction.peek();
         visit(node.Condition);
+
         AST.symbolTable.EnterScope();
         this.currentFunction.push(loop);
+
         visit(node.Block);
+
+        var loopNode = new FunctionSymbolTableNode();
+        loopNode.Id =node.LoopId;
+
+        for (var item : currentFunction.getLocalVariables().values()) {
+            loopNode.addLocalVariableDeclaration(item);
+        }
+        for (var item : loop.getLocalVariables().values()) {
+            loopNode.addLocalVariableDeclaration(item);
+        }
+
+        AST.symbolTable.PutFunction(loopNode);
         this.currentFunction.pop();
         AST.symbolTable.ExitScope();
 
