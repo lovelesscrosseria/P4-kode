@@ -22,7 +22,7 @@ public class program
 
         System.out.println("RoboCompiler v.1337");
         /*Used parser to turn a string of characters into a parse tree*/
-        var input = convertFileToInputStream("src/Test");
+        var input = convertFileToInputStream("src/TestReal");
 
         ReadableByteChannel channel = Channels.newChannel(input);
         var in = CharStreams.fromChannel(channel);
@@ -38,11 +38,15 @@ public class program
         AST.symbolTable.clear();
         var ast = new BuildAstVisitor().visitProgram(cst);
         //ast.visit(new PrintAst());
+        System.out.println("Declaring methods...");
         ast.visit(new MethodDeclaration());
+        System.out.println("Doing contextual analysis...");
         ast.visit(new ContextualAnalysis());
         checkErrors();
+        System.out.println("Checking types and valid returns...");
         ast.visit(new TypeChecking());
         checkErrors();
+        System.out.println("All looks good.");
 
     }
 

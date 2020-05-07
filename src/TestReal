@@ -1,0 +1,18 @@
+func void main() {
+    robot.changeStrategy("offensive")
+}
+
+strategy offensive {
+    behavior onRun() {
+        robot.scan()
+        robot.fire(1)
+        driveBy(4)
+    }
+}
+
+func void driveBy(num times) {
+    for (num i = 0; i < times; i++) {
+        robot.turnLeft(90 * (i + 1))
+        robot.fire(1)
+    }
+}
