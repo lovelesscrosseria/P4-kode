@@ -175,10 +175,17 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(BlockNode node) {
+        if (!this.currentFunction.empty()) {
+            AST.symbolTable.EnterScope();
+        }
+
         for (var item : node.statements) {
             visit(item);
         }
 
+        if (!this.currentFunction.empty()) {
+            AST.symbolTable.ExitScope();
+        }
         return null;
     }
 
@@ -616,7 +623,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         }
 
         if (node.elseBlock != null) {
-            visit(node.elseBlock);
+            visit(node.elseBlock.block);
         }
 
         return null;
@@ -627,19 +634,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     }
 
     private VariableSymbolTableNode GetVariable(IdentifierNode variableId) {
-        // check global scope
-        var result = AST.symbolTable.GetVariable(variableId.Id);
-
-        if (result != null) {
-            return result;
-        }
-
-        //  check function scope
-        if (!this.currentFunction.empty() && this.currentFunction.peek() != null) {
-            result = currentFunction.peek().getLocalVariable(variableId.Id);
-        }
-
-        return result;
+        return AST.symbolTable.GetVariable(variableId.Id);
     }
 
     private FunctionSymbolTableNode GetFunction(IdentifierNode functionId) {

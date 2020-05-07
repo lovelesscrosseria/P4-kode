@@ -139,13 +139,43 @@ x8 = 5
 list<num> myList = {0, 1, 2}
 dictionary<text, num> myDic = { {"as", 1}, {"asd", 2} }
 */
-func void test222(ScannedRobotEvent e) {
+/*
+func void test() {
+    bool y = true
+    if (true) {
+        bool x = true
+        x = false
+    }
+    x = false
+} */
+
+func void test(ScannedRobotEvent e) {
+    list<num> myList = {0, 1, 2}
+
+    //bool yeet = myList.add(5)
+    bool yeet = true
+    if (true) {
+        //yeet = myList.add(5)
+        //bool yeettt = "test"
+    } else if (false) {
+        num test = e.getBearing()
+        num test2 = e.getHealth()
+    } else if (true) {
+        bool test = false
+    } else {
+        num test2 = 25
+    }
+}
+
+
+/*func void test222(ScannedRobotEvent e) {
+    list<num> myList = {0, 1, 2}
     bool y = true
     if (true && false && true && y) {
         bool xxxx = true
         if (xxxx) {
             if (xxxx) {
-                bool plsWork = true
+                bool plsWork = myList.add(5)
             }
 
             plsWork = false
@@ -157,7 +187,7 @@ func void test222(ScannedRobotEvent e) {
     } else {
 
     }
-}
+} */
 /*
 func num funcs2(num x, text t) {
     num xxx = robot.health()

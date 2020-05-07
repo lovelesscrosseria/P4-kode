@@ -18,11 +18,6 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     private StrategySymbolTableNode currentStrategy;
 
     @Override
-    public RoboNode visit(IfNode node) {
-        return null;
-    }
-
-    @Override
     public RoboNode visit(AdditionExprNode node) {
         HashSet<String> additionTypes = new HashSet<String>(Arrays.asList("num", "text"));
         var left = visit(node.Left);
@@ -680,9 +675,94 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
         return node;
     }
+
     @Override
     public RoboNode visit(DotOperationExprNode node) {
-        return null;
+        var variable = AST.symbolTable.GetVariable(node.Id.Id);
+        if (variable instanceof ListVariableSymbolTableNode) {
+            if (!this.checkDotOperationExists("list", node)) {
+                return null;
+            }
+
+            for (int i = 0; i < node.Method.Params.size(); i++) {
+                var paramType = visit(node.Method.Params.get(i));
+                if (!paramType.Type.Type.equals(variable.Type)) {
+                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + variable.Type);
+                }
+            }
+
+            node.Type = new TypeNode();
+            node.Type.Type = this.getDotOperation("list", node).Type;
+
+        } else if (variable instanceof DictionaryVariableSymbolTableNode) {
+            if (!this.checkDotOperationExists("dictionary", node)) {
+                return null;
+            }
+            var dicVar = (DictionaryVariableSymbolTableNode) variable;
+
+            for (int i = 0; i < node.Method.Params.size(); i++) {
+                var paramType = visit(node.Method.Params.get(i));
+                if (i % 2 == 0 && !paramType.Type.Type.equals(dicVar.Key)) {
+                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + dicVar.Key);
+                } else if (i % 2 == 1 && !paramType.Type.Type.equals(dicVar.Value)){
+                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + dicVar.Value);
+                }
+            }
+
+            node.Type = new TypeNode();
+            node.Type.Type = this.getDotOperation("dictionary", node).Type;
+        } else if (variable.Type.equals("ScannedRobotEvent")) {
+            if (!this.checkDotOperationExists("ScannedRobotEvent", node)) {
+                return null;
+            }
+
+            var functionCallParams = node.Method.Params;
+            var formalParamsMap = AST.symbolTable.getDotOperationMethod("ScannedRobotEvent", node.Method.Method.Id, node.Method.Params.size())
+                    .getParams()
+                    .values();
+
+            var formalParamsArr = formalParamsMap.toArray(new VariableSymbolTableNode[formalParamsMap.size()]);
+
+            for (int i = 0; i < functionCallParams.size(); i++) {
+                if (!functionCallParams.get(i).Value.Type.Type.equals(formalParamsArr[i].Type)) {
+                    this.error(node.LineNumber, node.Method.Method.Id + "() Param #" + (i + 1) + " is not of type " + formalParamsArr[i].Type);
+                }
+            }
+
+            node.Type = new TypeNode();
+            node.Type.Type = this.getDotOperation("ScannedRobotEvent", node).Type;
+        }
+
+        return node;
+    }
+
+    @Override
+    public RoboNode visit(IfNode node) {
+        var exprNode = visit(node.expr);
+        if (exprNode == null) {
+            return null;
+        } else if (!exprNode.Type.Type.equals("bool")) {
+            this.error(node.LineNumber, "The expression of an if-statement must be of type bool");
+        }
+
+        visit(node.block);
+
+        for (var ifElseNode : node.ifElseNodes) {
+            var ifElseExprNode = visit(ifElseNode.expr);
+            if (ifElseExprNode == null) {
+                return null;
+            } else if (!ifElseExprNode.Type.Type.equals("bool")) {
+                this.error(ifElseNode.LineNumber, "The expression of an if-statement must be of type bool");
+            }
+
+            visit(ifElseNode.block);
+        }
+
+        if (node.elseBlock != null) {
+            visit(node.elseBlock.block);
+        }
+
+        return node;
     }
 
     private boolean checkDotOperationExists(String type, DotOperationNode node) {
@@ -699,6 +779,28 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         }
 
         return true;
+    }
+
+    private boolean checkDotOperationExists(String type, DotOperationExprNode node) {
+        var operationExistsOnType = AST.symbolTable.getDotOperationMethod(type, node.Method.Method.Id) != null;
+        var operationExistsOnTypeWithParams = AST.symbolTable.getDotOperationMethod(type, node.Method.Method.Id, node.Method.Params.size()) != null;
+        if (!operationExistsOnType) {
+            // no valid method found
+            this.error(node.LineNumber, "A method with name " + node.Method.Method.Id + " on type " + type + " could not be found");
+            return false;
+        } else if (!operationExistsOnTypeWithParams) {
+            // no valid method with number of params found
+            this.error(node.LineNumber, "A method with name " + node.Method.Method.Id + " on type " + type + " which takes " + node.Method.Params.size() + " parameters could not be found");
+            return false;
+        }
+
+        return true;
+    }
+
+    private MethodSymbolTableNode getDotOperation(String type, DotOperationExprNode node) {
+
+        return AST.symbolTable.getDotOperationMethod(type, node.Method.Method.Id, node.Method.Params.size());
+
     }
 
     private void error(int lineNumber, String err) {
