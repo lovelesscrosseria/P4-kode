@@ -162,6 +162,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
             this.error(node.LineNumber,"A func with name " + node.Id.Id + " is not declared");
             return null;
         }
+
         AST.symbolTable.EnterScope(function.GetParams());
         this.currentFunction.push(function);
 
@@ -487,6 +488,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         var loop = new ForLoopSymbolTableNode();
 
         AST.symbolTable.EnterScope();
+        var currentFunction = this.currentFunction.peek();
         this.currentFunction.push(loop);
 
         visit(node.Init);
@@ -494,6 +496,17 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         visit(node.Block);
         visit(node.Increment);
 
+        var loopNode = new FunctionSymbolTableNode();
+        loopNode.Id =node.LoopId;
+
+        for (var item : currentFunction.getLocalVariables().values()) {
+            loopNode.addLocalVariableDeclaration(item);
+        }
+        for (var item : loop.getLocalVariables().values()) {
+            loopNode.addLocalVariableDeclaration(item);
+        }
+
+        AST.symbolTable.PutFunction(loopNode);
         this.currentFunction.pop();
         AST.symbolTable.ExitScope();
 

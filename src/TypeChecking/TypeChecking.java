@@ -521,6 +521,26 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(ForLoopNode node) {
+        var id = new IdentifierNode();
+        id.Id = node.LoopId;
+        var loop = this.GetFunction(id);
+        AST.symbolTable.EnterFunction(loop);
+
+        visit(node.Init);
+
+        var conditionNode = visit(node.Condition);
+
+        if (!conditionNode.Type.Type.equals("bool")) {
+            this.error(conditionNode.LineNumber, "The condition-expression of a for-loop must be of type bool");
+        }
+        var incrementNode = visit(node.Increment);
+        if (!(incrementNode instanceof DecrementOperatorExprNode || incrementNode instanceof IncrementOperatorExprNode)) {
+            this.error(conditionNode.LineNumber, "The increment-expression of a for-loop must be either increment or decrement (i-- or i++)");
+        }
+
+        visit(node.Block);
+
+        AST.symbolTable.ExitFunction();
         return null;
     }
 

@@ -139,32 +139,29 @@ x8 = 5
 list<num> myList = {0, 1, 2}
 dictionary<text, num> myDic = { {"as", 1}, {"asd", 2} }
 */
-/*
-func void test() {
-    bool y = true
-    if (true) {
-        bool x = true
-        x = false
-    }
-    x = false
-} */
 
 func void test(ScannedRobotEvent e) {
-    list<num> myList = {0, 1, 2}
+    //list<num> myList = {0, 1, 2}
 
-    //bool yeet = myList.add(5)
+    for (num i = 0; i < 25; i++) {
+        num x = 5
+        x = 2
+        for (num xx = 0; xx < 25; xx++) {
+            num yess = 25
+        }
+    }
+
+    /*//bool yeet = myList.add(5)
     bool yeet = true
     if (true) {
-        //yeet = myList.add(5)
-        //bool yeettt = "test"
+       num test = e.getBearing()
     } else if (false) {
-        num test = e.getBearing()
-        num test2 = e.getHealth()
-    } else if (true) {
-        bool test = false
-    } else {
-        num test2 = 25
-    }
+       bool test = true
+       test = false
+    } else if (false) {
+        //num test = 2
+        //test = 5
+    } */
 }
 
 
