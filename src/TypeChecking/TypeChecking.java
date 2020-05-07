@@ -15,7 +15,6 @@ import ContexualAnalysis.*;
 import java.util.*;
 
 public class TypeChecking extends AstVisitor<RoboNode> {
-    private MethodSymbolTableNode currentFunction;
     private StrategySymbolTableNode currentStrategy;
 
     @Override
@@ -137,7 +136,12 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var variable = AST.symbolTable.GetVariable(node.Id);
 
         IdentifierNode result = new IdentifierNode();
-        result.Id = variable.Id;
+        try {
+            result.Id = variable.Id;
+        } catch (Exception e) {
+            var s = "aas";
+        }
+
         if (variable instanceof ListVariableSymbolTableNode) {
             result = new ListIdentifierNode();
         } else if (variable instanceof DictionaryVariableSymbolTableNode) {
@@ -197,7 +201,6 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(FunctionDeclNode node) {
         var function = this.GetFunction(node.Id);
-        this.currentFunction = function;
         AST.symbolTable.EnterFunction(function);
 
         visit(node.block);
@@ -205,7 +208,6 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         checkValidReturn(node);
 
         AST.symbolTable.ExitFunction();
-        this.currentFunction = null;
         return node;
     }
 
@@ -606,7 +608,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         for (int i = 0; i < formalParams.size(); i++) {
             var paramType = visit(node.Params.get(i));
             if (!formalParams.get(i).Type.equals(paramType.Type.Type)) {
-                this.error(node.LineNumber, node.Method.Id + "() Param #" + i + " is not of type " + formalParams.get(i).Type);
+                this.error(node.LineNumber, node.Method.Id + "() Param #" + (i + 1) + " is not of type " + formalParams.get(i).Type);
             }
         }
 

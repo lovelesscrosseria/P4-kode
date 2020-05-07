@@ -1,25 +1,28 @@
-/*
+
 num a = 3 + 4.0 * 4 + 5/2%2*3
 num b = 4-3
 num c = a*b + a^2
 num d = 3.2/2.2
 num e = 4.2%3.2
 
-num f = false && 3<4.0
-num g = true || false
-bool h= f != g
-text i = 2>3.5 ||5>=2 && 6 <= a
+bool f = false && 3<4.0
+bool g = true || false
+bool h = f != g
+bool i = 2>3.5 ||5>=2 && 6 <= a
+text myText = "yes"
 
 list<num> myList = {5, 5, 10, 5*5, b}
 dictionary<num, text> DictionaryWithoutValues
 dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15, "femten" }, { 20, "tyve" } }
 
- func void myfunc(num t, text x, text tt, num ss) {
+ func num myfunc(num t, text x, text tt, num ss) {
      t = 5
      num myNumber =  5 / 5 + 3
      x = "yeest"
      t--
      t++
+
+     return myFunc(10)
  }
 
  strategy default {
@@ -40,10 +43,10 @@ dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15,
  	return health < 20
  }
 
- num x = mything(x, y)
+num x = mything(2, "test")
 
-func void mything(num x, text y) {
-
+func num mything(num x, text y) {
+    return 5
 }
  func void myLoops() {
     for (num x = 0; x < 10; x++) {
@@ -51,40 +54,40 @@ func void mything(num x, text y) {
     }
     do {
         robot.fire(4)
-    } while (x)
-    num y = true
-    while (y) {
+    } while (x > 5)
+    num y = 5
+    while (y > 5) {
         robot.fire(5)
     }
  }
 
 func void myTest(num x) {
     x = 5
-    num value = testFunc(5)
-    return value
+    num value = testFunc("yes")
 }
 
-func void testFunc(text x) {
-    return x + 5
+func num testFunc(text x) {
+    return 5
 }
 
- num x2 = myfunc(12, x, 12, 5) + 5 * 2
- num x3 = robot.fire(3) + 5
+ num x2 = myfunc(12, myText, "12", 5) + 5 * 2
+ num x3 = robot.health() + 5
 
 
-num x4 = 5 * 2 + myfunc(1, 2, 3, 4)
+num x4 = 5 * 2 + myfunc(1, "as", myText, 4)
 num ss = a + b + 5
 
 
 num x5 = myFunc(5) + 5
 
-func void myFunc(num x2) {
+func num myFunc(num x2) {
     x = 5 + 5
-    num y = funcs() + 5
+
+    return 5
 }
 
 event myEvent {
-    num x = 5 + funcs()
+    num x = 5 + myFunc(120)
 
     while (x < 5) {
          x = 5 + 5
@@ -97,14 +100,10 @@ event myEvent {
     return x
 }
 
-func void funcs() {
+func void testLoop() {
     for (num i = 0; i < 5; i++) {
         num x = 55 ^ 2
     }
-}
-
-strategy offensive {
-
 }
 
 strategy defensive {
@@ -115,30 +114,10 @@ strategy defensive {
 		robot.fire(3)
 		robot.changeStrategy("offensive")
     }
-} */
+}
 
-/*
-num x = 5 + 5
-text y = "as" + "bs" + 5
-num x2 = 5 / 5
-// num x3 = 5 / "give me error"
-num x4 = 5 % 6
-// num x5 = 5 % "give me error"
-num x6 = 5 - y
-// num x7 = 5 - true
-num x8 = x ^ x4
-x8 = 5
-// x8--
-// x8++
-// y--
-// y++
-*/
-
-// test alle bool udtryk inde i en function-body
-/*
-list<num> myList = {0, 1, 2}
 dictionary<text, num> myDic = { {"as", 1}, {"asd", 2} }
-*/
+
 
 func num test(ScannedRobotEvent e) {
     //list<num> myList = {0, 1, 2}
@@ -187,17 +166,16 @@ func num test(ScannedRobotEvent e) {
 }
 
 
-/*func void test222(ScannedRobotEvent e) {
+func void test222(ScannedRobotEvent e) {
     list<num> myList = {0, 1, 2}
     bool y = true
     if (true && false && true && y) {
         bool xxxx = true
         if (xxxx) {
             if (xxxx) {
-                bool plsWork = myList.add(5)
+                num plsWork = 5
+                myList.add(5)
             }
-
-            plsWork = false
         }
     } else if (false ) {
 
@@ -206,19 +184,16 @@ func num test(ScannedRobotEvent e) {
     } else {
 
     }
-} */
-/*
+}
+
 func num funcs2(num x, text t) {
     num xxx = robot.health()
     robot.fire(5)
     myList.add(1)
     myDic.add(" as", 1)
     testing(5, "yes", 5, 5, "yes", true)
-}
 
-func void test() {
-  list<num> myList = {0, 1, 2}
-  testing(5, "yes", 5, 2, "yes", true)
+    return 5
 }
 
 func void testing(num x, text y, num t, num t2, text y43, bool za) {
@@ -237,12 +212,6 @@ func void funcs(num x, num x2) {
     bool not = !equal
     funcs2(5, "")
     num xxx = funcs2(5, "")
-
-    return 2
-}
-
-event myEvent {
-    num x = 123
 }
 
 strategy offensive {
@@ -250,5 +219,3 @@ strategy offensive {
 
     }
 }
-
-*/

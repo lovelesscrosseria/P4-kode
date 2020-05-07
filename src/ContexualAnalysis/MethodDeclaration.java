@@ -185,7 +185,7 @@ public class MethodDeclaration extends AstVisitor<RoboNode> {
     public RoboNode visit(StrategyNode node) {
         var strategy = this.GetStrategy(node.Id);
         if (strategy != null) {
-            this.error(node.LineNumber, "A strategy with name " + node.Id + " is already defined");
+            this.error(node.LineNumber, "A strategy with name " + node.Id.Id + " is already defined");
             return null;
         }
 

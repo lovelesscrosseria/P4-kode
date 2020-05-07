@@ -101,6 +101,8 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(VariableDeclNode node) {
         var variable = this.GetVariable(node.Id);
+        visit(node.Value);
+
         if (variable == null && !currentFunction.empty() && currentFunction.peek() != null) {
             // variable is not defined and is inside scope
             var varNode = new VariableSymbolTableNode();
@@ -132,8 +134,6 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
             // variable is declared in global scope and we are inside the global scope
             this.error(node.LineNumber,"Variable " + node.Id.Id + " is already defined");
         }
-
-        visit(node.Value);
 
         return null;
     }
@@ -339,7 +339,7 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         // what about ChangeStrategy(" strategy name ")
         var strategy = this.GetStrategy(node.Id);
         if (strategy == null) {
-            this.error(node.LineNumber, "A strategy with name " + node.Id + " is not defined");
+            this.error(node.LineNumber, "A strategy with name " + node.Id.Id + " is not defined");
             return null;
         }
 
@@ -582,6 +582,16 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
             return null;
         }
 
+        for (var param : node.Params) {
+            var paramValue = visit(param.Value);
+            if (paramValue instanceof IdentifierNode) {
+                var paramId = (IdentifierNode) paramValue;
+                if (this.GetVariable(paramId.Id) == null) {
+                    this.error(node.LineNumber, "The variable " + paramId.Id);
+                }
+            }
+        }
+
         return null;
     }
 
@@ -678,6 +688,10 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     private VariableSymbolTableNode GetVariable(IdentifierNode variableId) {
         return AST.symbolTable.GetVariable(variableId.Id);
     }
+    private VariableSymbolTableNode GetVariable(String variableId) {
+        return AST.symbolTable.GetVariable(variableId);
+    }
+
 
     private FunctionSymbolTableNode GetFunction(IdentifierNode functionId) {
         return AST.symbolTable.GetFunction(functionId.Id);
