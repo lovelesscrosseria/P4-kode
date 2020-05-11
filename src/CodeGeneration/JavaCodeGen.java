@@ -14,10 +14,7 @@ import AST.Nodes.Variables.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class JavaCodeGen extends AstVisitor<RoboNode> {
     private File outputFile;
@@ -361,7 +358,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         this.emit(",");
         this.emitFullType(node.value);
         this.emit(">()");
-        
+
         if (node.Nodes.size() > 0) {
             this.emit(" {{ \n");
             for (int i = 0; i < node.Nodes.size(); i++) {
@@ -388,16 +385,36 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(ForLoopNode node) {
+        this.emit("for (");
+        visit(node.Init);
+        if (!(node.Init instanceof VariableDeclNode)) {
+            this.emit("; ");
+        }
+        visit(node.Condition);
+        this.emit(";");
+        visit(node.Increment);
+        this.emit(") \n");
+        visit(node.Block);
         return null;
     }
 
     @Override
     public RoboNode visit(DoWhileLoopNode node) {
+        this.emit("do");
+        visit(node.Block);
+        this.emit("while(");
+        visit(node.Condition);
+        this.emit(");\n");
         return null;
     }
 
     @Override
     public RoboNode visit(WhileLoopNode node) {
+        this.emit("while(");
+        visit(node.Condition);
+        this.emit(")\n");
+        visit(node.Block);
+        
         return null;
     }
 
@@ -430,11 +447,15 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(DecrementOperatorExprNode node) {
+        visit(node.Id);
+        this.emit("--");
         return null;
     }
 
     @Override
     public RoboNode visit(IncrementOperatorExprNode node) {
+        visit(node.Id);
+        this.emit("++");
         return null;
     }
 

@@ -13,6 +13,18 @@ func void main() {
     d = 2555.5
     d++
     d--
+
+    for (num i = 0; i < 5; i++) {
+        text yeety = "yeety"
+    }
+
+    do {
+         text yeety = "yeety"
+    } while(true)
+
+    while (true) {
+        text yeety = "yeety"
+    }
 }
 
 func void testFunction(text myText, num myNumber, bool myBoolean, text yayyyy) {
