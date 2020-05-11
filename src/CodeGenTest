@@ -5,7 +5,8 @@ num c = a * b + a ^ 2
 num d = 3.0 / 2.2
 num e = 4.2 % 3.2
 list<num> myList = {1, 2, 3, 4, 5}
-
+dictionary<text, num> myDictionary = { { "one", 1}, {"two", 2} , {"three", 3}}
+dictionary<text, num> myDictionary2
 
 func void main() {
     text test = "yaybrozz"
@@ -25,4 +26,9 @@ func void testFunction(text myText, num myNumber, bool myBoolean, text yayyyy) {
     bool xy6 = 5 > 1
     bool xy7 = 5 <= 2
     bool xy8 = 5 < 2
+    testFunction("12", 12, true, "yess")
+    robot.fire(5)
+    robot.ahead(5)
+    robot.back(5)
+    //robot.changeStrategy("yeet")
 }

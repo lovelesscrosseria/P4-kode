@@ -16,6 +16,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JavaCodeGen extends AstVisitor<RoboNode> {
     private File outputFile;
@@ -101,11 +103,11 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(CaretExprNode node) {
         this.emit("(");
-        this.emit("Math.Pow(");
+        this.emit("Math.pow(");
         this.visit(node.Left);
         this.emit(", (");
         this.visit(node.Right);
-        this.emit("))");
+        this.emit(")))");
         return null;
     }
 
@@ -318,26 +320,69 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(FunctionCallNode node) {
+        visit(node.Method);
+        this.emit("(");
+
+        for (int i = 0; i < node.Params.size(); i++) {
+            var param = node.Params.get(i);
+            visit(param);
+            if ((i + 1) != node.Params.size()) {
+                this.emit(", ");
+            }
+        }
+
+        this.emit("); \n");
         return null;
     }
 
     @Override
     public RoboNode visit(ParamNode node) {
+        visit(node.Value);
         return null;
     }
 
     @Override
     public RoboNode visit(RoboCodeMethodNode node) {
+        visit(node.Method);
         return null;
     }
 
     @Override
     public RoboNode visit(DictionaryDeclNode node) {
+        this.emit("HashMap<");
+        this.emitFullType(node.key);
+        this.emit(",");
+        this.emitFullType(node.value);
+        this.emit("> ");
+        visit(node.Id);
+        this.emit(" = ");
+        this.emit("new HashMap<");
+        this.emitFullType(node.key);
+        this.emit(",");
+        this.emitFullType(node.value);
+        this.emit(">()");
+        
+        if (node.Nodes.size() > 0) {
+            this.emit(" {{ \n");
+            for (int i = 0; i < node.Nodes.size(); i++) {
+                this.emit("put(");
+                visit(node.Nodes.get(i));
+                this.emit(");\n");
+            }
+
+            this.emit("}}; \n");
+        } else {
+            this.emit(";\n");
+        }
+
         return null;
     }
 
     @Override
     public RoboNode visit(DictionaryValueNode node) {
+        visit(node.Key);
+        this.emit(", ");
+        visit(node.Value);
         return null;
     }
 
@@ -358,6 +403,18 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(FunctionCallExprNode node) {
+        visit(node.Method);
+        this.emit("(");
+
+        for (int i = 0; i < node.Params.size(); i++) {
+            var param = node.Params.get(i);
+            visit(param);
+            if ((i + 1) != node.Params.size()) {
+                this.emit(", ");
+            }
+        }
+
+        this.emit(")");
         return null;
     }
 
@@ -420,6 +477,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         this.emit("import java.util.ArrayList; \n");
         this.emit("import java.util.Arrays; \n");
         this.emit("import java.util.HashMap; \n");
+        this.emit("import java.util.Map; \n");
         this.emit("public class RoosterRobot extends AdvancedRobot \n");
         this.emit("{ \n");
     }
