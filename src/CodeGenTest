@@ -13,22 +13,29 @@ func num main() {
     d = 2555.5
     d++
     d--
-
+    num loopVariable = 5
     for (num i = 0; i < 5; i++) {
         text yeety = "yeety"
     }
 
     do {
+         loopVariable--
          text yeety = "yeety"
-    } while(true)
+    } while(loopVariable > 5)
 
-    while (true) {
+    while (loopVariable == 0) {
         text yeety = "yeety"
+        loopVariable++
     }
 
 
-    num y = robot.health() % 2
-    return y / 2 * 3
+    num yy = robot.health() % 2
+
+    myList.add(5)
+
+    num xyzzzz = myList.length()
+
+    return yy
 }
 
 func void testFunction(text myText, num myNumber, bool myBoolean, text yayyyy) {
@@ -47,4 +54,18 @@ func void testFunction(text myText, num myNumber, bool myBoolean, text yayyyy) {
     robot.ahead(5)
     robot.back(5)
     //robot.changeStrategy("yeet")
+}
+
+
+func void myTesting() {
+    num x = 1;
+    if (x == 1) {
+        text amIf = "ytes"
+    } else if (x == 2) {
+        text elseIf = "yasd"
+    } else if (x == 3) {
+        text amElseIf2 = "asda"
+    } else {
+        text amElse = "yes"
+    }
 }

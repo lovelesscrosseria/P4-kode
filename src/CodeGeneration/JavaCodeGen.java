@@ -19,6 +19,10 @@ import java.util.*;
 public class JavaCodeGen extends AstVisitor<RoboNode> {
     private File outputFile;
     private FileWriter fw;
+    private HashMap<String, String> convertFunctionNames = new HashMap<String, String>(Map.ofEntries(
+            Map.entry("length", "size"),
+            Map.entry("health", "getEnergy")
+    ));
 
     public JavaCodeGen(String fileLocation) {
         try {
@@ -317,6 +321,9 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(FunctionCallNode node) {
+        if (this.convertFunctionNames.containsKey(node.Method.Id)) {
+            node.Method.Id = this.convertFunctionNames.get(node.Method.Id);
+        }
         visit(node.Method);
         this.emit("(");
 
@@ -420,6 +427,9 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(FunctionCallExprNode node) {
+        if (this.convertFunctionNames.containsKey(node.Method.Id)) {
+            node.Method.Id = this.convertFunctionNames.get(node.Method.Id);
+        }
         visit(node.Method);
         this.emit("(");
 
@@ -438,8 +448,8 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(RoboCodeMethodExprNode node) {
         var func = node.Method;
-        if (func.Method.Id.equals("health")) {
-            func.Method.Id = "getEnergy"; // for roboCode
+        if (this.convertFunctionNames.containsKey(func.Method.Id)) {
+            func.Method.Id = this.convertFunctionNames.get(func.Method.Id);
         }
         visit(func.Method);
         this.emit("(");
@@ -480,26 +490,70 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(ParensVariableNode node) {
+        emit("(");
+        visit(node.value);
+        emit(")");
         return null;
     }
 
     @Override
     public RoboNode visit(NotExprNode node) {
+        emit("!(");
+        visit(node.Value);
+        emit(")");
         return null;
     }
 
     @Override
     public RoboNode visit(DotOperationNode node) {
+        visit(node.Id);
+        emit(".");
+        visit(node.Method);
         return null;
     }
 
     @Override
     public RoboNode visit(DotOperationExprNode node) {
+        var func = node.Method;
+
+        visit(node.Id);
+        emit(".");
+
+        if (this.convertFunctionNames.containsKey(func.Method.Id)) {
+            func.Method.Id = this.convertFunctionNames.get(func.Method.Id);
+        }
+
+        visit(func.Method);
+        this.emit("(");
+
+        for (int i = 0; i < func.Params.size(); i++) {
+            var param = func.Params.get(i);
+            visit(param);
+            if ((i + 1) != func.Params.size()) {
+                this.emit(", ");
+            }
+        }
+
+        this.emit(")");
         return null;
     }
 
     @Override
     public RoboNode visit(IfNode node) {
+        this.emit("if (");
+        visit(node.expr);
+        this.emit(")\n");
+        visit(node.block);
+        for (var elseIfnode : node.ifElseNodes) {
+            this.emit("else if (");
+            visit(elseIfnode.expr);
+            this.emit(")\n");
+            visit(elseIfnode.block);
+        }
+        if (node.elseBlock != null) {
+            this.emit("else \n");
+            visit(node.elseBlock.block);
+        }
         return null;
     }
 
