@@ -280,6 +280,14 @@ public class TypeChecking extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(ListDeclNode node) {
+        var variable = AST.symbolTable.GetVariable(node.Id.Id);
+
+        for (var item : node.nodes) {
+            var value = visit(item);
+            if (!value.Type.Type.equals(variable.Type)) {
+                this.error(node.LineNumber, "Node is of wrong type. Nodes must be of type " + node.Type.Type + " but type " + value.Type.Type + " was given");
+            }
+        }
         return null;
     }
 
