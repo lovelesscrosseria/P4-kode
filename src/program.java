@@ -5,6 +5,7 @@ import java.nio.channels.ReadableByteChannel;
 import AST.AST;
 import AST.BuildAstVisitor;
 import AST.PrintAst;
+import CodeGeneration.JavaCodeGen;
 import ContexualAnalysis.ContextualAnalysis;
 import ContexualAnalysis.MethodDeclaration;
 import GrammarOut.roboLexer;
@@ -22,7 +23,7 @@ public class program
 
         System.out.println("RoboCompiler v.1337");
         /*Used parser to turn a string of characters into a parse tree*/
-        var input = convertFileToInputStream("src/TestReal");
+        var input = convertFileToInputStream("src/CodeGenTest");
 
         ReadableByteChannel channel = Channels.newChannel(input);
         var in = CharStreams.fromChannel(channel);
@@ -46,8 +47,11 @@ public class program
         System.out.println("Checking types and valid returns...");
         ast.visit(new TypeChecking());
         checkErrors();
+        System.out.println("Generating java code...");
+        ast.visit(new JavaCodeGen("C:\\robocode\\robots\\Rooster"));
+        checkErrors();
         System.out.println("All looks good.");
-
+        input.close();
     }
 
 
