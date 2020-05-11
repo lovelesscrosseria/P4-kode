@@ -414,7 +414,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         visit(node.Condition);
         this.emit(")\n");
         visit(node.Block);
-        
+
         return null;
     }
 
@@ -437,11 +437,30 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(RoboCodeMethodExprNode node) {
+        var func = node.Method;
+        if (func.Method.Id.equals("health")) {
+            func.Method.Id = "getEnergy"; // for roboCode
+        }
+        visit(func.Method);
+        this.emit("(");
+
+        for (int i = 0; i < func.Params.size(); i++) {
+            var param = func.Params.get(i);
+            visit(param);
+            if ((i + 1) != func.Params.size()) {
+                this.emit(", ");
+            }
+        }
+
+        this.emit(")");
         return null;
     }
 
     @Override
     public RoboNode visit(ReturnNode node) {
+        emit("return ");
+        visit(node.Value);
+        emit("; \n");
         return null;
     }
 

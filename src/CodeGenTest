@@ -8,7 +8,7 @@ list<num> myList = {1, 2, 3, 4, 5}
 dictionary<text, num> myDictionary = { { "one", 1}, {"two", 2} , {"three", 3}}
 dictionary<text, num> myDictionary2
 
-func void main() {
+func num main() {
     text test = "yaybrozz"
     d = 2555.5
     d++
@@ -25,6 +25,10 @@ func void main() {
     while (true) {
         text yeety = "yeety"
     }
+
+
+    num y = robot.health() % 2
+    return y / 2 * 3
 }
 
 func void testFunction(text myText, num myNumber, bool myBoolean, text yayyyy) {
