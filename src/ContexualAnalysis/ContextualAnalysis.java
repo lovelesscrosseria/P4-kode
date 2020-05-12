@@ -173,9 +173,14 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(FunctionDeclNode node) {
         var function = this.GetFunction(node.Id);
+        var isRunTimeMethod = AST.symbolTable.getRuntimeMethod(node.Id.Id) != null;
+
         if (function == null) {
             // function is already declared
             this.error(node.LineNumber,"A func with name " + node.Id.Id + " is not declared");
+            return null;
+        } else if (isRunTimeMethod) {
+            this.error(node.LineNumber, node.Id.Id + " is a reserved runtime-method keyword.");
             return null;
         }
 
@@ -435,6 +440,13 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(FunctionCallNode node) {
         var function = this.GetFunction(node.Method);
+        var runtimeMethod = AST.symbolTable.getRuntimeMethod(node.Method.Id);
+        if (runtimeMethod != null && runtimeMethod.getParams().size() != node.Params.size()) {
+            this.error(node.LineNumber, "The function " + node.Method.Id + " uses " + runtimeMethod.getNumberOfParams() + " parameters, but " + node.Params.size() + " was given");
+            return null;
+        } else if (runtimeMethod != null) {
+            return null;
+        }
         if (function == null) {
             this.error(node.LineNumber, "The function " + node.Method.Id + " is not declared");
             return null;
@@ -612,6 +624,13 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(FunctionCallExprNode node) {
         var function = this.GetFunction(node.Method);
+        var runtimeMethod = AST.symbolTable.getRuntimeMethod(node.Method.Id);
+        if (runtimeMethod != null && runtimeMethod.getParams().size() != node.Params.size()) {
+            this.error(node.LineNumber, "The function " + node.Method.Id + " uses " + function.getNumberOfParams() + " parameters, but " + node.Params.size() + " was given");
+            return null;
+        } else if (runtimeMethod != null) {
+            return null;
+        }
         if (function == null) {
             this.error(node.LineNumber, "The function " + node.Method.Id + " is not declared");
             return null;

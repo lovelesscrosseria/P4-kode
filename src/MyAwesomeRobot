@@ -29,10 +29,10 @@ strategy Offensive {
     behavior onRun() {
         robot.scan()
         while(true) {
-            robot.turnRight(10)
+            robot.turnRight(50)
             robot.scan()
-            robot.ahead(10)
-            robot.back(10)
+            robot.ahead(100)
+            robot.back(100)
         }
 
     }

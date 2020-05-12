@@ -620,10 +620,17 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         this.emit("import java.util.Map; \n");
         this.emit("public class Rooster extends AdvancedRobot \n");
         this.emit("{ \n");
+        this.emitPrintMethod();
         this.emitStrategyVariable();
         this.emitChangeStrategy();
         this.emitOnCustomEvent();
         this.emitOnScannedRobot();
+    }
+
+    private void emitPrintMethod() {
+        this.emit("public void print(String s) { \n");
+        this.emit("System.out.println(s);\n");
+        this.emit("}\n");
     }
 
     private void emitStrategyVariable() {
