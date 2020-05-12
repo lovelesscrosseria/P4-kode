@@ -1,7 +1,6 @@
 package AST;
 
 import java.util.ArrayList;
-import java.util.function.Function;
 
 import AST.Nodes.Bool.BoolExprNode;
 import AST.Nodes.Functions.BlockNode;
@@ -10,7 +9,6 @@ import AST.Nodes.Functions.FunctionDeclNode;
 import AST.Nodes.Infix.*;
 import AST.Nodes.Bool.*;
 import AST.Nodes.Functions.*;
-import AST.Nodes.Infix.*;
 import AST.Nodes.Loops.DoWhileLoopNode;
 import AST.Nodes.Loops.ForLoopNode;
 import AST.Nodes.Loops.WhileLoopNode;
@@ -20,7 +18,6 @@ import AST.Nodes.Variables.*;
 import GrammarOut.roboBaseVisitor;
 import GrammarOut.roboLexer;
 import GrammarOut.roboParser;
-import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
     /**

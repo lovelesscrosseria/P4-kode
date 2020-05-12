@@ -5,6 +5,7 @@ import java.nio.channels.ReadableByteChannel;
 import AST.AST;
 import AST.BuildAstVisitor;
 import CodeGeneration.JavaCodeGen;
+import ContexualAnalysis.BasicErrorListener;
 import ContexualAnalysis.ContextualAnalysis;
 import ContexualAnalysis.MethodDeclaration;
 import GrammarOut.roboLexer;
@@ -30,7 +31,14 @@ public class program
         // create a parser that feeds off the tokens buffer
 
         roboParser parser = new roboParser(tokens);
+        var errorListener = new BasicErrorListener();
+        parser.addErrorListener(errorListener);
         var cst = parser.program();
+
+        if (errorListener.hasErrors()) {
+            throw new Error();
+        }
+
         AST.errors.clear();
         AST.symbolTable.clear();
         var ast = new BuildAstVisitor().visitProgram(cst);
@@ -45,6 +53,7 @@ public class program
         checkErrors();
         System.out.println("Generating java code...");
         ast.visit(new JavaCodeGen("C:\\robocode\\robots\\Rooster"));
+        System.out.println("Generated code is located at: C:\\robocode\\robots\\Rooster");
         checkErrors();
         System.out.println("All looks good.");
         input.close();
