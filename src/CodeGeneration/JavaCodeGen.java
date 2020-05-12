@@ -11,7 +11,10 @@ import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.ProgramNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
+import ContexualAnalysis.BehaviorSymbolTableNode;
 import ContexualAnalysis.EventSymbolTableNode;
+import ContexualAnalysis.StrategySymbolTableNode;
+import ContexualAnalysis.VariableSymbolTableNode;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -26,6 +29,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
             Map.entry("health", "getEnergy")
     ));
     private String currentFunction = null;
+    private BehaviorSymbolTableNode currentBehavior = null;
 
     @Override
     public RoboNode visit(ProgramNode node) {
@@ -39,28 +43,12 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         return null;
     }
 
-    private void emitStrategyInterface() {
-        this.emit("interface IStrategy { \n");
-        this.emit("} \n");
-    }
-
-    private void emitStrategies() {
-        var strategies = AST.symbolTable.GetStrategies();
-
-        for (var strategy : strategies) {
-            this.emit("class Strategy_" + strategy.Id + " implements IStrategy { \n");
-
-            this.emit("} \n");
-        }
-    }
-
-
     public JavaCodeGen(String fileLocation) {
         try {
-            this.outputFile = new File(fileLocation + "\\RoosterRobot.java");
+            this.outputFile = new File(fileLocation + "\\Rooster.java");
             this.fw = new FileWriter(outputFile);
             if (outputFile.createNewFile()) {
-                System.out.println("Created output file: RoosterRobot.java");
+                System.out.println("Created output file: Rooster.java");
             }
 
         } catch (IOException e) {
@@ -190,6 +178,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         this.emit("{\n");
         if (currentFunction != null && currentFunction.equals("run")) {
             this.currentFunction = null;
+            this.emit("strategy.onRun(this);\n");
             var events = AST.symbolTable.GetEvents();
             for (var event : events.values()) {
                 this.generateEvent(event);
@@ -361,6 +350,9 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         if (this.convertFunctionNames.containsKey(node.Method.Id)) {
             node.Method.Id = this.convertFunctionNames.get(node.Method.Id);
         }
+        if (this.currentBehavior != null) {
+            this.emit("obj.");
+        }
         visit(node.Method);
         this.emit("(");
 
@@ -384,6 +376,11 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(RoboCodeMethodNode node) {
+        var func = node.Method;
+        if (this.convertFunctionNames.containsKey(func.Method.Id)) {
+            func.Method.Id = this.convertFunctionNames.get(func.Method.Id);
+        }
+
         visit(node.Method);
         return null;
     }
@@ -404,7 +401,10 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         this.emit(">()");
 
         if (node.Nodes.size() > 0) {
-            this.emit(" {{ \n");
+            this.emit(" {");
+            this.emit(" private static final long serialVersionUID = 10L; ");
+            this.emit("{ \n");
+
             for (int i = 0; i < node.Nodes.size(); i++) {
                 this.emit("put(");
                 visit(node.Nodes.get(i));
@@ -412,6 +412,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
             }
 
             this.emit("}}; \n");
+
         } else {
             this.emit(";\n");
         }
@@ -467,6 +468,10 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         if (this.convertFunctionNames.containsKey(node.Method.Id)) {
             node.Method.Id = this.convertFunctionNames.get(node.Method.Id);
         }
+        if (this.currentBehavior != null) {
+            this.emit("obj.");
+        }
+
         visit(node.Method);
         this.emit("(");
 
@@ -487,6 +492,9 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         var func = node.Method;
         if (this.convertFunctionNames.containsKey(func.Method.Id)) {
             func.Method.Id = this.convertFunctionNames.get(func.Method.Id);
+        }
+        if (this.currentBehavior != null) {
+            emit("obj.");
         }
         visit(func.Method);
         this.emit("(");
@@ -604,15 +612,28 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
     }
 
     private void defaultEmit() {
+        this.emit("package Rooster; \n");
         this.emit("import robocode.*; \n");
         this.emit("import java.util.ArrayList; \n");
         this.emit("import java.util.Arrays; \n");
         this.emit("import java.util.HashMap; \n");
         this.emit("import java.util.Map; \n");
-        this.emit("public class RoosterRobot extends AdvancedRobot \n");
+        this.emit("public class Rooster extends AdvancedRobot \n");
         this.emit("{ \n");
+        this.emitStrategyVariable();
+        this.emitChangeStrategy();
         this.emitOnCustomEvent();
         this.emitOnScannedRobot();
+    }
+
+    private void emitStrategyVariable() {
+        var strategy = AST.symbolTable.GetStrategies().size() == 0 ? null : AST.symbolTable.GetStrategies().toArray(new StrategySymbolTableNode[0])[0];
+
+        if (strategy == null) {
+            return;
+        }
+
+        this.emit("public IStrategy strategy = new Strategy_" + strategy.Id + "(); \n");
     }
 
     private void emitOnScannedRobot() {
@@ -683,5 +704,123 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         this.emit("public boolean test() ");
         visit(event.block);
         this.emit("});\n");
+    }
+
+    private void emitStrategyInterface() {
+        var behaviors = this.getAllBehaviorsDefined().values();
+        this.emit("interface IStrategy { \n");
+        for (var behavior : behaviors) {
+            this.emitBehaviorHead(behavior, false);
+        }
+        this.emit("} \n");
+    }
+
+    private void emitStrategies() {
+        var strategies = AST.symbolTable.GetStrategies();
+
+
+        for (var strategy : strategies) {
+            var currentStrategyBehaviors = strategy.getBehaviors();
+            this.emit("class Strategy_" + strategy.Id + " implements IStrategy { \n");
+
+            this.emitStrategyBehaviors(currentStrategyBehaviors);
+
+            this.emit("} \n");
+        }
+    }
+
+    private void emitStrategyBehaviors(HashMap<String, BehaviorSymbolTableNode> currentStrategyBehaviors) {
+        var allBehaviorsDefined = this.getAllBehaviorsDefined().values();
+
+        for (var behavior : currentStrategyBehaviors.values()) {
+            this.currentBehavior = behavior;
+            this.emitBehavior(behavior);
+            this.currentBehavior = null;
+        }
+        for (var behavior : allBehaviorsDefined) {
+            if (!currentStrategyBehaviors.containsKey(behavior.Id)) {
+                this.emitEmptyBehavior(behavior);
+            }
+        }
+    }
+
+    private void emitEmptyBehavior(BehaviorSymbolTableNode behavior) {
+        this.emitBehaviorHead(behavior, true);
+        this.emit("{ } \n");
+    }
+
+    private void emitBehaviorHead(BehaviorSymbolTableNode behavior, boolean isPartOfFunction) {
+        var behaviorParams = behavior.getParams().values().toArray(new VariableSymbolTableNode[0]);
+        if (isPartOfFunction) {
+            this.emit("public ");
+        }
+        this.emit("void " + behavior.Id + "(Rooster obj");
+        if (behaviorParams.length > 0) {
+            this.emit(", ");
+        }
+
+        for (int i = 0; i < behaviorParams.length; i++) {
+            var param = behaviorParams[i];
+            this.emit("" + param.Type + " " + param.Id);
+
+            if ((i + 1) != behaviorParams.length) {
+                this.emit(", ");
+            }
+        }
+
+        this.emit(")");
+        if (isPartOfFunction) {
+            this.emit("\n");
+        } else {
+            this.emit("; \n");
+        }
+    }
+
+    private void emitBehavior(BehaviorSymbolTableNode behavior) {
+        this.emitBehaviorHead(behavior, true);
+        this.visit(behavior.block);
+    }
+
+    private void emitChangeStrategy() {
+        var strategies = AST.symbolTable.GetStrategies();
+
+        this.emit("public void changeStrategy(String strat) {\n");
+
+        for (var strategy : strategies) {
+            this.emit("if(strat == \"" + strategy.Id + "\") {\n");
+            this.emit("this.strategy = new Strategy_" + strategy.Id + "();\n");
+            this.emit("}\n");
+        }
+
+        this.emit("this.strategy.onRun(this);\n");
+
+        this.emit("}\n");
+    }
+
+    private HashMap<String, BehaviorSymbolTableNode> getAllBehaviorsDefined() {
+        HashMap<String, BehaviorSymbolTableNode> nodes = new HashMap<String, BehaviorSymbolTableNode>();
+        var strategies = AST.symbolTable.GetStrategies();
+        var events = AST.symbolTable.GetEvents().values();
+
+        for (var strategy : strategies) {
+            var behaviors = strategy.getBehaviors();
+            for (var behavior : behaviors.values()) {
+                if (!nodes.containsKey(behavior.Id)) {
+                    nodes.put(behavior.Id, behavior);
+                }
+            }
+        }
+
+        for (var event : events) {
+            if (!nodes.containsKey(event.Id)) {
+                var behavior = new BehaviorSymbolTableNode();
+                behavior.block = event.block;
+                behavior.Id = event.Id;
+                behavior.Type = "void";
+                nodes.put(event.Id, behavior);
+            }
+        }
+
+        return nodes;
     }
 }

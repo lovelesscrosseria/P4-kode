@@ -1,0 +1,50 @@
+func void run() {
+    robot.changeStrategy("offensive")
+}
+
+func bool shouldFire(ScannedRobotEvent e) {
+    return true
+}
+
+event onLowHealth {
+    return (robot.health() < 50)
+}
+
+event onNormalHealth {
+    return (robot.health() >= 50)
+}
+
+strategy Defensive {
+    behavior onRun() {
+        robot.ahead(50)
+        robot.back(50)
+    }
+
+    behavior onNormalHealth() {
+        robot.changeStrategy("Offensive")
+    }
+}
+
+strategy Offensive {
+    behavior onRun() {
+        robot.scan()
+        while(true) {
+            robot.turnRight(10)
+            robot.scan()
+            robot.ahead(10)
+            robot.back(10)
+        }
+
+    }
+
+    behavior onScannedRobot(ScannedRobotEvent e) {
+        if (shouldFire(e)) {
+            robot.turnRight(e.getBearing())
+            robot.fire(5)
+        }
+    }
+
+    behavior onLowHealth() {
+        robot.changeStrategy("Defensive")
+    }
+}

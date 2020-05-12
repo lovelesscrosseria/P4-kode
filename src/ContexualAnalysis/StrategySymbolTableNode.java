@@ -1,6 +1,7 @@
 package ContexualAnalysis;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class StrategySymbolTableNode extends SymbolTableNode {
@@ -13,5 +14,9 @@ public class StrategySymbolTableNode extends SymbolTableNode {
 
     public BehaviorSymbolTableNode getBehavior(String Id) {
         return this.behaviors.getOrDefault(Id, null);
+    }
+
+    public HashMap<String, BehaviorSymbolTableNode> getBehaviors() {
+        return this.behaviors;
     }
 }

@@ -23,7 +23,7 @@ public class program
 
         System.out.println("RoboCompiler v.1337");
         /*Used parser to turn a string of characters into a parse tree*/
-        var input = convertFileToInputStream("src/CodeGenTest");
+        var input = convertFileToInputStream("src/MyAwesomeRobot");
 
         ReadableByteChannel channel = Channels.newChannel(input);
         var in = CharStreams.fromChannel(channel);

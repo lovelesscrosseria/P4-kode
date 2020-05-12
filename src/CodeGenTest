@@ -37,7 +37,7 @@ func void run() {
 }
 
 func void testFunction(text myText, num myNumber, bool myBoolean, text yayyyy) {
-    bool y = true
+   /* bool y = true
     bool x = false
     bool xy = 2 <= 2 && x
     bool xy2 = y || x
@@ -46,7 +46,7 @@ func void testFunction(text myText, num myNumber, bool myBoolean, text yayyyy) {
     bool xy5 = 1 >= 5
     bool xy6 = 5 > 1
     bool xy7 = 5 <= 2
-    bool xy8 = 5 < 2
+    bool xy8 = 5 < 2 */
     testFunction("12", 12, true, "yess")
     robot.fire(5)
     robot.ahead(5)
@@ -79,7 +79,7 @@ event testEvent {
     return robot.health() < 50
 }
 
-strategy default {
+strategy defaultz {
     behavior onRun() {
         num xxx = 5
         xxx = 5 + 2
@@ -116,7 +116,7 @@ strategy default {
     }
 
     behavior onLose() {
-        text loseText = "Fuck you!"
+        //text loseText = "Fuck you!"
         for (num b = 0; b < 10; b++) {
             //print(loseText)
         }

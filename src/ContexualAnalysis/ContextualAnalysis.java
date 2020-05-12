@@ -363,8 +363,17 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
         this.currentStrategy = strategy;
 
+        boolean hasSeenOnRun = false;
+
         for (var behavior : node.behaviorNodes) {
             visit(behavior);
+            if (behavior.Id.Id.equals("onRun")) {
+                hasSeenOnRun = true;
+            }
+        }
+
+        if (!hasSeenOnRun) {
+            this.error(node.LineNumber, "Strategy " + node.Id.Id + " does not implement a behavior named onRun(), which is required");
         }
 
         this.currentStrategy = null;

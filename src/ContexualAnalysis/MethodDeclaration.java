@@ -233,6 +233,7 @@ public class MethodDeclaration extends AstVisitor<RoboNode> {
             behavior.addLocalVariableDeclaration(param);
         }
 
+        behavior.block = node.Block;
         this.currentStrategy.addBehavior(behavior);
 
         return null;
