@@ -5,6 +5,7 @@ import AST.Nodes.Infix.*;
 import AST.Nodes.Loops.DoWhileLoopNode;
 import AST.Nodes.Loops.ForLoopNode;
 import AST.Nodes.Loops.WhileLoopNode;
+import AST.Nodes.ProgramNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import AST.Nodes.Bool.*;
@@ -58,6 +59,7 @@ public abstract class AstVisitor<T> {
     public abstract T visit(DotOperationNode node);
     public abstract T visit(DotOperationExprNode node);
     public abstract T visit(IfNode node);
+    public abstract T visit(ProgramNode node);
 
 
     public T visit(RoboNode node) {
@@ -161,6 +163,8 @@ public abstract class AstVisitor<T> {
             return visit((DotOperationExprNode) node);
         } else if (node instanceof IfNode) {
             return visit((IfNode) node);
+        } else if (node instanceof ProgramNode) {
+            return visit((ProgramNode) node);
         }
 
         return null;

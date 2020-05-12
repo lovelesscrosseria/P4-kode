@@ -14,6 +14,7 @@ import AST.Nodes.Infix.*;
 import AST.Nodes.Loops.DoWhileLoopNode;
 import AST.Nodes.Loops.ForLoopNode;
 import AST.Nodes.Loops.WhileLoopNode;
+import AST.Nodes.ProgramNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import GrammarOut.roboBaseVisitor;
@@ -32,7 +33,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
             nodes.add(node);
         }
 
-        return new AST(nodes);
+        return new AST(new ProgramNode(nodes));
     }
 
     @Override
@@ -494,7 +495,6 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public InfixExprNode visitInfixExpr(roboParser.InfixExprContext ctx) {
         InfixExprNode node = new SubtractionExprNode();
-
         switch (ctx.op.getType())
         {
             case roboLexer.MUL_OP:

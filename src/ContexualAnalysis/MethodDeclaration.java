@@ -8,6 +8,7 @@ import AST.Nodes.Infix.*;
 import AST.Nodes.Loops.DoWhileLoopNode;
 import AST.Nodes.Loops.ForLoopNode;
 import AST.Nodes.Loops.WhileLoopNode;
+import AST.Nodes.ProgramNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 
@@ -16,6 +17,15 @@ import java.util.Stack;
 public class MethodDeclaration extends AstVisitor<RoboNode> {
     private Stack<MethodSymbolTableNode> currentFunction = new Stack<MethodSymbolTableNode>();
     private StrategySymbolTableNode currentStrategy;
+
+    @Override
+    public RoboNode visit(ProgramNode node) {
+        for (var item : node.nodes) {
+            visit(item);
+        }
+
+        return null;
+    }
 
     @Override
     public RoboNode visit(IfNode node) {

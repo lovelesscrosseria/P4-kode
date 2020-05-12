@@ -68,9 +68,66 @@ func void myTesting() {
     }
 }
 
+func bool shouldFire(ScannedRobotEvent e) {
+    return true
+}
+
 event myevent {
     return true
 }
 event testEvent {
     return robot.health() < 50
+}
+
+strategy default {
+    behavior onRun() {
+        num xxx = 5
+        xxx = 5 + 2
+
+        robot.ahead(10)
+        robot.fire(3)
+        robot.back(10)
+        robot.fire(3)
+
+        while (robot.health() > 50) {
+            robot.turnGunRight(10)
+        }
+    }
+
+    behavior onScannedRobot(ScannedRobotEvent e) {
+        if (shouldFire(e)) {
+            robot.turnRight(e.getBearing())
+            robot.fire(3)
+        }
+        robot.scan()
+    }
+
+    behavior onLowHealth()  {
+        robot.changeStrategy("defensive")
+    }
+
+    behavior onWin() {
+        num amountzz = 0
+
+        do {
+            num x = 5
+            amountzz++
+        } while(amountzz == 0)
+    }
+
+    behavior onLose() {
+        text loseText = "Fuck you!"
+        for (num b = 0; b < 10; b++) {
+            //print(loseText)
+        }
+    }
+}
+
+strategy defensive {
+	behavior onRun() {
+		robot.ahead(200)
+		robot.fire(3)
+		robot.back(200)
+		robot.fire(3)
+    }
 }

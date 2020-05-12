@@ -14,6 +14,9 @@ text myText = "yes"
 list<num> myList = {5, 5, 10, 5*5, b}
 dictionary<num, text> DictionaryWithoutValues
 dictionary<num, text> DictionaryWithValues = { { 5, "fem" }, { 10, "ti" }, { 15, "femten" }, { 20, "tyve" } }
+func void run(){
+
+}
 
  func num myfunc(num t, text x, text tt, num ss) {
      t = 5
@@ -86,7 +89,7 @@ func num myFunc(num x2) {
     return 5
 }
 
-event myEvent {
+event myEventz {
     num x = 5 + myFunc(120)
 
     while (x < 5) {
@@ -97,7 +100,7 @@ event myEvent {
          } while(x < 55)
     }
 
-    return x
+    return true
 }
 
 func void testLoop() {

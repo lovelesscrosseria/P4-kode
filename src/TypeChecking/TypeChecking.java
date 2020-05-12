@@ -8,6 +8,7 @@ import AST.Nodes.Infix.*;
 import AST.Nodes.Loops.DoWhileLoopNode;
 import AST.Nodes.Loops.ForLoopNode;
 import AST.Nodes.Loops.WhileLoopNode;
+import AST.Nodes.ProgramNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import ContexualAnalysis.*;
@@ -16,6 +17,15 @@ import java.util.*;
 
 public class TypeChecking extends AstVisitor<RoboNode> {
     private StrategySymbolTableNode currentStrategy;
+
+    @Override
+    public RoboNode visit(ProgramNode node) {
+        for (var item : node.nodes) {
+            visit(item);
+        }
+
+        return null;
+    }
 
     @Override
     public RoboNode visit(AdditionExprNode node) {
@@ -136,11 +146,7 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         var variable = AST.symbolTable.GetVariable(node.Id);
 
         IdentifierNode result = new IdentifierNode();
-        try {
-            result.Id = variable.Id;
-        } catch (Exception e) {
-            var s = "aas";
-        }
+        result.Id = variable.Id;
 
         if (variable instanceof ListVariableSymbolTableNode) {
             result = new ListIdentifierNode();
@@ -149,7 +155,11 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         }
 
         result.Type = new TypeNode();
-        result.Type.Type = variable.Type;
+        try {
+            result.Type.Type = variable.Type;
+        } catch (Exception e) {
+            var s = true;
+        }
         result.LineNumber = node.LineNumber;
 
         return result;

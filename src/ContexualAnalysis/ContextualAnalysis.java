@@ -8,6 +8,7 @@ import AST.Nodes.Infix.*;
 import AST.Nodes.Loops.DoWhileLoopNode;
 import AST.Nodes.Loops.ForLoopNode;
 import AST.Nodes.Loops.WhileLoopNode;
+import AST.Nodes.ProgramNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import ContexualAnalysis.Loops.DoWhileLoopSymboleTableNode;
@@ -20,6 +21,14 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     private Stack<MethodSymbolTableNode> currentFunction = new Stack<MethodSymbolTableNode>();
     private StrategySymbolTableNode currentStrategy;
 
+    @Override
+    public RoboNode visit(ProgramNode node) {
+        for (var item : node.nodes) {
+            visit(item);
+        }
+
+        return null;
+    }
     public ContextualAnalysis() {
         var startMethod = AST.symbolTable.GetFunction("run");
         if (startMethod == null) {
@@ -365,10 +374,11 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(BehaviorNode node) {
-        var behavior = new BehaviorSymbolTableNode();
-        behavior.Id = node.Id.Id;
+        var behavior = this.GetBehavior(node.Id);
+        //var behavior = new BehaviorSymbolTableNode();
+        //behavior.Id = node.Id.Id;
 
-        if (this.GetBehavior(node.Id) == null) {
+        if (behavior == null) {
             this.error(node.LineNumber, "A behavior with name " + node.Id.Id + " is not defined");
             return null;
         }

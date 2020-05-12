@@ -8,6 +8,7 @@ import AST.Nodes.Infix.*;
 import AST.Nodes.Loops.DoWhileLoopNode;
 import AST.Nodes.Loops.ForLoopNode;
 import AST.Nodes.Loops.WhileLoopNode;
+import AST.Nodes.ProgramNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
 import ContexualAnalysis.EventSymbolTableNode;
@@ -26,6 +27,34 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
     ));
     private String currentFunction = null;
 
+    @Override
+    public RoboNode visit(ProgramNode node) {
+        this.defaultEmit();
+        for (var item : node.nodes) {
+            visit(item);
+        }
+        this.emit("}");
+        this.emitStrategyInterface();
+        this.emitStrategies();
+        return null;
+    }
+
+    private void emitStrategyInterface() {
+        this.emit("interface IStrategy { \n");
+        this.emit("} \n");
+    }
+
+    private void emitStrategies() {
+        var strategies = AST.symbolTable.GetStrategies();
+
+        for (var strategy : strategies) {
+            this.emit("class Strategy_" + strategy.Id + " implements IStrategy { \n");
+
+            this.emit("} \n");
+        }
+    }
+
+
     public JavaCodeGen(String fileLocation) {
         try {
             this.outputFile = new File(fileLocation + "\\RoosterRobot.java");
@@ -33,8 +62,6 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
             if (outputFile.createNewFile()) {
                 System.out.println("Created output file: RoosterRobot.java");
             }
-
-            this.defaultEmit();
 
         } catch (IOException e) {
             AST.errors.add("Could not write to output file at location: " + fileLocation);
@@ -173,13 +200,6 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         }
         this.emit("}\n");
         return null;
-    }
-
-    private void generateEvent(EventSymbolTableNode event) {
-        this.emit("addCustomEvent(new Condition(\"" + event.Id + "\") {\n");
-        this.emit("public boolean test() ");
-        visit(event.block);
-        this.emit("});\n");
     }
 
     @Override
@@ -591,6 +611,31 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         this.emit("import java.util.Map; \n");
         this.emit("public class RoosterRobot extends AdvancedRobot \n");
         this.emit("{ \n");
+        this.emitOnCustomEvent();
+        this.emitOnScannedRobot();
+    }
+
+    private void emitOnScannedRobot() {
+        this.emit("public void onScannedRobot(ScannedRobotEvent e) { \n");
+        this.emit("strategy.onScannedRobot(this, e);\n");
+        this.emit("}\n");
+    }
+
+    private void emitOnCustomEvent() {
+        boolean isFirst = true;
+        this.emit("public void onCustomEvent(CustomEvent e) {\n");
+        var events = AST.symbolTable.GetEvents();
+        for (var event : events.values()) {
+            if (!isFirst) {
+                this.emit("else ");
+            }
+            this.emit("if(e.getCondition().getName().equals(\"" + event.Id + "\")) {\n");
+            this.emit("strategy." + event.Id + "(this);\n");
+            this.emit("}\n");
+            isFirst = false;
+        }
+        this.emit("}\n");
+
     }
 
     private void emitSimpleType(TypeNode type) {
@@ -606,6 +651,9 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
                 break;
             case "text":
                 this.emit("String ");
+                break;
+            case "ScannedRobotEvent":
+                this.emit("ScannedRobotEvent ");
                 break;
             default:
                 AST.errors.add(type.Type + " not implemented in emitSimpleType()");
@@ -628,5 +676,12 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
                 AST.errors.add(type.Type + " not implemented in emitFullType()");
                 break;
         }
+    }
+
+    private void generateEvent(EventSymbolTableNode event) {
+        this.emit("addCustomEvent(new Condition(\"" + event.Id + "\") {\n");
+        this.emit("public boolean test() ");
+        visit(event.block);
+        this.emit("});\n");
     }
 }

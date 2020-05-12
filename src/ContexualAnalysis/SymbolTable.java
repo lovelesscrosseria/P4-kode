@@ -3,6 +3,7 @@ package ContexualAnalysis;
 import AST.Nodes.Variables.VariableDeclNode;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class SymbolTable {
@@ -27,6 +28,9 @@ public class SymbolTable {
 
     public StrategySymbolTableNode GetStrategy(String Id) {
         return this.strategies.getOrDefault(Id, null);
+    }
+    public Collection<StrategySymbolTableNode> GetStrategies() {
+        return this.strategies.values();
     }
 
     public void PutFunction(FunctionSymbolTableNode func) {
