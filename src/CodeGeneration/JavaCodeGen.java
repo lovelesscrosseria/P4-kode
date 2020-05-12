@@ -10,6 +10,7 @@ import AST.Nodes.Loops.ForLoopNode;
 import AST.Nodes.Loops.WhileLoopNode;
 import AST.Nodes.RoboNode;
 import AST.Nodes.Variables.*;
+import ContexualAnalysis.EventSymbolTableNode;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -139,6 +140,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(FunctionDeclNode node) {
+        this.currentFunction = node.Id.Id;
         this.emit("public ");
         this.visit(node.Type);
         this.visit(node.Id);
@@ -152,18 +154,32 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         }
         this.emit(") \n");
         this.visit(node.block);
-
+        this.currentFunction = null;
         return null;
     }
 
     @Override
     public RoboNode visit(BlockNode node) {
         this.emit("{\n");
+        if (currentFunction != null && currentFunction.equals("run")) {
+            this.currentFunction = null;
+            var events = AST.symbolTable.GetEvents();
+            for (var event : events.values()) {
+                this.generateEvent(event);
+            }
+        }
         for (var stmt : node.statements) {
             visit(stmt);
         }
         this.emit("}\n");
         return null;
+    }
+
+    private void generateEvent(EventSymbolTableNode event) {
+        this.emit("addCustomEvent(new Condition(\"" + event.Id + "\") {\n");
+        this.emit("public boolean test() ");
+        visit(event.block);
+        this.emit("});\n");
     }
 
     @Override

@@ -238,6 +238,7 @@ public class MethodDeclaration extends AstVisitor<RoboNode> {
 
         event = new EventSymbolTableNode();
         event.Id = node.Id.Id;
+        event.block = node.Block;
 
         AST.symbolTable.PutEvent(event);
 

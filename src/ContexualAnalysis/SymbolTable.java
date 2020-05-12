@@ -42,6 +42,9 @@ public class SymbolTable {
     public EventSymbolTableNode GetEvent(String Id) {
         return this.events.getOrDefault(Id, null);
     }
+    public HashMap<String, EventSymbolTableNode> GetEvents() {
+        return this.events;
+    }
 
     public void EnterScope(ArrayList<VariableSymbolTableNode> variables) {
         this.variables.EnterScope(variables);
