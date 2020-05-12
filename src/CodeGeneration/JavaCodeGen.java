@@ -23,6 +23,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
             Map.entry("length", "size"),
             Map.entry("health", "getEnergy")
     ));
+    private String currentFunction = null;
 
     public JavaCodeGen(String fileLocation) {
         try {

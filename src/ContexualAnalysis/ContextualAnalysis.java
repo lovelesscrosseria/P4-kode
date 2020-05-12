@@ -386,6 +386,20 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
         AST.symbolTable.EnterScope();
         this.currentFunction.push(event);
         visit(node.Block);
+
+        boolean hasFoundReturn = false;
+
+        for (var stmt : node.Block.statements) {
+            if (stmt instanceof ReturnNode) {
+                hasFoundReturn = true;
+                break;
+            }
+        }
+
+        if (!hasFoundReturn) {
+            this.error(node.LineNumber, "An event must have a return value");
+        }
+
         this.currentFunction.pop();
         AST.symbolTable.ExitScope();
 

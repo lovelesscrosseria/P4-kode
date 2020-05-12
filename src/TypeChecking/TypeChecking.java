@@ -475,6 +475,17 @@ public class TypeChecking extends AstVisitor<RoboNode> {
         AST.symbolTable.EnterFunction(event);
 
         visit(node.Block);
+        ;
+
+        for (var stmt : node.Block.statements) {
+            if (stmt instanceof ReturnNode) {
+                var myType = visit(stmt);
+                if (!myType.Type.Type.equals("bool")) {
+                    this.error(stmt.LineNumber, "Events must return a boolean value");
+                    break;
+                }
+            }
+        }
 
         AST.symbolTable.ExitFunction();
         return node;

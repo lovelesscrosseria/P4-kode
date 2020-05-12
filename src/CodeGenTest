@@ -58,7 +58,7 @@ func void testFunction(text myText, num myNumber, bool myBoolean, text yayyyy) {
 
 
 func void myTesting() {
-    num x = 1;
+    num x = 1
     if (x == 1) {
         text amIf = "ytes"
     } else if (x == 2) {
@@ -68,4 +68,8 @@ func void myTesting() {
     } else {
         text amElse = "yes"
     }
+}
+
+event myevent {
+    return true
 }

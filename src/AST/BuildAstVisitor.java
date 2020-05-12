@@ -185,6 +185,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         for (var item : ctx.dictionaryValue()) {
             node.Nodes.add((DictionaryValueNode) visit(item));
         }
+
         return node;
     }
     /**
@@ -493,6 +494,7 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
      */
     @Override public InfixExprNode visitInfixExpr(roboParser.InfixExprContext ctx) {
         InfixExprNode node = new SubtractionExprNode();
+
         switch (ctx.op.getType())
         {
             case roboLexer.MUL_OP:

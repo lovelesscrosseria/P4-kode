@@ -1,4 +1,4 @@
-func void main() {
+func void run() {
     robot.changeStrategy("offensive")
 }
 
