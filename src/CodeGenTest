@@ -8,7 +8,7 @@ list<num> myList = {1, 2, 3, 4, 5}
 dictionary<text, num> myDictionary = { { "one", 1}, {"two", 2} , {"three", 3}}
 dictionary<text, num> myDictionary2
 
-func num main() {
+func void run() {
     text test = "yaybrozz"
     d = 2555.5
     d++
@@ -34,8 +34,6 @@ func num main() {
     myList.add(5)
 
     num xyzzzz = myList.length()
-
-    return yy
 }
 
 func void testFunction(text myText, num myNumber, bool myBoolean, text yayyyy) {

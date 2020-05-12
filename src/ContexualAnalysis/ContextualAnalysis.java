@@ -20,6 +20,13 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
     private Stack<MethodSymbolTableNode> currentFunction = new Stack<MethodSymbolTableNode>();
     private StrategySymbolTableNode currentStrategy;
 
+    public ContextualAnalysis() {
+        var startMethod = AST.symbolTable.GetFunction("run");
+        if (startMethod == null) {
+            this.error(1, "No starting point could be found. Please declare a 'run()' method.");
+        }
+    }
+
     @Override
     public RoboNode visit(DecrementOperatorExprNode node) {
         var s = this.GetVariable(node.Id);

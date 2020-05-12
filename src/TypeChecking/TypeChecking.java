@@ -201,6 +201,10 @@ public class TypeChecking extends AstVisitor<RoboNode> {
     @Override
     public RoboNode visit(FunctionDeclNode node) {
         var function = this.GetFunction(node.Id);
+        if (function.Id.equals("run") && !function.Type.equals("void")) {
+            this.error(node.LineNumber, "run() method must be of type void");
+        }
+
         AST.symbolTable.EnterFunction(function);
 
         visit(node.block);
