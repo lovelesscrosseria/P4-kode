@@ -25,11 +25,6 @@ public class PrintAst extends AstVisitor<RoboNode>{
     }
 
     @Override
-    public RoboNode visit(IfNode node) {
-        return null;
-    }
-
-    @Override
     public RoboNode visit(IncrementOperatorExprNode node) {
         System.out.print("( ");
         visit(node.Id);
@@ -379,6 +374,11 @@ public class PrintAst extends AstVisitor<RoboNode>{
     public RoboNode visit(BoolValueNode node) {
         System.out.print(node.Value);
 
+        return null;
+    }
+
+    @Override
+    public RoboNode visit(IfNode node) {
         return null;
     }
 
