@@ -142,7 +142,11 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         node.Id = new IdentifierNode();
         node.Id.Id = ctx.varId.getText();
 
-        node.Value = ctx.value == null ? null : (RoboNode) visit(ctx.value);
+        if (ctx.value == null) {
+            setDefaultValue(node);
+        } else {
+            node.Value = (RoboNode) visit(ctx.value);
+        }
 
         return node;
     }
@@ -713,5 +717,27 @@ public class BuildAstVisitor extends roboBaseVisitor<RoboNode> {
         }
 
         return params;
+    }
+
+    private void setDefaultValue(VariableDeclNode node) {
+        switch (node.Type.Type) {
+            case "bool":
+                var boolValue = new BoolValueNode();
+                boolValue.Value = "false";
+                node.Value = boolValue;
+                break;
+            case "num":
+                var numValue = new DigitExprNode();
+                numValue.value = 0;
+                node.Value = numValue;
+                break;
+            case "text":
+                var textValue = new StringExprNode();
+                textValue.value = "";
+                node.Value = textValue;
+                break;
+        }
+
+
     }
 }

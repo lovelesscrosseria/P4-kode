@@ -92,9 +92,9 @@ public class ContextualAnalysis extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(IdentifierNode node) {
-        var s = this.GetVariable(node);
+        var variable = this.GetVariable(node);
 
-        if (s == null) {
+        if (variable == null) {
             this.error(node.LineNumber, "Variable " + node.Id + " is not defined");
         }
 

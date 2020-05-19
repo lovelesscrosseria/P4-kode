@@ -9,7 +9,6 @@ strategy offensive {
         driveBy(4)
     }
 }
-S
 
 func void driveBy(num times) {
     for (num i = 0; i < times; i++) {
