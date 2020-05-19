@@ -131,13 +131,32 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
 
     @Override
     public RoboNode visit(TypeNode node) {
-        this.emitSimpleType(node);
+        switch (node.Type) {
+            case "num":
+                this.emit("double ");
+                break;
+            case "bool":
+                this.emit("boolean ");
+                break;
+            case "void":
+                this.emit("void ");
+                break;
+            case "text":
+                this.emit("String ");
+                break;
+            case "ScannedRobotEvent":
+                this.emit("ScannedRobotEvent ");
+                break;
+            default:
+                AST.errors.add(node.Type + " not implemented in visit TypeNode");
+                break;
+        }
         return null;
     }
 
     @Override
     public RoboNode visit(VariableDeclNode node) {
-        this.emitSimpleType(node.Type);
+        visit(node.Type);
         this.emit(node.Id.Id + " = ");
         visit(node.Value);
         emit("; \n");
@@ -664,29 +683,6 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         }
         this.emit("}\n");
 
-    }
-
-    private void emitSimpleType(TypeNode type) {
-        switch (type.Type) {
-            case "num":
-                this.emit("double ");
-                break;
-            case "bool":
-                this.emit("boolean ");
-                break;
-            case "void":
-                this.emit("void ");
-                break;
-            case "text":
-                this.emit("String ");
-                break;
-            case "ScannedRobotEvent":
-                this.emit("ScannedRobotEvent ");
-                break;
-            default:
-                AST.errors.add(type.Type + " not implemented in emitSimpleType()");
-                break;
-        }
     }
 
     private void emitFullType(TypeNode type) {
