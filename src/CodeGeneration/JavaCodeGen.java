@@ -710,7 +710,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
     }
 
     private void emitStrategyInterface() {
-        var behaviors = this.getAllBehaviorsDefined().values();
+        var behaviors = this.getAllBehaviorsAndEventsDefined().values();
         this.emit("interface IStrategy { \n");
         for (var behavior : behaviors) {
             this.emitBehaviorHead(behavior, false);
@@ -733,7 +733,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
     }
 
     private void emitStrategyBehaviors(HashMap<String, BehaviorSymbolTableNode> currentStrategyBehaviors) {
-        var allBehaviorsDefined = this.getAllBehaviorsDefined().values();
+        var allBehaviorsDefined = this.getAllBehaviorsAndEventsDefined().values();
 
         for (var behavior : currentStrategyBehaviors.values()) {
             this.currentBehavior = behavior;
@@ -800,7 +800,7 @@ public class JavaCodeGen extends AstVisitor<RoboNode> {
         this.emit("}\n");
     }
 
-    private HashMap<String, BehaviorSymbolTableNode> getAllBehaviorsDefined() {
+    private HashMap<String, BehaviorSymbolTableNode> getAllBehaviorsAndEventsDefined() {
         HashMap<String, BehaviorSymbolTableNode> nodes = new HashMap<String, BehaviorSymbolTableNode>();
         var strategies = AST.symbolTable.GetStrategies();
         var events = AST.symbolTable.GetEvents().values();
