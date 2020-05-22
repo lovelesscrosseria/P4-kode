@@ -6,7 +6,7 @@
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/src/robo.g4" />
           <option name="autoGen" value="true" />
-          <option name="outputDir" value="C:\Users\AVB\Documents\GitHub\P4-kode\src" />
+          <option name="outputDir" value="C:\Users\AVB\Documents\Projekter\P4\P4-kode\src" />
           <option name="libDir" value="" />
           <option name="encoding" value="" />
           <option name="pkg" value="GrammarOut" />
