@@ -13,9 +13,7 @@ variable_decl: varType=type varId=ID (ASSIGN_OP value=expr)?;
 list_decl: 'list' LESS_OP listType=type GREATER_OP id=ID (ASSIGN_OP LCURL listExpr=expr? (',' expr)* RCURL)?;
 dictionary_decl: 'dictionary' LESS_OP dicKey=type COMMA dicValue=type GREATER_OP id=ID (ASSIGN_OP LCURL defaultValue=dictionaryValue? (',' dictionaryValue)* RCURL)?;
 dictionaryValue: LCURL key=expr COMMA value=expr RCURL;
-//collection_expr: id=ID DOT ('get' LPAREN expr RPAREN | 'length');
 dotOperation: id=ID DOT method=function_call;
-//collection_statement: ID DOT 'push' LPAREN (expr | expr COMMA expr) RPAREN;
 roboCode_method: 'robot' DOT method=function_call;
 ifStmt: 'if' ifExpr=expr (NEWLINE)? ifBlock=block ('else if' expr (NEWLINE)? block )* ('else' ( NEWLINE)? block )?;
 
@@ -45,9 +43,6 @@ loop: loopType='for' LPAREN (forLoopVarDec=variable_decl | forLoopAssign=assignm
     | loopType='while' LPAREN loopCondition=expr RPAREN (NEWLINE)? loopBlock=block
     | loopType='do' ( NEWLINE )? loopBlock=block 'while' LPAREN loopCondition=expr RPAREN
     ;
-//for_loop: 'for' LPAREN (variable_decl | assignment) ';' expr ';' expr RPAREN block;
-//while_loop: 'while' LPAREN expr RPAREN (NEWLINE)? block;
-//do_while_loop: 'do' ( NEWLINE )? block 'while' LPAREN expr RPAREN;
 block: LCURL (stat | NEWLINE )* RCURL;
 
 formal_params: paramType=type paramId=ID (',' formal_params)*;
@@ -71,7 +66,6 @@ expr        : decrement_operator                                                
             | id=ID                                                             # idExpr
             | funcCall=function_call                                            # funcExpr
             | collectionExpr=dotOperation                                       # collExpr
-//            | id=ID DOT funcCall=function_call                                  # roboEventCallExpr
             | roboMethod=roboCode_method                                        # roboMethodExpr
             ;
 
